@@ -14,7 +14,7 @@ let co: Awaited<ReturnType<typeof makeCompany>>;
 let other: Awaited<ReturnType<typeof makeCompany>>;
 
 /** Real sign-in through the Supabase API, as a phone would. */
-async function apiClientFor(userType: "crew" | "workshop" | "director", companyId: string) {
+async function apiClientFor(userType: "crew" | "workshop" | "director", companyId: string, verify = true) {
   const admin = createClient(URL, SECRET, { auth: { persistSession: false } });
   const email = `${userType}-${crypto.randomUUID()}@test.local`;
   const password = "Correct-Horse-9";
@@ -32,6 +32,12 @@ async function apiClientFor(userType: "crew" | "workshop" | "director", companyI
   const client = createClient(URL, PUBLISHABLE, { auth: { persistSession: false } });
   const signIn = await client.auth.signInWithPassword({ email, password });
   if (signIn.error) throw signIn.error;
+  if (verify) {
+    // Completed second step (device check) for this session.
+    const claims = JSON.parse(Buffer.from(signIn.data.session!.access_token.split(".")[1], "base64url").toString());
+    await adminDb.execute(sql`insert into public.verified_sessions (session_id, company_id, user_id)
+      values (${claims.session_id}, ${companyId}, ${data.user.id})`);
+  }
   return { client, id: data.user.id };
 }
 
@@ -112,6 +118,18 @@ describe("Workshop and Director via the API", () => {
     expect(costs.data).toEqual([{ amount_cents: 125000 }]);
   });
 
+  it("Director with a password but no second step reads nothing", async () => {
+    const { client } = await apiClientFor("director", co.company.id, false);
+    expect((await client.from("zz_test_wo_costs").select("*")).data).toEqual([]);
+    expect((await client.from("companies").select("id")).data).toEqual([]);
+    expect((await client.rpc("my_permissions")).data).toEqual([]);
+  });
+
+  it("Crew needs no second step", async () => {
+    const { client } = await apiClientFor("crew", co.company.id, false);
+    expect((await client.from("companies").select("id")).data).toEqual([{ id: co.company.id }]);
+  });
+
   it("nobody can hard-delete through the API", async () => {
     const { client } = await apiClientFor("director", co.company.id);
     const del = await client.from("zz_test_workshop_docs").delete().eq("company_id", co.company.id);
@@ -123,7 +141,7 @@ describe("acting access and flags (database side)", () => {
   it("acting access applies until it ends", async () => {
     const u = await makeUser({ companyId: co.company.id, userType: "crew" });
     const can = () =>
-      asUser({ id: u.id }, async (tx) => {
+      asUser(u, async (tx) => {
         const r = await tx.execute(sql`select app.can('docs_workshop','view') as ok`);
         return (r as unknown as { ok: boolean }[])[0].ok;
       });
@@ -138,12 +156,12 @@ describe("acting access and flags (database side)", () => {
   it("Workshop lead flag unlocks sign-off", async () => {
     const plain = await makeUser({ companyId: co.company.id, userType: "workshop" });
     const lead = await makeUser({ companyId: co.company.id, userType: "workshop", flags: ["workshop_lead"] });
-    const q = (id: string) =>
-      asUser({ id }, async (tx) => {
+    const q = (u: { id: string; sessionId: string }) =>
+      asUser(u, async (tx) => {
         const r = await tx.execute(sql`select app.can('work_orders','sign_off') as ok`);
         return (r as unknown as { ok: boolean }[])[0].ok;
       });
-    expect(await q(plain.id)).toBe(false);
-    expect(await q(lead.id)).toBe(true);
+    expect(await q(plain)).toBe(false);
+    expect(await q(lead)).toBe(true);
   });
 });

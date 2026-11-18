@@ -21,7 +21,7 @@ export async function actAs<A extends Area, T>(
   const me = await requireActive();
   assertCan(me.actor, area, action);
   const meta = await requestMeta();
-  return asUser({ id: me.id, ...meta }, (tx) => fn(tx, me));
+  return asUser({ id: me.id, sessionId: me.sessionId, ...meta }, (tx) => fn(tx, me));
 }
 
 export type { Actor };

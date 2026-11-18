@@ -23,12 +23,12 @@ beforeAll(async () => {
 
 describe("tenant isolation (RLS)", () => {
   it("an active user only sees their own company", async () => {
-    const rows = await asUser({ id: directorA.id }, (tx) => tx.select({ id: companies.id }).from(companies));
+    const rows = await asUser(directorA, (tx) => tx.select({ id: companies.id }).from(companies));
     expect(rows.map((r) => r.id)).toEqual([a.company.id]);
   });
 
   it("cannot read another company's sites, crews or users", async () => {
-    await asUser({ id: directorA.id }, async (tx) => {
+    await asUser(directorA, async (tx) => {
       const s = await tx.select().from(sites);
       expect(s.every((r) => r.companyId === a.company.id)).toBe(true);
       expect(s.length).toBeGreaterThan(0);
@@ -40,7 +40,7 @@ describe("tenant isolation (RLS)", () => {
   });
 
   it("a PENDING user sees only their own profile row and nothing else", async () => {
-    await asUser({ id: pendingA.id }, async (tx) => {
+    await asUser(pendingA, async (tx) => {
       expect(await tx.select({ id: companies.id }).from(companies)).toEqual([]);
       expect(await tx.select().from(sites)).toEqual([]);
       expect(await tx.select().from(crews)).toEqual([]);
@@ -51,14 +51,14 @@ describe("tenant isolation (RLS)", () => {
 
   it("cannot read the PIN hash column through the user role", async () => {
     await expectDbError(
-      asUser({ id: directorA.id }, (tx) => tx.execute(sql`select pin_hash from public.users`)),
+      asUser(directorA, (tx) => tx.execute(sql`select pin_hash from public.users`)),
       /permission denied/,
     );
   });
 
   it("the sign-up code is not readable directly", async () => {
     await expectDbError(
-      asUser({ id: directorA.id }, (tx) => tx.execute(sql`select signup_code from public.companies`)),
+      asUser(directorA, (tx) => tx.execute(sql`select signup_code from public.companies`)),
       /permission denied/,
     );
   });

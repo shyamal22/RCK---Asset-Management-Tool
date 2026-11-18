@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function SignupLinkPage() {
   const me = await requirePermission("settings", "edit");
-  const rows = await asUser({ id: me.id }, (tx) =>
+  const rows = await asUser({ id: me.id, sessionId: me.sessionId }, (tx) =>
     tx.execute(sql`select public.my_signup_code() as code,
       (select signup_enabled from public.companies where id = app.current_company_id()) as enabled`),
   );

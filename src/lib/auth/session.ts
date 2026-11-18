@@ -7,17 +7,24 @@ import { asUser } from "@db/client";
 import { supabaseServer } from "@/lib/supabase/server";
 import type { Actor } from "@/lib/permissions/check";
 import type { UserFlag, UserType } from "@/lib/permissions/types";
+import { currentDevice, hasUnlockMethod, isUnlocked, touchUnlock } from "./device";
+import { needsSecondStep } from "./policy";
 
 export type Profile = {
   id: string;
+  sessionId: string | null;
   companyId: string;
   companyName: string;
   name: string;
+  email: string | null;
+  mobile: string | null;
   status: "pending" | "active" | "rejected" | "deactivated";
-  userType: UserType | null; // effective (acting access applied)
+  userType: UserType | null; // effective (acting access applied, second step passed)
+  rawUserType: UserType | null; // effective type before the second-step gate
   baseUserType: UserType | null;
   crewId: string | null;
   flags: UserFlag[];
+  secondStepNeeded: boolean;
 };
 
 export async function requestMeta() {
@@ -28,40 +35,64 @@ export async function requestMeta() {
   };
 }
 
+/** Verified identity from the session JWT (signature checked), or null. */
+export const getIdentity = cache(async () => {
+  const supabase = await supabaseServer();
+  const { data } = await supabase.auth.getClaims();
+  if (!data?.claims?.sub) return null;
+  return { userId: data.claims.sub as string, sessionId: (data.claims.session_id as string | undefined) ?? null };
+});
+
 /** Signed-in user's profile, or null. Reads run as the user, so RLS applies. */
 export const getProfile = cache(async (): Promise<Profile | null> => {
-  const supabase = await supabaseServer();
-  const { data } = await supabase.auth.getUser();
-  if (!data.user) return null;
+  const ident = await getIdentity();
+  if (!ident) return null;
   const meta = await requestMeta();
-  const rows = await asUser({ id: data.user.id, ...meta }, (tx) =>
+  const rows = await asUser({ id: ident.userId, sessionId: ident.sessionId, ...meta }, (tx) =>
     tx.execute(sql`
-      select u.id, u.company_id, u.name, u.status, u.user_type as base_user_type, u.crew_id,
+      select u.id, u.company_id, u.name, u.email, u.mobile, u.status, u.user_type as base_user_type, u.crew_id,
              app.current_user_type() as user_type,
-             (select c.name from public.companies c where c.id = u.company_id) as company_name_visible,
+             app.current_user_type_raw() as raw_user_type,
+             (select c.name from public.companies c where c.id = u.company_id) as company_name,
              app.has_flag('workshop_lead') as workshop_lead
       from public.users u where u.id = auth.uid()`),
   );
   const r = (rows as unknown as Record<string, unknown>[])[0];
   if (!r) return null;
+  const rawUserType = (r.raw_user_type as UserType | null) ?? null;
+  const userType = (r.user_type as UserType | null) ?? null;
   return {
     id: r.id as string,
+    sessionId: ident.sessionId,
     companyId: r.company_id as string,
-    companyName: (r.company_name_visible as string | null) ?? "",
+    companyName: (r.company_name as string | null) ?? "",
     name: r.name as string,
+    email: (r.email as string | null) ?? null,
+    mobile: (r.mobile as string | null) ?? null,
     status: r.status as Profile["status"],
-    userType: (r.user_type as UserType | null) ?? null,
+    userType,
+    rawUserType,
     baseUserType: (r.base_user_type as UserType | null) ?? null,
     crewId: (r.crew_id as string | null) ?? null,
     flags: r.workshop_lead ? ["workshop_lead"] : [],
+    secondStepNeeded: needsSecondStep(rawUserType) && userType === null,
   };
 });
 
-/** For pages that need an approved user. Redirects otherwise. */
-export async function requireActive(): Promise<Profile & { userType: UserType; actor: Actor }> {
+export type ActiveUser = Profile & { userType: UserType; actor: Actor };
+
+/** For pages/actions that need an approved, verified, unlocked user. Redirects otherwise. */
+export async function requireActive(): Promise<ActiveUser> {
   const p = await getProfile();
   if (!p) redirect("/sign-in");
-  if (p.status === "pending") redirect("/waiting");
-  if (p.status !== "active" || !p.userType) redirect("/sign-in?state=inactive");
+  if (p.status === "pending" || p.status === "rejected") redirect("/waiting");
+  if (p.status !== "active") redirect("/sign-in?state=inactive");
+  if (p.secondStepNeeded) redirect("/verify-device");
+  if (!p.userType) redirect("/sign-in?state=inactive");
+  const device = await currentDevice(p.id);
+  if (device && (await hasUnlockMethod(p.id))) {
+    if (!(await isUnlocked(device.id))) redirect("/unlock");
+    await touchUnlock(device.id);
+  }
   return { ...p, userType: p.userType, actor: { userType: p.userType, flags: p.flags } };
 }

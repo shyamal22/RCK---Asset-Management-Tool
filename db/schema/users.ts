@@ -93,3 +93,77 @@ export const tempAccess = pgTable(
   },
   (t) => [index("temp_access_user_idx").on(t.userId)],
 );
+
+/** A browser/phone a user has signed in on. The cookie holds a random token; we store its hash. */
+export const trustedDevices = pgTable(
+  "trusted_devices",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    tokenHash: text("token_hash").notNull(),
+    label: text("label"),
+    verifiedAt: timestamp("verified_at", { withTimezone: true }),
+    unlockedUntil: timestamp("unlocked_until", { withTimezone: true }),
+    webauthnChallenge: text("webauthn_challenge"),
+    challengeExpiresAt: timestamp("challenge_expires_at", { withTimezone: true }),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: createdAt(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  },
+  (t) => [uniqueIndex("trusted_devices_user_token").on(t.userId, t.tokenHash)],
+);
+
+/** Supabase sessions that passed the device check (second step for Director/Office). */
+export const verifiedSessions = pgTable("verified_sessions", {
+  sessionId: uuid("session_id").primaryKey(),
+  companyId: uuid("company_id")
+    .notNull()
+    .references(() => companies.id),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  deviceId: uuid("device_id").references(() => trustedDevices.id),
+  createdAt: createdAt(),
+});
+
+export const passkeys = pgTable(
+  "passkeys",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companies.id),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    credentialId: text("credential_id").notNull().unique(),
+    publicKey: text("public_key").notNull(),
+    counter: integer("counter").notNull().default(0),
+    transports: text("transports").array(),
+    label: text("label"),
+    createdAt: createdAt(),
+    lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  },
+  (t) => [index("passkeys_user_idx").on(t.userId)],
+);
+
+/**
+ * Failed sign-in attempts, keyed by email/mobile. Pre-authentication, so there is no tenant
+ * yet: the one table without company_id. RLS on with no policies (server only).
+ */
+export const signInFailures = pgTable(
+  "sign_in_failures",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    identifier: text("identifier").notNull(),
+    ip: text("ip"),
+    at: timestamp("at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("sign_in_failures_ident_at").on(t.identifier, t.at)],
+);

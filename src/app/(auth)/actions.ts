@@ -1,10 +1,13 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { sql } from "drizzle-orm";
-import { asUser } from "@db/client";
+import { and, eq, gt, sql } from "drizzle-orm";
+import { adminDb, asUser } from "@db/client";
+import { signInFailures, users } from "@db/schema";
+import { markDeviceVerified, markSessionVerified, registerDevice } from "@/lib/auth/device";
+import { isLockedOut, LOCKOUT } from "@/lib/auth/policy";
 import { supabaseServer } from "@/lib/supabase/server";
-import { requestMeta } from "@/lib/auth/session";
+import { getIdentity, requestMeta } from "@/lib/auth/session";
 import { contactSchema, passwordSchema, signInSchema, signUpSchema, verifySchema } from "@/lib/auth/schemas";
 import { z } from "zod";
 
@@ -22,6 +25,21 @@ async function audit(userId: string, action: string, after?: Record<string, unkn
       (select company_id from public.users where id = auth.uid()), ${action}, 'user', ${userId},
       null, ${after ? JSON.stringify(after) : null}::jsonb)`),
   );
+}
+
+const sessionIdOf = (accessToken: string) =>
+  JSON.parse(Buffer.from(accessToken.split(".")[1], "base64url").toString()).session_id as string;
+
+/** After any successful sign-in: remember the device; a code proved on it makes it trusted. */
+async function afterSignIn(userId: string, accessToken: string, provedByCode: boolean) {
+  const [u] = await adminDb.select({ companyId: users.companyId }).from(users).where(eq(users.id, userId));
+  if (!u) return;
+  const meta = await requestMeta();
+  const device = await registerDevice({ userId, companyId: u.companyId, label: meta.device, trusted: provedByCode });
+  if (provedByCode && !device.verifiedAt) await markDeviceVerified(device.id);
+  if (provedByCode || device.verifiedAt) {
+    await markSessionVerified({ sessionId: sessionIdOf(accessToken), userId, companyId: u.companyId, deviceId: device.id });
+  }
 }
 
 export async function signUpAction(input: unknown): Promise<ActionResult> {
@@ -50,7 +68,8 @@ export async function verifyCodeAction(input: unknown): Promise<ActionResult> {
     contact.method === "email"
       ? await supabase.auth.verifyOtp({ email: contact.email, token, type: purpose === "signup" ? "signup" : "recovery" })
       : await supabase.auth.verifyOtp({ phone: contact.mobile, token, type: purpose === "signup" ? "sms" : "sms" });
-  if (error || !data.user) return fail("That code didn't work. Check it or send a new one.");
+  if (error || !data.user || !data.session) return fail("That code didn't work. Check it or send a new one.");
+  await afterSignIn(data.user.id, data.session.access_token, true);
   await audit(data.user.id, purpose === "signup" ? "verify" : "reset_code_verified");
   return { ok: true };
 }
@@ -76,14 +95,27 @@ export async function signInAction(input: unknown): Promise<ActionResult> {
   const parsed = signInSchema.safeParse(input);
   if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Check your details");
   const { contact, password } = parsed.data;
+  const identifier = contact.method === "email" ? contact.email : contact.mobile;
+  const since = new Date(Date.now() - LOCKOUT.windowMinutes * 60_000);
+  const recent = await adminDb
+    .select({ id: signInFailures.id })
+    .from(signInFailures)
+    .where(and(eq(signInFailures.identifier, identifier), gt(signInFailures.at, since)));
+  if (isLockedOut(recent.length)) {
+    return fail(`Too many tries. Wait ${LOCKOUT.windowMinutes} minutes or reset your password.`);
+  }
   const supabase = await supabaseServer();
   const { data, error } = await supabase.auth.signInWithPassword({ ...creds(contact), password } as Parameters<
     typeof supabase.auth.signInWithPassword
   >[0]);
-  if (error || !data.user) {
+  if (error || !data.user || !data.session) {
     if (error?.code === "email_not_confirmed") return fail("unverified");
+    const meta = await requestMeta();
+    await adminDb.insert(signInFailures).values({ identifier, ip: meta.ip });
     return fail("Email/mobile or password is wrong");
   }
+  await adminDb.delete(signInFailures).where(eq(signInFailures.identifier, identifier));
+  await afterSignIn(data.user.id, data.session.access_token, false);
   await audit(data.user.id, "sign_in");
   return { ok: true };
 }
@@ -111,4 +143,34 @@ function friendly(msg: string) {
   if (/password/i.test(msg)) return "Choose a stronger password (at least 8 characters)";
   if (/sign-up link/i.test(msg) || /Database error/i.test(msg)) return "This sign-up link isn't active.";
   return "Something went wrong. Try again.";
+}
+
+/** Second step for Director/Office on a new device: a code to their email or mobile. */
+export async function sendDeviceCodeAction(): Promise<ActionResult> {
+  const ident = await getIdentity();
+  if (!ident) return fail("Sign in again");
+  const [u] = await adminDb.select({ email: users.email, mobile: users.mobile }).from(users).where(eq(users.id, ident.userId));
+  const supabase = await supabaseServer();
+  const { error } = u?.email
+    ? await supabase.auth.signInWithOtp({ email: u.email, options: { shouldCreateUser: false } })
+    : await supabase.auth.signInWithOtp({ phone: u!.mobile!, options: { shouldCreateUser: false } });
+  return error ? fail(friendly(error.message)) : { ok: true };
+}
+
+export async function verifyDeviceCodeAction(input: unknown): Promise<ActionResult> {
+  const parsed = z.object({ token: z.string().regex(/^\d{6}$/, "Enter the 6-digit code") }).safeParse(input);
+  if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Enter the 6-digit code");
+  const ident = await getIdentity();
+  if (!ident) return fail("Sign in again");
+  const [u] = await adminDb.select({ email: users.email, mobile: users.mobile }).from(users).where(eq(users.id, ident.userId));
+  const supabase = await supabaseServer();
+  const { data, error } = u?.email
+    ? await supabase.auth.verifyOtp({ email: u.email, token: parsed.data.token, type: "email" })
+    : await supabase.auth.verifyOtp({ phone: u!.mobile!, token: parsed.data.token, type: "sms" });
+  if (error || !data.user || !data.session || data.user.id !== ident.userId) {
+    return fail("That code didn't work. Check it or send a new one.");
+  }
+  await afterSignIn(data.user.id, data.session.access_token, true);
+  await audit(data.user.id, "device_verified");
+  return { ok: true };
 }

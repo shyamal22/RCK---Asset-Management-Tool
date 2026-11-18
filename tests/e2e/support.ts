@@ -72,10 +72,22 @@ export async function syncPermissions(companyId: string) {
   }
 }
 
-export async function signIn(page: Page, email: string) {
+/** Signs in; completes the Director/Office new-device code step if asked. */
+export async function signIn(page: Page, email: string, password = PASSWORD) {
   await page.goto("/sign-in");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(PASSWORD);
+  await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
   await page.waitForURL((u) => !u.pathname.startsWith("/sign-in"));
+  await page.waitForLoadState("networkidle");
+  if (new URL(page.url()).pathname === "/verify-device") {
+    const t0 = Date.now() - 1000;
+    await page.getByRole("button", { name: "Send code" }).click();
+    await page.getByLabel("6-digit code").fill(await latestCode(email, t0));
+    await page.getByRole("button", { name: "Confirm" }).click();
+    await page.waitForURL((u) => u.pathname !== "/verify-device");
+  }
 }
+
+/** Our form error box (Next adds its own empty role=alert route announcer). */
+export const formError = (page: Page) => page.locator('p[role="alert"]');

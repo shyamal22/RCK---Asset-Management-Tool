@@ -17,7 +17,7 @@ export const adminDb = drizzle(client, { schema });
 
 export type Tx = Parameters<Parameters<typeof adminDb.transaction>[0]>[0];
 
-export type DbUser = { id: string; device?: string; ip?: string };
+export type DbUser = { id: string; sessionId?: string | null; device?: string; ip?: string };
 
 /**
  * Run queries as a signed-in user. Switches to the `authenticated` role and sets the
@@ -26,7 +26,7 @@ export type DbUser = { id: string; device?: string; ip?: string };
  */
 export function asUser<T>(user: DbUser, fn: (tx: Tx) => Promise<T>): Promise<T> {
   return adminDb.transaction(async (tx) => {
-    const claims = JSON.stringify({ sub: user.id, role: "authenticated" });
+    const claims = JSON.stringify({ sub: user.id, role: "authenticated", session_id: user.sessionId ?? null });
     await tx.execute(sql`select set_config('request.jwt.claims', ${claims}, true)`);
     await tx.execute(sql`select set_config('app.device', ${user.device ?? ""}, true)`);
     await tx.execute(sql`select set_config('app.ip', ${user.ip ?? ""}, true)`);

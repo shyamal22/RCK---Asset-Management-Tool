@@ -14,7 +14,7 @@ export default async function UsersPage() {
   const me = await requireActive();
   const canApprove = can(me.actor, "users", "approve");
   if (!canApprove && !can(me.actor, "users", "view_pending")) notFound();
-  const { pending, crews } = await asUser({ id: me.id }, async (tx) => ({
+  const { pending, crews } = await asUser({ id: me.id, sessionId: me.sessionId }, async (tx) => ({
     pending: (await tx.execute(sql`select id, name, email, mobile, created_at from public.users
       where status = 'pending' order by created_at`)) as unknown as Pending[],
     crews: (await tx.execute(sql`select id, name from public.crews where deleted_at is null order by name`)) as unknown as {

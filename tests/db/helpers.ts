@@ -2,7 +2,7 @@ import { expect } from "vitest";
 import { randomUUID } from "node:crypto";
 import { sql } from "drizzle-orm";
 import { adminDb } from "@db/client";
-import { companies, crews, userFlags, users } from "@db/schema";
+import { companies, crews, userFlags, users, verifiedSessions } from "@db/schema";
 import { syncCompanyPermissions } from "@db/permissions";
 import type { UserFlag, UserType } from "@/lib/permissions/types";
 
@@ -43,10 +43,13 @@ export async function makeUser(opts: {
       crewId: opts.crewId ?? null,
     })
     .returning();
+  // Every test user gets a verified session (as after a completed sign-in + second step).
+  const sessionId = randomUUID();
+  await adminDb.insert(verifiedSessions).values({ sessionId, companyId: opts.companyId, userId: user.id });
   for (const flag of opts.flags ?? []) {
     await adminDb.insert(userFlags).values({ companyId: opts.companyId, userId: user.id, flag });
   }
-  return user;
+  return { ...user, sessionId };
 }
 
 /** Drizzle wraps Postgres errors; match against the underlying message. */

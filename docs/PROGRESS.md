@@ -11,6 +11,7 @@
 - 19/11/2026 — M0 sign-up: /join/<code> (name, email or mobile, password); new auth users become PENDING via DB trigger. Setup → Sign-up link shows URL + QR, turn off/on, regenerate (old link dies). Microsoft/Google buttons hidden until NEXT_PUBLIC_SSO_* set; OAuth callback creates pending user from the link cookie. Mobile sign-up hidden until NEXT_PUBLIC_SMS_ENABLED.
 - 19/11/2026 — M0 codes: email confirmation, recovery and sign-in emails use one branded code-only template (no links, no Supabase branding — e2e asserts both). Codes expire in 15 min; resend; reset password by code. SMS template branded; SMS off until Twilio is set up.
 - 19/11/2026 — M0 pending/approval: pending users get a waiting screen and zero data (RLS); Setup → Users lists pending accounts (Office sees, can't approve); Director approves with type, crew, Workshop lead, or rejects with reason — all via definer functions that re-check permission and audit. Director 'notified' via pending count on their home until notifications land in M2b (Q24).
+- 19/11/2026 — M0 device security: device cookie (hashed), sliding 12h unlock by PIN (bcrypt) or passkey (WebAuthn, server-side challenge); 5 wrong PINs → signed out. Director/Office need an emailed/SMS code on new devices — enforced in the DB too (sessions must be in verified_sessions or RLS returns nothing). Password lockout: 5 fails in 15 min. Reset by code. e2e incl. virtual authenticator.
 
 ## Questions for Sam
 Each has a default that will be used unless you say otherwise.
@@ -44,3 +45,5 @@ Each has a default that will be used unless you say otherwise.
 22. Weekly missed pre-check report — Monday 7:00 am NZ? *Default: yes.*
 23. Supervisors get the missed report for their crew? *Default: yes, own crew only.*
 24. **New sign-up alert to Director** — the notifications module is Milestone 2b. *Default: until then, Director sees a waiting-for-approval count on their home screen; push/email alert added in M2b.*
+25. **Phone lock timing** — how long before a phone asks for PIN / Face ID again? *Default: after 12 hours without use; only for people who've set a PIN or passkey. 5 wrong PINs = full sign-in.*
+26. **Passkeys for first sign-in** — passkeys currently unlock a signed-in phone; first sign-in on a device is still password (+ code for Director/Office). *Default: keep it that way for now.*
