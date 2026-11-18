@@ -7,7 +7,7 @@ import { asUser } from "@db/client";
 import { supabaseServer } from "@/lib/supabase/server";
 import type { Actor } from "@/lib/permissions/check";
 import type { UserFlag, UserType } from "@/lib/permissions/types";
-import { currentDevice, hasUnlockMethod, isUnlocked, touchUnlock } from "./device";
+import { currentDevice, hasUnlockMethod, isUnlocked, sharedDevice, touchUnlock } from "./device";
 import { needsSecondStep } from "./policy";
 
 export type Profile = {
@@ -90,7 +90,12 @@ export async function requireActive(): Promise<ActiveUser> {
   if (p.secondStepNeeded) redirect("/verify-device");
   if (!p.userType) redirect("/sign-in?state=inactive");
   const device = await currentDevice(p.id);
-  if (device && (await hasUnlockMethod(p.id))) {
+  const shared = device ? await sharedDevice() : null;
+  if (device && shared) {
+    // Shared workshop tablet: idle → back to the user list.
+    if (!(await isUnlocked(device.id))) redirect("/switch");
+    await touchUnlock(device.id, false, true);
+  } else if (device && (await hasUnlockMethod(p.id))) {
     if (!(await isUnlocked(device.id))) redirect("/unlock");
     await touchUnlock(device.id);
   }

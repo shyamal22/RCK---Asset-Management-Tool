@@ -3,8 +3,8 @@ import { createHash, randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
 import { and, eq, gt, isNull, sql } from "drizzle-orm";
 import { adminDb } from "@db/client";
-import { passkeys, trustedDevices, users, verifiedSessions } from "@db/schema";
-import { UNLOCK_IDLE_HOURS } from "./policy";
+import { passkeys, sharedDevices, trustedDevices, users, verifiedSessions } from "@db/schema";
+import { SHARED_IDLE_MINUTES, UNLOCK_IDLE_HOURS } from "./policy";
 
 export const DEVICE_COOKIE = "wd";
 const hash = (t: string) => createHash("sha256").update(t).digest("hex");
@@ -85,11 +85,14 @@ export async function isUnlocked(deviceId: string) {
 }
 
 /** Sliding unlock window; only writes when it has moved by more than an hour. */
-export async function touchUnlock(deviceId: string, force = false) {
-  const until = new Date(Date.now() + UNLOCK_IDLE_HOURS * 3600_000);
+export async function touchUnlock(deviceId: string, force = false, shared = false) {
+  const windowMs = shared ? SHARED_IDLE_MINUTES * 60_000 : UNLOCK_IDLE_HOURS * 3600_000;
+  const until = new Date(Date.now() + windowMs);
+  // Only write when the window has moved enough (1h normally, 1 min on a shared tablet).
+  const slack = shared ? 60_000 : 3600_000;
   const cond = force
     ? eq(trustedDevices.id, deviceId)
-    : and(eq(trustedDevices.id, deviceId), sql`coalesce(${trustedDevices.unlockedUntil}, now()) < ${new Date(until.getTime() - 3600_000).toISOString()}::timestamptz`);
+    : and(eq(trustedDevices.id, deviceId), sql`coalesce(${trustedDevices.unlockedUntil}, now()) < ${new Date(until.getTime() - slack).toISOString()}::timestamptz`);
   await adminDb.update(trustedDevices).set({ unlockedUntil: until, lastSeenAt: new Date() }).where(cond);
 }
 
@@ -109,6 +112,31 @@ export async function setChallenge(deviceId: string, challenge: string | null) {
     .update(trustedDevices)
     .set({ webauthnChallenge: challenge, challengeExpiresAt: challenge ? new Date(Date.now() + 5 * 60_000) : null })
     .where(eq(trustedDevices.id, deviceId));
+}
+
+/** The shared-tablet record for this browser, if it is one. */
+export async function sharedDevice() {
+  const token = await deviceToken(false);
+  if (!token) return null;
+  const [d] = await adminDb
+    .select()
+    .from(sharedDevices)
+    .where(and(eq(sharedDevices.tokenHash, hash(token)), isNull(sharedDevices.revokedAt)));
+  return d ?? null;
+}
+
+export async function makeShared(opts: { companyId: string; userId: string; label: string }) {
+  const token = (await deviceToken(true))!;
+  await adminDb
+    .insert(sharedDevices)
+    .values({ companyId: opts.companyId, tokenHash: hash(token), label: opts.label, createdBy: opts.userId })
+    .onConflictDoUpdate({ target: sharedDevices.tokenHash, set: { revokedAt: null, label: opts.label, companyId: opts.companyId } });
+}
+
+export async function stopShared() {
+  const token = await deviceToken(false);
+  if (!token) return;
+  await adminDb.update(sharedDevices).set({ revokedAt: new Date() }).where(eq(sharedDevices.tokenHash, hash(token)));
 }
 
 export { users };

@@ -57,6 +57,13 @@
       "when": 1795040932629,
       "tag": "0007_device_challenge",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795041476104,
+      "tag": "0008_shared_devices",
+      "breakpoints": true
     }
   ]
 }

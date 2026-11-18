@@ -1,5 +1,7 @@
 import { requireActive } from "@/lib/auth/session";
-import { userPasskeys } from "@/lib/auth/device";
+import { sharedDevice, userPasskeys } from "@/lib/auth/device";
+import { can } from "@/lib/permissions/check";
+import { SharedTablet } from "./shared-tablet";
 import { formatDate } from "@/lib/dates";
 import { SecurityForms } from "./security-forms";
 
@@ -8,6 +10,8 @@ export const dynamic = "force-dynamic";
 export default async function SecurityPage() {
   const me = await requireActive();
   const keys = await userPasskeys(me.id);
+  const canShare = me.userType === "director" || can(me.actor, "work_orders", "assign");
+  const shared = canShare ? await sharedDevice() : null;
   return (
     <div className="grid max-w-sm gap-6">
       <h1 className="text-2xl font-bold">Unlock</h1>
@@ -21,6 +25,7 @@ export default async function SecurityPage() {
           ))}
         </ul>
       ) : null}
+      {canShare ? <SharedTablet isShared={!!shared} /> : null}
     </div>
   );
 }

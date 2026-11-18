@@ -12,7 +12,7 @@ Work top to bottom. Tick each box when done (see CLAUDE.md "Done means").
 - [x] Verification by 6-digit code (SMS/email) entered in-app — no magic links, no confirmation-link emails; all messages branded, custom templates
 - [x] Pending state: no data access (RLS), waiting screen; Director notified; Setup → Users approve (type, crew, flags) or reject
 - [x] Passkeys (Face ID / fingerprint) and PIN unlock on phones; second step for Director/Office on new devices; lockout on repeated failures; reset by code
-- [ ] Shared workshop tablet: quick user switch by personal PIN
+- [x] Shared workshop tablet: quick user switch by personal PIN
 - [ ] User admin: change user type, move crew, Workshop lead flag, acting access with end date (auto-expires), deactivate (never delete)
 - [ ] Append-only audit log for all writes, sign-ins and exports; audit viewer for Director
 - [ ] App shell: phone layout (bottom nav) and desktop layout (side nav); a different home screen per user type; RCK branding placeholder

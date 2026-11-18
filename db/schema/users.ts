@@ -167,3 +167,16 @@ export const signInFailures = pgTable(
   },
   (t) => [index("sign_in_failures_ident_at").on(t.identifier, t.at)],
 );
+
+/** A device (by cookie) set up as a shared workshop tablet: users switch by personal PIN. */
+export const sharedDevices = pgTable("shared_devices", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  companyId: uuid("company_id")
+    .notNull()
+    .references(() => companies.id),
+  tokenHash: text("token_hash").notNull().unique(),
+  label: text("label").notNull(),
+  createdBy: uuid("created_by").references(() => users.id),
+  createdAt: createdAt(),
+  revokedAt: timestamp("revoked_at", { withTimezone: true }),
+});

@@ -3,6 +3,10 @@ export const LOCKOUT = { maxFailures: 5, windowMinutes: 15 } as const;
 export const PIN = { min: 4, max: 6, maxFailures: 5 } as const;
 /** A phone with a PIN or passkey asks for it again after this long without use. */
 export const UNLOCK_IDLE_HOURS = 12;
+/** On a shared workshop tablet, back to the user list after this long without use. */
+export const SHARED_IDLE_MINUTES = 15;
+/** Who can use the shared tablet (Director/Office need their own device + second step). */
+export const SHARED_DEVICE_TYPES = ["workshop", "supervisor", "crew"] as const;
 /** User types that need a second step (emailed/SMS code) on a new device. */
 export const SECOND_STEP_TYPES = ["director", "office"] as const;
 
