@@ -18,7 +18,7 @@ Work top to bottom. Tick each box when done (see CLAUDE.md "Done means").
 - [x] App shell: phone layout (bottom nav) and desktop layout (side nav); a different home screen per user type; RCK branding placeholder
 - [x] Setup area behind a single Setup (gear) button, visible per docs/10; no setup controls anywhere in everyday screens
 - [x] First-run guided setup for a new company (company → yards/crews → assets → templates → sign-up link)
-- [ ] Seed script: RCK company, Helensville + Westgate yards, Jacks Bobcats Ltd + RCK owner entities, Green and Yellow crews, one sample user of each user type
+- [x] Seed script: RCK company, Helensville + Westgate yards, Jacks Bobcats Ltd + RCK owner entities, Green and Yellow crews, one sample user of each user type
 - [ ] CI: GitHub Actions running typecheck, lint, test on every push
 
 ## Milestone 1 — Asset register

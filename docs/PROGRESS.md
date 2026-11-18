@@ -18,6 +18,7 @@
 - 19/11/2026 — M0 shell: phone bottom nav / desktop side nav (Home, Setup if allowed, Me); home screen per user type with docs/05 sections (empty states until data lands); flat 3-colour palette tokens + status colours; Me page (type, acting, lead; PIN/Face ID; sign out); Done button on shared tablets. e2e checks each home, no sideways scroll at phone width.
 - 19/11/2026 — M0 Setup: one gear → sections filtered by a tested visibility map (Director all; Office Users; Workshop none yet; Supervisor/Crew never — 404 by URL too). Added Setup → Company (name, NZBN, labour rate, approval limit in cents) and Yards and crews (yards, crews, owners: add, rename, archive).
 - 19/11/2026 — M0 first run: Director of a new company lands on /setup/start until finished: company details → yards and crews (needs ≥1 each) → sign-up link/QR → Finish. Assets and pre-check template steps will be added to the wizard in M1/M2.
+- 19/11/2026 — M0 seed (pnpm db:seed, idempotent): RCK Group, Helensville + Westgate yards, Jacks Bobcats Ltd + RCK Group owners, Green + Yellow crews, one user per type (@rck.test, Workshop lead flag on Wayne). Local password Workshop-Dev-2026; refuses remote DBs unless SEED_ALLOW_REMOTE=1 (then no passwords set).
 
 ## Questions for Sam
 Each has a default that will be used unless you say otherwise.
