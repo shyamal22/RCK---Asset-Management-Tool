@@ -14,6 +14,7 @@
 - 19/11/2026 — M0 device security: device cookie (hashed), sliding 12h unlock by PIN (bcrypt) or passkey (WebAuthn, server-side challenge); 5 wrong PINs → signed out. Director/Office need an emailed/SMS code on new devices — enforced in the DB too (sessions must be in verified_sessions or RLS returns nothing). Password lockout: 5 fails in 15 min. Reset by code. e2e incl. virtual authenticator.
 - 19/11/2026 — M0 shared tablet: Director or Workshop lead marks a device as shared (My security). /switch lists eligible people; tap name + personal PIN → session minted server-side (no email). 5 wrong PINs clears that PIN. Every switch audited with the tablet name. Idle 15 min → back to the list.
 - 19/11/2026 — M0 user admin (Setup → Users → person): change type/crew/Workshop lead, acting access (type, until date, reason; max 90 days; auto-expires; end now), deactivate/reactivate (signed out everywhere, banned from sign-in, row kept). All via definer functions: permission re-checked, can't change yourself, before/after audited. Direct UPDATE/DELETE on users revoked.
+- 19/11/2026 — M0 audit: generic app.audit_row() trigger (insert/update/soft-delete with before/after, actor, device) on companies, sites, crews, owner_entities — attach to every new domain table. Sign-ins, approvals, PIN/passkey events, exports logged. Setup → Audit log: filters (dates, person, action, record), paging, field-level changes, CSV export (formula-safe, itself logged).
 
 ## Questions for Sam
 Each has a default that will be used unless you say otherwise.

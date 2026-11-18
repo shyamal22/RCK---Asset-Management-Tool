@@ -71,6 +71,13 @@
       "when": 1795041604759,
       "tag": "0009_user_admin",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795041784871,
+      "tag": "0010_audit_triggers",
+      "breakpoints": true
     }
   ]
 }
