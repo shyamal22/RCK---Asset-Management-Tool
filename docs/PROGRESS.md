@@ -15,6 +15,7 @@
 - 19/11/2026 — M0 shared tablet: Director or Workshop lead marks a device as shared (My security). /switch lists eligible people; tap name + personal PIN → session minted server-side (no email). 5 wrong PINs clears that PIN. Every switch audited with the tablet name. Idle 15 min → back to the list.
 - 19/11/2026 — M0 user admin (Setup → Users → person): change type/crew/Workshop lead, acting access (type, until date, reason; max 90 days; auto-expires; end now), deactivate/reactivate (signed out everywhere, banned from sign-in, row kept). All via definer functions: permission re-checked, can't change yourself, before/after audited. Direct UPDATE/DELETE on users revoked.
 - 19/11/2026 — M0 audit: generic app.audit_row() trigger (insert/update/soft-delete with before/after, actor, device) on companies, sites, crews, owner_entities — attach to every new domain table. Sign-ins, approvals, PIN/passkey events, exports logged. Setup → Audit log: filters (dates, person, action, record), paging, field-level changes, CSV export (formula-safe, itself logged).
+- 19/11/2026 — M0 shell: phone bottom nav / desktop side nav (Home, Setup if allowed, Me); home screen per user type with docs/05 sections (empty states until data lands); flat 3-colour palette tokens + status colours; Me page (type, acting, lead; PIN/Face ID; sign out); Done button on shared tablets. e2e checks each home, no sideways scroll at phone width.
 
 ## Questions for Sam
 Each has a default that will be used unless you say otherwise.
@@ -51,3 +52,4 @@ Each has a default that will be used unless you say otherwise.
 25. **Phone lock timing** — how long before a phone asks for PIN / Face ID again? *Default: after 12 hours without use; only for people who've set a PIN or passkey. 5 wrong PINs = full sign-in.*
 26. **Passkeys for first sign-in** — passkeys currently unlock a signed-in phone; first sign-in on a device is still password (+ code for Director/Office). *Default: keep it that way for now.*
 27. **Shared tablet users** — who can switch in by PIN? *Default: Workshop, Supervisor and Crew who have set a PIN and have an email on their account (Director/Office keep their own devices for the second step). Idle 15 min → back to the name list.*
+28. **Brand colours** — docs/10 says three colours, TBC. *Default: ink #1F2933, paper #F6F6F3, steel blue #2F5D8A; green/yellow/red only for status. Send RCK's brand colours/logo and I'll swap them in (one file: globals.css).*

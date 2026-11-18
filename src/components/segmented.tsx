@@ -13,7 +13,14 @@ export function Segmented<T extends string>({
   label: string;
 }) {
   return (
-    <div role="radiogroup" aria-label={label} className="grid auto-cols-fr grid-flow-col rounded-md border p-1">
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className={cn(
+        "grid gap-1 rounded-md border p-1",
+        options.length > 3 ? "grid-cols-3 sm:auto-cols-fr sm:grid-flow-col sm:grid-cols-none" : "auto-cols-fr grid-flow-col",
+      )}
+    >
       {options.map((o) => (
         <button
           key={o.value}
@@ -22,7 +29,7 @@ export function Segmented<T extends string>({
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
           className={cn(
-            "h-11 rounded text-base font-bold",
+            "h-11 min-w-0 truncate rounded px-1 text-base font-bold",
             value === o.value ? "bg-primary text-primary-foreground" : "text-foreground",
           )}
         >
