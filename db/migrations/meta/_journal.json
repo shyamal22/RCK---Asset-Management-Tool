@@ -64,6 +64,13 @@
       "when": 1795041476104,
       "tag": "0008_shared_devices",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795041604759,
+      "tag": "0009_user_admin",
+      "breakpoints": true
     }
   ]
 }

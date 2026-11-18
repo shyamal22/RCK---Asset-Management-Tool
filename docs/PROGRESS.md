@@ -13,6 +13,7 @@
 - 19/11/2026 — M0 pending/approval: pending users get a waiting screen and zero data (RLS); Setup → Users lists pending accounts (Office sees, can't approve); Director approves with type, crew, Workshop lead, or rejects with reason — all via definer functions that re-check permission and audit. Director 'notified' via pending count on their home until notifications land in M2b (Q24).
 - 19/11/2026 — M0 device security: device cookie (hashed), sliding 12h unlock by PIN (bcrypt) or passkey (WebAuthn, server-side challenge); 5 wrong PINs → signed out. Director/Office need an emailed/SMS code on new devices — enforced in the DB too (sessions must be in verified_sessions or RLS returns nothing). Password lockout: 5 fails in 15 min. Reset by code. e2e incl. virtual authenticator.
 - 19/11/2026 — M0 shared tablet: Director or Workshop lead marks a device as shared (My security). /switch lists eligible people; tap name + personal PIN → session minted server-side (no email). 5 wrong PINs clears that PIN. Every switch audited with the tablet name. Idle 15 min → back to the list.
+- 19/11/2026 — M0 user admin (Setup → Users → person): change type/crew/Workshop lead, acting access (type, until date, reason; max 90 days; auto-expires; end now), deactivate/reactivate (signed out everywhere, banned from sign-in, row kept). All via definer functions: permission re-checked, can't change yourself, before/after audited. Direct UPDATE/DELETE on users revoked.
 
 ## Questions for Sam
 Each has a default that will be used unless you say otherwise.
