@@ -43,3 +43,4 @@ Each has a default that will be used unless you say otherwise.
 21. Who signs off subcontractor jobs? *Default: Workshop lead or Director.*
 22. Weekly missed pre-check report — Monday 7:00 am NZ? *Default: yes.*
 23. Supervisors get the missed report for their crew? *Default: yes, own crew only.*
+24. **New sign-up alert to Director** — the notifications module is Milestone 2b. *Default: until then, Director sees a waiting-for-approval count on their home screen; push/email alert added in M2b.*
