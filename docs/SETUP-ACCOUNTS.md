@@ -22,5 +22,6 @@
    Callback URL: `https://<project-ref>.supabase.co/auth/v1/callback`. On Supabase Free these
    screens show `xxxx.supabase.co`; hiding that needs Supabase Pro + custom domain.
 
-## Claude can start meanwhile
-Milestone 0 can begin on a local Postgres without waiting for Supabase. Say "start Milestone 0".
+## Meanwhile
+Building continues on the local Supabase stack; the real project is plugged in when ready.
+Next build step: Milestone 1 (asset register).
