@@ -8,7 +8,7 @@ Work top to bottom. Tick each box when done (see CLAUDE.md "Done means").
 - [x] Tables: companies, users, crews, sites, owner_entities, user_type_permissions, user_flags, temp_access, audit_log — all with company_id + RLS
 - [x] Central permission map (user type × area × action) from docs/05, with unit tests for every cell of the matrix
 - [x] RLS policies generated from the permission map; tests prove Crew cannot read workshop documents or costs via the API
-- [ ] Self sign-up via company sign-up link (+ QR): name, mobile or email, password; Microsoft/Google one-tap option; Director can disable/regenerate link
+- [x] Self sign-up via company sign-up link (+ QR): name, mobile or email, password; Microsoft/Google one-tap option; Director can disable/regenerate link
 - [ ] Verification by 6-digit code (SMS/email) entered in-app — no magic links, no confirmation-link emails; all messages branded, custom templates
 - [ ] Pending state: no data access (RLS), waiting screen; Director notified; Setup → Users approve (type, crew, flags) or reject
 - [ ] Passkeys (Face ID / fingerprint) and PIN unlock on phones; second step for Director/Office on new devices; lockout on repeated failures; reset by code

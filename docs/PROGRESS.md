@@ -8,6 +8,7 @@
 - 19/11/2026 — M0 tables: companies, sites, crews, owner_entities, users, user_type_permissions, user_flags, temp_access, audit_log. RLS on all; pending users see only their own profile; PIN hash column not readable via API; audit_log append-only (trigger + revokes). DB tests prove cross-company isolation.
 - 19/11/2026 — M0 permission map: src/lib/permissions/map.ts is the single source (17 areas × 5 user types, scopes all/crew/own, Workshop lead flag). Tests compare every cell against an independent transcription of docs/05 (176 tests). Areas added beyond docs/05: precheck_templates (Workshop + Director per docs/07).
 - 19/11/2026 — M0 RLS from the map: app.allows(area, action, company, crew, owner) + policy generator (pnpm db:policy) for every domain table; my_permissions() RPC for the UI. API tests (real Supabase sign-in) prove Crew can't read workshop docs, costs, audit log or PIN hashes, can't self-promote, and nobody can hard-delete. Stand-in tables used until docs/costs tables land in M1/M3.
+- 19/11/2026 — M0 sign-up: /join/<code> (name, email or mobile, password); new auth users become PENDING via DB trigger. Setup → Sign-up link shows URL + QR, turn off/on, regenerate (old link dies). Microsoft/Google buttons hidden until NEXT_PUBLIC_SSO_* set; OAuth callback creates pending user from the link cookie. Mobile sign-up hidden until NEXT_PUBLIC_SMS_ENABLED.
 
 ## Questions for Sam
 Each has a default that will be used unless you say otherwise.
