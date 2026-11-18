@@ -4,7 +4,7 @@ Work top to bottom. Tick each box when done (see CLAUDE.md "Done means").
 
 ## Milestone 0 — Foundation
 - [x] Scaffold Next.js + TypeScript + Tailwind + shadcn/ui; pnpm scripts: dev, build, typecheck, lint, test, e2e
-- [ ] Supabase project wiring (env vars, client/server helpers); Drizzle set up with first migration
+- [x] Supabase project wiring (env vars, client/server helpers); Drizzle set up with first migration
 - [ ] Tables: companies, users, crews, sites, owner_entities, user_type_permissions, user_flags, temp_access, audit_log — all with company_id + RLS
 - [ ] Central permission map (user type × area × action) from docs/05, with unit tests for every cell of the matrix
 - [ ] RLS policies generated from the permission map; tests prove Crew cannot read workshop documents or costs via the API
