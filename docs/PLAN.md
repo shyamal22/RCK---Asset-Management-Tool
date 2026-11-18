@@ -3,7 +3,7 @@
 Work top to bottom. Tick each box when done (see CLAUDE.md "Done means").
 
 ## Milestone 0 — Foundation
-- [ ] Scaffold Next.js + TypeScript + Tailwind + shadcn/ui; pnpm scripts: dev, build, typecheck, lint, test, e2e
+- [x] Scaffold Next.js + TypeScript + Tailwind + shadcn/ui; pnpm scripts: dev, build, typecheck, lint, test, e2e
 - [ ] Supabase project wiring (env vars, client/server helpers); Drizzle set up with first migration
 - [ ] Tables: companies, users, crews, sites, owner_entities, user_type_permissions, user_flags, temp_access, audit_log — all with company_id + RLS
 - [ ] Central permission map (user type × area × action) from docs/05, with unit tests for every cell of the matrix
