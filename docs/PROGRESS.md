@@ -2,6 +2,7 @@
 
 ## Log
 - 18/11/2026 — Starter pack committed. Specs read end to end; gaps and contradictions recorded below with the default chosen for each. Milestone 0 not started.
+- 18/11/2026 — Account setup steps written to docs/SETUP-ACCOUNTS.md. Waiting on GitHub repo, Supabase token and Resend key. Next: start Milestone 0.
 
 ## Questions for Sam
 Each has a default that will be used unless you say otherwise.
