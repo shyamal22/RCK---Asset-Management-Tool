@@ -22,6 +22,13 @@
       "when": 1795040069728,
       "tag": "0002_core_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795040226434,
+      "tag": "0003_permission_policies",
+      "breakpoints": true
     }
   ]
 }
