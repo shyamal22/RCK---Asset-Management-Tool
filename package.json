@@ -14,7 +14,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx db/migrate.ts",
     "db:seed": "tsx db/seed.ts",
-    "db:policy": "tsx db/policy.ts"
+    "db:policy": "tsx db/policy.ts",
+    "db:drift": "drizzle-kit generate --name drift && git diff --exit-code -- db/migrations && test -z \"$(git status --porcelain -- db/migrations)\""
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.7",

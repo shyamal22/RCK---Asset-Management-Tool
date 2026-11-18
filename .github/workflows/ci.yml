@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Lint
+        run: pnpm lint
+
+      - name: Start local Supabase
+        run: pnpm exec supabase start
+      - name: Env from local Supabase
+        run: ./scripts/ci-env.sh
+      - name: Migrate
+        run: pnpm db:migrate
+      - name: Schema matches migrations
+        run: pnpm db:drift
+      - name: Unit + database tests
+        run: pnpm test
+
+      - name: Seed
+        run: pnpm db:seed
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+      - name: End-to-end tests
+        run: pnpm e2e
+        env:
+          CI: "1"
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-results
+          path: test-results/
+          retention-days: 7
