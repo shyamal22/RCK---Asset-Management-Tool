@@ -101,6 +101,7 @@ test("Face ID / fingerprint (passkey) unlocks the app", async ({ page, browserNa
   await page.goto("/me/security");
   await page.getByRole("button", { name: "Add Face ID / fingerprint" }).click();
   await expect(page.getByText("Face ID / fingerprint added")).toBeVisible();
+  await page.waitForLoadState("networkidle"); // let the refresh finish touching the unlock window
 
   await sql`update public.trusted_devices set unlocked_until = now() - interval '1 minute' where user_id = ${c.id}`;
   await page.goto("/");
