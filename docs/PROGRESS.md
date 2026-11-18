@@ -5,6 +5,7 @@
 - 18/11/2026 — Account setup steps written to docs/SETUP-ACCOUNTS.md. Waiting on GitHub repo, Supabase token and Resend key. Next: start Milestone 0.
 - 19/11/2026 — M0 scaffold: Next.js 15 (App Router, strict TS), Tailwind 4 + shadcn/ui, Carlito font, Vitest, Playwright (phone + desktop projects). Scripts: dev, build, typecheck, lint, test, e2e, db:*. Local Postgres 16 used for dev/test until Supabase keys arrive.
 - 19/11/2026 — M0 Supabase wiring: local Supabase stack via CLI (Docker) for dev/test; env validated with Zod; browser/server/admin Supabase clients; Drizzle client with asUser() that runs queries as the 'authenticated' role with JWT claims so RLS always applies; db:migrate script.
+- 19/11/2026 — M0 tables: companies, sites, crews, owner_entities, users, user_type_permissions, user_flags, temp_access, audit_log. RLS on all; pending users see only their own profile; PIN hash column not readable via API; audit_log append-only (trigger + revokes). DB tests prove cross-company isolation.
 
 ## Questions for Sam
 Each has a default that will be used unless you say otherwise.
