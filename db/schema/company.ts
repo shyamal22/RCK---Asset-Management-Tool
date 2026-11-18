@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { boolean, integer, pgTable, text, uuid, index } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, text, timestamp, uuid, index } from "drizzle-orm/pg-core";
 import { id, timestamps } from "./common";
 
 /** Tenant. `id` is the company_id every other table points at. */
@@ -17,7 +17,7 @@ export const companies = pgTable("companies", {
   signupEnabled: boolean("signup_enabled").notNull().default(true),
   labourRateCents: integer("labour_rate_cents"),
   approvalLimitCents: integer("approval_limit_cents").notNull().default(200000),
-  setupCompletedAt: text("setup_completed_at"),
+  setupCompletedAt: timestamp("setup_completed_at", { withTimezone: true }),
   ...timestamps(),
 });
 

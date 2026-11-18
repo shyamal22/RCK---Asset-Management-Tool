@@ -1,0 +1,1 @@
+ALTER TABLE "companies" ALTER COLUMN "setup_completed_at" SET DATA TYPE timestamp with time zone USING setup_completed_at::timestamptz;

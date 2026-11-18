@@ -17,6 +17,7 @@
 - 19/11/2026 — M0 audit: generic app.audit_row() trigger (insert/update/soft-delete with before/after, actor, device) on companies, sites, crews, owner_entities — attach to every new domain table. Sign-ins, approvals, PIN/passkey events, exports logged. Setup → Audit log: filters (dates, person, action, record), paging, field-level changes, CSV export (formula-safe, itself logged).
 - 19/11/2026 — M0 shell: phone bottom nav / desktop side nav (Home, Setup if allowed, Me); home screen per user type with docs/05 sections (empty states until data lands); flat 3-colour palette tokens + status colours; Me page (type, acting, lead; PIN/Face ID; sign out); Done button on shared tablets. e2e checks each home, no sideways scroll at phone width.
 - 19/11/2026 — M0 Setup: one gear → sections filtered by a tested visibility map (Director all; Office Users; Workshop none yet; Supervisor/Crew never — 404 by URL too). Added Setup → Company (name, NZBN, labour rate, approval limit in cents) and Yards and crews (yards, crews, owners: add, rename, archive).
+- 19/11/2026 — M0 first run: Director of a new company lands on /setup/start until finished: company details → yards and crews (needs ≥1 each) → sign-up link/QR → Finish. Assets and pre-check template steps will be added to the wizard in M1/M2.
 
 ## Questions for Sam
 Each has a default that will be used unless you say otherwise.

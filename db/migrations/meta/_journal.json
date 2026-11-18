@@ -78,6 +78,13 @@
       "when": 1795041784871,
       "tag": "0010_audit_triggers",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795043108418,
+      "tag": "0011_setup_completed_ts",
+      "breakpoints": true
     }
   ]
 }
