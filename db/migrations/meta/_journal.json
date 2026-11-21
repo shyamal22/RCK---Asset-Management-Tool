@@ -85,6 +85,20 @@
       "when": 1795043108418,
       "tag": "0011_setup_completed_ts",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1795305228471,
+      "tag": "0012_platform",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1795305303689,
+      "tag": "0013_platform_rls",
+      "breakpoints": true
     }
   ]
 }

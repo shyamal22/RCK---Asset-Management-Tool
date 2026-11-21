@@ -18,6 +18,10 @@ export const companies = pgTable("companies", {
   labourRateCents: integer("labour_rate_cents"),
   approvalLimitCents: integer("approval_limit_cents").notNull().default(200000),
   setupCompletedAt: timestamp("setup_completed_at", { withTimezone: true }),
+  /** KRE Consulting's own company: its flagged users are KRE admins (platform level). */
+  isPlatform: boolean("is_platform").notNull().default(false),
+  /** Suspended client: users keep their accounts but see nothing until reactivated. */
+  suspendedAt: timestamp("suspended_at", { withTimezone: true }),
   ...timestamps(),
 });
 
