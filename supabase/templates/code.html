@@ -3,7 +3,10 @@
   <body style="margin:0;padding:24px;background:#f4f4f5;font-family:Calibri,Carlito,Arial,sans-serif;color:#1f2937">
     <table role="presentation" width="100%" style="max-width:420px;margin:0 auto;background:#ffffff;border-radius:8px">
       <tr>
-        <td style="padding:28px 28px 8px;font-size:18px;font-weight:bold">{{ .Data.company_name }} Workshop</td>
+        <td style="padding:28px 28px 0;font-size:18px;font-weight:bold">KRE Asset Management Tool</td>
+      </tr>
+      <tr>
+        <td style="padding:2px 28px 8px;font-size:14px;color:#6b7280">{{ if .Data.company_name }}{{ .Data.company_name }}{{ end }}</td>
       </tr>
       <tr>
         <td style="padding:8px 28px;font-size:15px">Type this code into the app:</td>

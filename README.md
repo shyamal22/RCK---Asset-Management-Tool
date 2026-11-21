@@ -1,4 +1,8 @@
-# RCK Workshop & Maintenance App — Claude Code starter pack
+# KRE Asset Management Tool
+
+Built and hosted by KRE Consulting. First client: RCK Group.
+
+## Claude Code starter pack
 
 1. Create an empty folder (or GitHub repo) and copy these files into it.
 2. `git init` and commit.

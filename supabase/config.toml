@@ -281,7 +281,7 @@ enable_signup = false
 # If enabled, users need to confirm their phone number before signing in.
 enable_confirmations = false
 # Template for sending OTP to users
-template = "Your Workshop code is {{ .Code }}. It expires in 15 minutes."
+template = "Your KRE Asset Management code is {{ .Code }}. It expires in 15 minutes."
 # Controls the minimum amount of time that must pass before sending another sms otp.
 max_frequency = "5s"
 

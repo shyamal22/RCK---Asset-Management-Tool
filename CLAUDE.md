@@ -1,11 +1,21 @@
-# CLAUDE.md — Workshop & Maintenance Tracking App
+# CLAUDE.md — KRE Asset Management Tool
 
 Read this file at the start of every session. It is the project's standing brief.
 
 ## What we are building
-A web app (mobile-first, works as a PWA on phones) that tracks plant and vehicle
-maintenance for RCK Group (Auckland/Northland asphalt, concrete and civil contractor),
-and later for other contractors as a multi-company product.
+**KRE Asset Management Tool** — a web app (mobile-first, works as a PWA on phones) that
+tracks plant and vehicle maintenance. It is owned and hosted by **KRE Consulting** and sold
+to contractors as a multi-company product. **RCK Group** (Auckland/Northland asphalt,
+concrete and civil contractor) is the first client company.
+
+- KRE admins (platform level) create client companies and invite each company's first
+  Director; nobody can create a company themselves. KRE admins see companies and users but
+  not client data, except through time-limited, read-only, audited support access.
+- Branding: "KRE Asset Management Tool" on sign-in screens and emails; once signed in,
+  the client's company name shows in the header.
+- Live at https://assets.kreconsulting.co.nz (Vercel project kre-asset-management, team
+  kre-consulting; Supabase project fraxahglookmhracfqgd, Sydney). Emails come from
+  "Login Team <noreply@kreconsulting.co.nz>" via Resend.
 
 Core idea: pre-checks and breakdown reports raise yellow/red **flags** on an asset
 (never work orders automatically). The workshop turns flags, and due services, into

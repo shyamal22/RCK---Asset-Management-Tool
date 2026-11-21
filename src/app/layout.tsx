@@ -9,8 +9,8 @@ const carlito = Carlito({
 });
 
 export const metadata: Metadata = {
-  title: "RCK Workshop",
-  description: "Plant and vehicle maintenance",
+  title: "KRE Asset Management Tool",
+  description: "Plant and vehicle maintenance by KRE Consulting",
 };
 
 export const viewport: Viewport = {
