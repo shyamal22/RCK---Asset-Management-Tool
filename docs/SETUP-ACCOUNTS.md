@@ -1,12 +1,14 @@
-# Account setup — where we are (18/11/2026)
+# Account setup — where we are (21/11/2026)
 
 ## Status
 - GitHub: done — github.com/shyamal22/RCK---Asset-Management-Tool, CI green.
-- Milestone 0 complete, running on a local Supabase. Real Supabase, Resend and Vercel still to do.
+- Supabase: project created (Sydney), env vars set, personal access token saved, migrations applied (21/11/2026).
+- Still to do: fix NEXT_PUBLIC_SUPABASE_URL, Resend, DNS, auth config, Vercel.
 
 ## To do next (Sam), in order
 1. ~~**GitHub**~~ — done.
-2. **Supabase** — sign up at supabase.com. Make a personal access token at
+2. ~~**Supabase**~~ — done, except `NEXT_PUBLIC_SUPABASE_URL` is empty in the environment: set it to
+   `https://fraxahglookmhracfqgd.supabase.co`. Previously: sign up at supabase.com. Make a personal access token at
    supabase.com/dashboard/account/tokens. Claude will create the project (Sydney region),
    fetch keys and configure auth. Give the token through Claude's secure form, never in chat.
 3. **Resend** — sign up at resend.com, create an API key with Full access. Claude adds the

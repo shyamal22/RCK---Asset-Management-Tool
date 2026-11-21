@@ -20,6 +20,7 @@
 - 19/11/2026 — M0 first run: Director of a new company lands on /setup/start until finished: company details → yards and crews (needs ≥1 each) → sign-up link/QR → Finish. Assets and pre-check template steps will be added to the wizard in M1/M2.
 - 19/11/2026 — M0 seed (pnpm db:seed, idempotent): RCK Group, Helensville + Westgate yards, Jacks Bobcats Ltd + RCK Group owners, Green + Yellow crews, one user per type (@rck.test, Workshop lead flag on Wayne). Local password Workshop-Dev-2026; refuses remote DBs unless SEED_ALLOW_REMOTE=1 (then no passwords set).
 - 19/11/2026 — M0 CI (.github/workflows/ci.yml) on every push/PR: typecheck, lint, local Supabase in Docker, migrate, schema-drift check (db:drift), unit + DB tests, seed, Playwright e2e (phone + desktop). Uploads test results on failure.
+- 21/11/2026 — Real Supabase (project fraxahglookmhracfqgd, Postgres 17): env vars checked (NEXT_PUBLIC_SUPABASE_URL was empty — needs setting), all 12 migrations applied and recorded in drizzle.__drizzle_migrations; 14 public tables, all with RLS, 23 policies, sign-up trigger on auth.users; anon key gets permission denied. Cloud sessions can't open raw Postgres, so added `pnpm db:migrate:api` (same migrations over the Supabase Management API, needs a personal access token). Not seeded yet.
 
 ## Questions for Sam
 Each has a default that will be used unless you say otherwise.
@@ -57,3 +58,4 @@ Each has a default that will be used unless you say otherwise.
 26. **Passkeys for first sign-in** — passkeys currently unlock a signed-in phone; first sign-in on a device is still password (+ code for Director/Office). *Default: keep it that way for now.*
 27. **Shared tablet users** — who can switch in by PIN? *Default: Workshop, Supervisor and Crew who have set a PIN and have an email on their account (Director/Office keep their own devices for the second step). Idle 15 min → back to the name list.*
 28. **Brand colours** — docs/10 says three colours, TBC. *Default: ink #1F2933, paper #F6F6F3, steel blue #2F5D8A; green/yellow/red only for status. Send RCK's brand colours/logo and I'll swap them in (one file: globals.css).*
+29. **Seeding the real project** — the seed creates @rck.test demo users. *Default: don't seed production; the real Director signs up and runs first-run setup. Demo data goes in a separate project if wanted.*
