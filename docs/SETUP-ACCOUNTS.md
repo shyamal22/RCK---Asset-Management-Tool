@@ -11,9 +11,9 @@
    `https://fraxahglookmhracfqgd.supabase.co`. Previously: sign up at supabase.com. Make a personal access token at
    supabase.com/dashboard/account/tokens. Claude will create the project (Sydney region),
    fetch keys and configure auth. Give the token through Claude's secure form, never in chat.
-3. **Resend** — sign up at resend.com, create an API key with Full access. Claude adds the
+3. ~~**Resend**~~ — done 22/11/2026 (kreconsulting.co.nz, sender Login Team). Previously: sign up at resend.com, create an API key with Full access. Claude adds the
    sending domain and gives you the DNS records to add.
-4. **DNS** — add the records Claude gives you at your domain host.
+4. ~~**DNS**~~ — done (records in Netlify DNS, not Crazy Domains). Previously: add the records Claude gives you at your domain host.
 5. **Environment variables** — Claude gives you a ready-to-paste block; add it under the
    cloud environment menu (session title bar) → Edit → Environment variables:
    `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
