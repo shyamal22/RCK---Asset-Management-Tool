@@ -21,6 +21,7 @@
 - 19/11/2026 — M0 seed (pnpm db:seed, idempotent): RCK Group, Helensville + Westgate yards, Jacks Bobcats Ltd + RCK Group owners, Green + Yellow crews, one user per type (@rck.test, Workshop lead flag on Wayne). Local password Workshop-Dev-2026; refuses remote DBs unless SEED_ALLOW_REMOTE=1 (then no passwords set).
 - 19/11/2026 — M0 CI (.github/workflows/ci.yml) on every push/PR: typecheck, lint, local Supabase in Docker, migrate, schema-drift check (db:drift), unit + DB tests, seed, Playwright e2e (phone + desktop). Uploads test results on failure.
 - 21/11/2026 — Real Supabase (project fraxahglookmhracfqgd, Postgres 17): env vars checked (NEXT_PUBLIC_SUPABASE_URL was empty — needs setting), all 12 migrations applied and recorded in drizzle.__drizzle_migrations; 14 public tables, all with RLS, 23 policies, sign-up trigger on auth.users; anon key gets permission denied. Cloud sessions can't open raw Postgres, so added `pnpm db:migrate:api` (same migrations over the Supabase Management API, needs a personal access token). Not seeded yet.
+- 22/11/2026 — Real Supabase auth configured via Management API to match supabase/config.toml: 6-digit email codes, 15 min expiry, password min 8, branded code-only template + NZ subjects for confirmation/recovery/sign-in/email change/reauth. Custom SMTP (Resend, sender on kreconsulting.co.nz) still to do — until then hosted Supabase only emails project team members.
 
 ## Questions for Sam
 Each has a default that will be used unless you say otherwise.
