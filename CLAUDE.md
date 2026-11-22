@@ -48,7 +48,9 @@ Full specs live in `docs/`:
 
 ## Rules
 1. **Multi-tenant from day one.** Every table has `company_id`; RLS policies enforce it.
-   RCK is just the first company.
+   RCK is just the first company. **Every new table needs explicit grants** to `authenticated`
+   in its migration (hosted Supabase grants nothing by default; migration 0014 made local match)
+   and an entry in `tests/db/grants.test.ts`.
 2. **Money:** store cents as integers, NZD, ex GST. Show GST separately where relevant.
 3. **Never delete cost records.** Corrections are reversing entries. Soft-delete everything else.
 4. **Audit log** on create/update/delete of assets, work orders and costs.

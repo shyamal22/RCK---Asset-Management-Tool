@@ -1,0 +1,48 @@
+import { describe, expect, it } from "vitest";
+import { sql } from "drizzle-orm";
+import { adminDb } from "@db/client";
+
+/**
+ * Hosted Supabase gives new tables NO access for signed-in users; local dev used to grant everything.
+ * Migration 0014 makes both explicit. This pins the exact table-level grants so a new table without
+ * grants (broken in production) or with too many (too open) fails here, not in front of a user.
+ */
+const EXPECTED: Record<string, string[]> = {
+  audit_log: ["SELECT"],
+  companies: ["UPDATE"],
+  crews: ["INSERT", "SELECT", "UPDATE"],
+  owner_entities: ["INSERT", "SELECT", "UPDATE"],
+  sites: ["INSERT", "SELECT", "UPDATE"],
+  temp_access: ["INSERT", "SELECT", "UPDATE"],
+  user_flags: ["INSERT", "SELECT", "UPDATE"],
+  user_type_permissions: ["SELECT"],
+};
+
+describe("table privileges for signed-in users", () => {
+  it("match the explicit list (RLS then decides rows)", async () => {
+    const rows = (await adminDb.execute(sql`
+      select table_name, privilege_type from information_schema.role_table_grants
+      where table_schema = 'public' and grantee = 'authenticated'
+        and privilege_type not in ('REFERENCES', 'TRIGGER') and table_name not like 'zz_test_%'
+      order by 1, 2`)) as unknown as { table_name: string; privilege_type: string }[];
+    const actual: Record<string, string[]> = {};
+    for (const r of rows) (actual[r.table_name] ??= []).push(r.privilege_type);
+    expect(actual).toEqual(EXPECTED);
+  });
+
+  it("anonymous visitors can reach no table", async () => {
+    const rows = (await adminDb.execute(sql`
+      select table_name from information_schema.role_table_grants
+      where table_schema = 'public' and grantee = 'anon' and table_name not like 'zz_test_%'`)) as unknown as unknown[];
+    expect(rows).toEqual([]);
+  });
+
+  it("new tables get no access by default", async () => {
+    await adminDb.execute(sql`drop table if exists public.zz_default_grants; create table public.zz_default_grants (id int)`);
+    const rows = (await adminDb.execute(sql`
+      select privilege_type from information_schema.role_table_grants
+      where table_name = 'zz_default_grants' and grantee in ('anon', 'authenticated')`)) as unknown as unknown[];
+    await adminDb.execute(sql`drop table public.zz_default_grants`);
+    expect(rows).toEqual([]);
+  });
+});
