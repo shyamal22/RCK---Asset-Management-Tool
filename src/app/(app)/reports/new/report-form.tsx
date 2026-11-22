@@ -66,7 +66,6 @@ export function ReportForm({ asset }: { asset: Asset }) {
       }}
     >
       <div className="grid gap-2">
-        <span className="text-base font-medium">Photos</span>
         <input
           ref={input}
           type="file"
@@ -110,7 +109,7 @@ export function ReportForm({ asset }: { asset: Asset }) {
         </div>
       </div>
 
-      <Field id="report-title" label="What's wrong?" placeholder="e.g. Hydraulic leak on the drum" value={title} onChange={(e) => setTitle(e.target.value)} />
+      <Field id="report-title" label="What's wrong?" value={title} onChange={(e) => setTitle(e.target.value)} />
       <div className="grid gap-1.5">
         <Label htmlFor="report-details" className="text-base">
           Details
@@ -120,7 +119,6 @@ export function ReportForm({ asset }: { asset: Asset }) {
           rows={4}
           value={details}
           onChange={(e) => setDetails(e.target.value)}
-          placeholder="Where on the machine, what happened, anything the workshop should know"
           className="min-h-28 rounded-[0.875rem] p-3 text-lg"
         />
       </div>
@@ -150,12 +148,12 @@ export function ReportForm({ asset }: { asset: Asset }) {
             </button>
           ))}
         </div>
-        {severity === "unusable" ? <p className="text-sm text-muted-foreground">{asset.code} will be marked Unusable until the workshop clears it.</p> : null}
+        {severity === "unusable" ? <p className="text-sm text-muted-foreground">{asset.code} will be marked Unusable.</p> : null}
       </div>
 
       <Field
         id="report-reading"
-        label={`Current ${asset.unit === "hours" ? "hours" : "kilometres"} (if you know)`}
+        label={`${asset.unit === "hours" ? "Hours" : "Km"} (optional)`}
         inputMode="decimal"
         value={reading}
         onChange={(e) => setReading(e.target.value)}

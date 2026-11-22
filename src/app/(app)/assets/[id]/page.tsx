@@ -47,7 +47,7 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
   return (
     <div className="grid max-w-3xl gap-6">
       <header className="flex items-start gap-4">
-        <div className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted sm:size-32">
+        <div className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-card sm:size-32">
           {photo ? (
             // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL
             <img src={photo} alt={`${a.code} ${a.name}`} className="size-full object-cover" />
@@ -63,10 +63,12 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
             <StatusDot tone={STATUS_TONE[a.status]} label={STATUS_LABELS[a.status]} />
             {flag ? <FlagBadge {...flag} /> : null}
           </div>
-          <p className="text-lg font-bold tabular-nums" data-testid="current-reading">
-            {formatReading(a.current_reading, a.tracking_unit)}
+          <p className="text-lg">
+            <span className="font-bold tabular-nums" data-testid="current-reading">
+              {formatReading(a.current_reading, a.tracking_unit)}
+            </span>
+            {a.current_reading_at ? <span className="text-sm text-muted-foreground tabular-nums"> · {formatDate(a.current_reading_at)}</span> : null}
           </p>
-          {a.current_reading_at ? <p className="text-sm text-muted-foreground">as at {formatDate(a.current_reading_at)}</p> : null}
         </div>
       </header>
 
@@ -85,7 +87,7 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
 
       {reports.length ? (
         <section aria-labelledby="open-reports-h" className="grid gap-2">
-          <h2 id="open-reports-h" className="text-xl font-bold">Open damage reports</h2>
+          <h2 id="open-reports-h" className="text-xl font-bold">Reports</h2>
           <ul className="grid gap-2">
             {reports.map((r) => (
               <li key={r.id}>
@@ -104,8 +106,7 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
         </section>
       ) : null}
 
-      <section aria-labelledby="details-h" className="grid gap-2">
-        <h2 id="details-h" className="text-xl font-bold">Details</h2>
+      <section aria-label="Details" className="grid gap-2">
         <dl className="grid grid-cols-[8rem_1fr] gap-x-4 gap-y-1">
           {details
             .filter(([, v]) => v)
@@ -126,9 +127,7 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
             <ReadingForm assetId={a.id} unitName={UNIT_LABELS[a.tracking_unit].name} />
           </div>
         ) : null}
-        {readings.length === 0 ? (
-          <p className="text-muted-foreground">No readings yet.</p>
-        ) : (
+        {readings.length ? (
           <ul className="grid gap-1" aria-label="Recent readings">
             {readings.map((r) => (
               <li key={r.id} className="flex flex-wrap justify-between gap-2 border-b py-2">
@@ -143,7 +142,7 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
               </li>
             ))}
           </ul>
-        )}
+        ) : null}
       </section>
     </div>
   );

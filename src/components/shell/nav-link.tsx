@@ -2,9 +2,9 @@
 import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Building2, Home, Settings, TriangleAlert, Truck, UserRound } from "lucide-react";
+import { Building2, ClipboardCheck, Home, Settings, TriangleAlert, Truck, UserRound } from "lucide-react";
 
-const ICONS = { home: Home, assets: Truck, reports: TriangleAlert, clients: Building2, setup: Settings, me: UserRound } as const;
+const ICONS = { home: Home, assets: Truck, checks: ClipboardCheck, reports: TriangleAlert, clients: Building2, setup: Settings, me: UserRound } as const;
 export type IconName = keyof typeof ICONS;
 
 export function NavLink({ href, label, icon, variant }: { href: string; label: string; icon: IconName; variant: "bottom" | "side" }) {
@@ -19,7 +19,7 @@ export function NavLink({ href, label, icon, variant }: { href: string; label: s
       aria-current={active ? "page" : undefined}
       className={cn(
         variant === "bottom"
-          ? "group relative flex min-h-16 flex-1 flex-col items-center justify-center gap-1 text-sm transition-colors"
+          ? "group relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 text-caption font-bold transition-colors"
           : "press relative flex h-12 items-center gap-3 rounded-full px-4 text-base",
         variant === "bottom" && (active ? "font-bold text-[var(--indigo)]" : "text-muted-foreground"),
         variant === "side" && (active ? "bg-white font-bold text-[var(--indigo)]" : "text-white/80 hover:bg-white/10 hover:text-white"),
@@ -48,7 +48,7 @@ function BottomIcon({ Icon, active }: { Icon: (typeof ICONS)[IconName]; active: 
   return (
     <span
       className={cn(
-        "relative flex h-8 w-16 items-center justify-center rounded-full transition-[background-color,box-shadow,scale] duration-[240ms] ease-[cubic-bezier(.23,1,.32,1)] group-data-[pressed]:scale-[0.86] group-data-[pressed]:bg-[color-mix(in_srgb,var(--indigo)_20%,transparent)] group-data-[pressed]:duration-[60ms]",
+        "relative flex h-8 w-14 items-center justify-center rounded-full transition-[background-color,box-shadow,scale] duration-[240ms] ease-[cubic-bezier(.23,1,.32,1)] motion-safe:group-data-[pressed]:scale-[0.86] group-data-[pressed]:bg-[color-mix(in_srgb,var(--indigo)_20%,transparent)] group-data-[pressed]:duration-[60ms]",
         lit && "bg-[color-mix(in_srgb,var(--indigo)_13%,transparent)] text-[var(--indigo)] shadow-[inset_0_1px_3px_rgb(11_11_16/.10)]",
       )}
     >

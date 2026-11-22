@@ -30,7 +30,7 @@ export function passwordStrength(pw: string): Strength {
   if (repeats) score -= 1;
   const s = Math.max(1, Math.min(4, score)) as 1 | 2 | 3 | 4;
   const label = ({ 1: "Weak", 2: "Fair", 3: "Good", 4: "Strong" } as const)[s];
-  return { score: s, label, hint: s <= 1 ? "Longer is stronger: try three words with dashes" : null, ok: true };
+  return { score: s, label, hint: s <= 1 ? "Try three words with dashes" : null, ok: true };
 }
 
 const WORDS = [

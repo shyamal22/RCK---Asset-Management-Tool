@@ -3,6 +3,7 @@ import { asUser } from "@db/client";
 import { requireActive } from "@/lib/auth/session";
 import { can } from "@/lib/permissions/check";
 import { formatDateTime } from "@/lib/dates";
+import { cn } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { PendingUserCard } from "./pending-user-card";
@@ -34,33 +35,37 @@ export default async function UsersPage() {
   }));
   return (
     <div className="grid max-w-xl gap-4">
-      <h1 className="text-2xl font-bold">Waiting for approval</h1>
-      {pending.length === 0 ? <p className="text-lg">No one waiting</p> : null}
-      {pending.map((u) => (
-        <PendingUserCard
-          key={u.id}
-          user={{ id: u.id, name: u.name, contact: u.email ?? u.mobile ?? "", signedUp: formatDateTime(u.created_at) }}
-          crews={crews}
-          canApprove={canApprove}
-        />
-      ))}
+      {/* Director: everyone, with the waiting block on top only when someone is waiting. Office: the waiting list only. */}
+      <h1 className="text-2xl font-bold">{canViewAll ? "People" : "Waiting for approval"}</h1>
+      {pending.length ? (
+        <section className="grid gap-4" aria-label="Waiting for approval">
+          {canViewAll ? <h2 className="text-xl font-bold">Waiting for approval</h2> : null}
+          {pending.map((u) => (
+            <PendingUserCard
+              key={u.id}
+              user={{ id: u.id, name: u.name, contact: u.email ?? u.mobile ?? "", signedUp: formatDateTime(u.created_at) }}
+              crews={crews}
+              canApprove={canApprove}
+            />
+          ))}
+        </section>
+      ) : canViewAll ? null : (
+        <p className="text-lg text-muted-foreground">None</p>
+      )}
       {canViewAll ? (
-        <>
-          <h2 className="mt-6 text-2xl font-bold">People</h2>
-          <ul className="divide-y rounded-lg border" aria-label="People">
-            {people.map((p) => (
-              <li key={p.id}>
-                <Link href={`/setup/users/${p.id}`} className="press flex min-h-14 items-center justify-between gap-3 px-4 py-2">
-                  <span className={p.status === "deactivated" ? "text-muted-foreground line-through" : "font-bold"}>{p.name}</span>
-                  <span className="text-right text-sm">
-                    {p.user_type ? USER_TYPE_LABELS[p.user_type] : ""}
-                    {p.crew ? ` · ${p.crew}` : ""}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </>
+        <ul className={cn("divide-y overflow-hidden rounded-lg border", pending.length && "mt-6")} aria-label="People">
+          {people.map((p) => (
+            <li key={p.id}>
+              <Link href={`/setup/users/${p.id}`} className="press flex min-h-14 items-center justify-between gap-3 px-4 py-2">
+                <span className={p.status === "deactivated" ? "text-muted-foreground line-through" : "font-bold"}>{p.name}</span>
+                <span className="text-right text-sm">
+                  {p.user_type ? USER_TYPE_LABELS[p.user_type] : ""}
+                  {p.crew ? ` · ${p.crew}` : ""}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       ) : null}
     </div>
   );

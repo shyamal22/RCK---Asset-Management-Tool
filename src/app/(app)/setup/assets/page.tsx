@@ -13,11 +13,11 @@ export default async function SetupAssetsPage({ searchParams }: { searchParams: 
   return (
     <div className="grid max-w-3xl gap-4">
       <h1 className="text-2xl font-bold">Assets</h1>
-      {archived ? <p role="status">Asset archived. Its history is kept.</p> : null}
+      {archived ? <p role="status">Asset archived</p> : null}
       <Button asChild size="lg" className="h-12 w-fit">
         <Link href="/setup/assets/new">Add asset</Link>
       </Button>
-      <ul className="divide-y surface">
+      <ul className="divide-y surface overflow-hidden">
         {list.map((a) => (
           <li key={a.id}>
             <Link href={`/setup/assets/${a.id}`} className="press flex min-h-14 items-center justify-between gap-3 px-4">

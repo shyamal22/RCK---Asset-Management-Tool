@@ -13,7 +13,6 @@ export default function RootError({ reset }: { error: Error & { digest?: string 
     <main className="app-theme grid min-h-dvh place-items-center px-6 text-center text-white">
       <div className="grid gap-4">
         <h1 className="text-3xl font-bold">That didn&apos;t load</h1>
-        <p className="text-lg text-white/75">Check your signal, then try again.</p>
         <button
           type="button"
           className="press h-14 rounded-full bg-white px-8 text-lg font-bold text-[var(--onyx)]"

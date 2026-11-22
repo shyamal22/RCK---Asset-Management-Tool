@@ -11,7 +11,6 @@ export default function AppError({ reset }: { error: Error & { digest?: string }
   return (
     <div className="mx-auto grid max-w-md gap-4 py-10 text-center">
       <h1 className="text-2xl font-bold">That didn&apos;t load</h1>
-      <p className="text-lg text-muted-foreground">Check your signal, then try again.</p>
       <Button
         size="xl"
         onClick={() =>

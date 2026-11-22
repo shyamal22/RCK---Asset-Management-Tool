@@ -74,7 +74,7 @@ export function TypeRail({ items, compact = false }: { items: RailItem[]; compac
  */
 function CompactRail({ items }: { items: RailItem[] }) {
   return (
-    <BayRail label="Asset types" className="bay-rail -mx-4 -mt-1 flex gap-1 overflow-x-auto px-4 pt-1 pb-1 md:-mx-10 md:px-10">
+    <BayRail label="Asset types" className="bay-rail relative -mx-4 -mt-1 flex gap-1 overflow-x-auto px-4 pt-1 pb-1 md:-mx-10 md:px-10">
       {items.map((it) => (
         <Link
           key={it.key}

@@ -13,7 +13,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
           ? "Your company's account is on hold. Talk to your manager."
           : undefined;
   return (
-    <Screen title="Sign in" subtitle="Welcome back">
+    <Screen title="Sign in">
       <SsoButtons />
       <SignInForm notice={notice} />
     </Screen>

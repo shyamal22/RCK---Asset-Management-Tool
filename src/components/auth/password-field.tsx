@@ -11,7 +11,7 @@ const BAR = ["bg-[var(--tangerine)]", "bg-[var(--tangerine)]", "bg-[color-mix(in
 
 /**
  * Password box: show/hide (the cab operator looks away), optional live strength + hint for new
- * passwords, and an optional "Suggest a strong password" that fills in a memorable passphrase.
+ * passwords, and an optional "Suggest one" that fills in a memorable passphrase.
  * The toggle's name is text content (not aria-label) so the "Password" label stays unique.
  */
 export function PasswordField({
@@ -89,7 +89,7 @@ export function PasswordField({
           }}
         >
           <WandSparkles className="size-4" aria-hidden />
-          Suggest a strong password
+          Suggest one
         </button>
       ) : null}
       {error ? <p className="text-sm text-destructive">{error}</p> : null}

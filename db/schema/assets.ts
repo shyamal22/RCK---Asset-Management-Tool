@@ -50,6 +50,9 @@ export const assets = pgTable(
     rego: text("rego"),
     vinSerial: text("vin_serial"),
     photoPath: text("photo_path"),
+    /** Last pre-check (docs/07: stored from day one for missed-check reporting). */
+    lastPrecheckAt: timestamp("last_precheck_at", { withTimezone: true }),
+    lastPrecheckBy: uuid("last_precheck_by"),
     notes: text("notes"),
     ...timestamps(),
   },

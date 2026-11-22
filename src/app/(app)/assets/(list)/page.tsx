@@ -131,12 +131,12 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
           </div>
           {list.length === 0 ? (
             <p className="py-10 text-center text-muted-foreground">
-              {filtered ? "Nothing matches." : "No machines of this type."}
+              {filtered ? "Nothing matches." : "None yet"}
             </p>
           ) : listView ? (
             <ShuffleGrid key={`${f.type}-${f.status}-${f.q}-${f.site}-${f.crew}`} items={items} />
           ) : (
-            <Orbit key={`${f.type}-${f.status}-${f.q}-${f.site}-${f.crew}`} items={items} />
+            <Orbit key={`${f.type}-${f.status}-${f.q}-${f.site}-${f.crew}`} items={items} typeChosen={!!f.type && f.type !== "all"} />
           )}
 
           {/* next/form: a client-side navigation (keeps the app shell, shows progress) instead of a full reload. */}
@@ -148,7 +148,7 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
                 name="q"
                 type="search"
                 defaultValue={f.q}
-                placeholder="Search name, code or rego"
+                placeholder="Search"
                 aria-label="Search assets"
                 className="h-12 w-full min-w-0 rounded-full border border-input bg-background px-5 text-lg"
               />

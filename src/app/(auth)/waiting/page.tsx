@@ -14,18 +14,12 @@ export default async function WaitingPage() {
   const rejected = profile.status === "rejected";
   return (
     <Screen title={rejected ? "Not approved" : "Waiting for approval"}>
-      <p className="text-lg">
-        {rejected
-          ? "Your account wasn't approved. Talk to your manager."
-          : `Thanks ${profile.name}. You'll get access once your account is approved.`}
-      </p>
-      {rejected ? null : (
-        <>
-          <p className="text-base text-muted-foreground">Using the app from your home screen? Sign in there once you&apos;re approved.</p>
-          <Button asChild size="lg" className="h-14 w-full text-lg">
-            <Link href="/">Check again</Link>
-          </Button>
-        </>
+      {rejected ? (
+        <p className="text-lg">Talk to your manager.</p>
+      ) : (
+        <Button asChild size="lg" className="h-14 w-full text-lg">
+          <Link href="/">Check again</Link>
+        </Button>
       )}
       <form action={signOutAction}>
         <Button type="submit" variant="outline" size="lg" className="h-14 w-full text-lg">

@@ -95,8 +95,7 @@ function PhotoPicker({ file, onFile }: { file: File | null; onFile: (f: File | n
             <span className="flex size-14 items-center justify-center rounded-full bg-accent text-[var(--indigo)]">
               <Camera className="size-7" aria-hidden />
             </span>
-            <span className="text-base font-semibold text-foreground">Take or choose a photo</span>
-            <span className="text-sm">Shows on the asset card</span>
+            <span className="text-base font-semibold text-foreground">Add photo</span>
           </span>
         )}
         {preview ? <span className="absolute right-3 bottom-3 rounded-full bg-black/60 px-3 py-1 text-sm text-white">Change photo</span> : null}
@@ -119,7 +118,7 @@ export function AssetForm({ initial, opts }: { initial: AssetFormValues; opts: O
   const pickType = (typeId: string) => {
     const t = opts.types.find((x) => x.id === typeId);
     setV((s) => ({ ...s, assetTypeId: typeId, trackingUnit: !editing && t?.default_unit ? t.default_unit : s.trackingUnit }));
-    setSuggestedUnit(!editing && t?.default_unit ? `Suggested for ${t.name}. Change it if this one is different.` : null);
+    setSuggestedUnit(!editing && t?.default_unit ? `Suggested for ${t.name}.` : null);
     if (!editing && !v.code.trim() && t?.code_prefix) {
       start(async () => {
         const code = await nextCodeAction(typeId);

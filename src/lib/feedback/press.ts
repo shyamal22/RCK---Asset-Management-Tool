@@ -10,8 +10,9 @@
  */
 export const PRESSABLE =
   'button, a[href], [role="button"], [role="tab"], [role="radio"], [role="switch"], [role="checkbox"], [role="option"], [role="menuitem"], summary, label[for], select, [data-pressable]';
-/** Controls that never scroll with the page: press shows instantly. */
-const FIXED_CHROME = 'nav, header, dialog, [role="dialog"], [data-press-instant]';
+/** Controls that never scroll with the page: press shows instantly. In-page menus and rails (which
+ *  scroll, or sit in the scrolling page) take the short defer so a swipe never flashes or buzzes. */
+const FIXED_CHROME = 'dialog, [role="dialog"], [data-press-instant]';
 
 export const PRESS_DEFER_MS = 50;
 export const PRESS_MIN_HOLD_MS = 120;
@@ -40,7 +41,7 @@ export function movedTooFar(x0: number, y0: number, x: number, y: number, slop =
 }
 
 /** Wires the controller to the document. Returns a cleanup function. */
-export function installPressController(onShow?: (el: HTMLElement) => void): () => void {
+export function installPressController(onShow?: (el: HTMLElement) => void, onRelease?: (el: HTMLElement) => void): () => void {
   let cur: { el: HTMLElement; id: number; x: number; y: number; timer?: number; shownAt?: number } | null = null;
   const releaseTimers = new Map<HTMLElement, number>();
 
@@ -78,6 +79,7 @@ export function installPressController(onShow?: (el: HTMLElement) => void): () =
     show(); // a tap quicker than the defer still flashes
     const { el, shownAt } = cur;
     cur = null;
+    onRelease?.(el); // a completed press (cancelled ones never get here)
     const wait = holdRemaining(shownAt ?? performance.now(), performance.now());
     releaseTimers.set(el, window.setTimeout(() => (releaseTimers.delete(el), clear(el)), wait));
   };

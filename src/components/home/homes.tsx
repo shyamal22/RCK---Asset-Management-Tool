@@ -36,11 +36,11 @@ function Pending({ n }: { n: number }) {
             <UserPlus className="size-5" aria-hidden />
           </span>
           <span className="text-lg">
-            <span className="font-bold tabular-nums">{n}</span> {n === 1 ? "person has" : "people have"} signed up
+            <span className="font-bold tabular-nums">{n}</span> to approve
           </span>
         </Link>
       ) : (
-        <p className="text-muted-foreground">Nobody waiting.</p>
+        <p className="text-muted-foreground">None</p>
       )}
     </Panel>
   );
@@ -56,7 +56,7 @@ export function CrewHome({ d }: { d: HomeData }) {
         <MachineStrip items={d.machines} photos={d.photos} />
       </Panel>
       <Panel title="My reports" href="/reports">
-        <ReportFeed reports={mine} photos={d.photos} empty="No open reports from you." />
+        <ReportFeed reports={mine} photos={d.photos} empty="None open" />
       </Panel>
     </div>
   );
@@ -68,7 +68,7 @@ export function SupervisorHome({ d }: { d: HomeData }) {
       <Greeting />
       <ReportDamage />
       <Panel title="Needs attention" href="/assets?view=list">
-        <AttentionStrip rows={d.attention} photos={d.photos} empty="All your crew's machines are good to go." />
+        <AttentionStrip rows={d.attention} photos={d.photos} />
       </Panel>
       <Panel title="Crew machines" href="/assets?type=all">
         <MachineStrip items={d.machines} photos={d.photos} />
@@ -125,7 +125,7 @@ export function DirectorHome({ d }: { d: HomeData }) {
         <Panel title="Fleet by type" href="/assets">
           <FleetByType rows={d.byType} />
         </Panel>
-        <Panel title="Latest damage reports" href="/reports">
+        <Panel title="Damage reports" href="/reports">
           <ReportFeed reports={d.reports} photos={d.photos} />
         </Panel>
       </div>

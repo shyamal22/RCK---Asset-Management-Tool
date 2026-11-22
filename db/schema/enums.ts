@@ -33,3 +33,15 @@ export const breakdownSeverityEnum = pgEnum("breakdown_severity", BREAKDOWN_SEVE
 /** open → dismissed (not a fault, reason) | fixed (what was done). Work orders link in Milestone 3. */
 export const BREAKDOWN_STATUSES = ["open", "dismissed", "fixed"] as const;
 export const breakdownStatusEnum = pgEnum("breakdown_status", BREAKDOWN_STATUSES);
+
+/** docs/07 pre-check answers: Fine/Usable/Broken · Yes/No (builder marks the problem answer) · free text. */
+export const PRECHECK_ANSWER_TYPES = ["condition", "yes_no", "text"] as const;
+export const precheckAnswerTypeEnum = pgEnum("precheck_answer_type", PRECHECK_ANSWER_TYPES);
+
+/** Per answer and overall (worst item): green record only, yellow check soon, red problem. */
+export const PRECHECK_FLAGS = ["green", "yellow", "red"] as const;
+export const precheckFlagEnum = pgEnum("precheck_flag", PRECHECK_FLAGS);
+
+/** A flagged item stays open on the asset until dismissed (reason) or its work order is signed off (M3). */
+export const PRECHECK_ITEM_STATUSES = ["open", "dismissed", "resolved"] as const;
+export const precheckItemStatusEnum = pgEnum("precheck_item_status", PRECHECK_ITEM_STATUSES);

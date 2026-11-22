@@ -1,5 +1,5 @@
 /** Where "‹ Back" goes when there's no in-app history to return to (e.g. the app was just opened on this screen). */
-export const TAB_ROOTS = ["/", "/assets", "/reports", "/kre", "/setup", "/me"] as const;
+export const TAB_ROOTS = ["/", "/assets", "/prechecks", "/reports", "/kre", "/setup", "/me"] as const;
 
 const START_STEPS = ["company", "yards", "link"] as const;
 

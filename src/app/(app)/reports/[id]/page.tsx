@@ -42,11 +42,12 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
         ) : (
           <span className="text-lg font-bold">{company?.name}</span>
         )}
-        <span className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">Damage report</span>
+        {/* Printed / PDF header only: on screen the page is obviously a damage report. */}
+        <span className="hidden text-sm font-semibold tracking-wide text-muted-foreground uppercase print:inline">Damage report</span>
       </div>
       {sent ? (
         <p role="status" className="surface p-4 font-semibold">
-          Report sent. The workshop can see it now.
+          Report sent
         </p>
       ) : null}
       <header className="grid gap-2">
@@ -56,17 +57,19 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
         <h1 className="text-3xl font-bold">{r.title}</h1>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
           <StatusDot tone={r.status === "open" ? sev.tone : null} label={sev.label} />
-          <span className="rounded-full bg-muted px-3 py-0.5 text-sm font-semibold">{REPORT_STATUS[r.status]}</span>
+          {r.status !== "open" ? <span className="rounded-full border border-border bg-card px-3 py-0.5 text-sm font-semibold">{REPORT_STATUS[r.status]}</span> : null}
           <span className="text-sm text-muted-foreground">
-            {r.raised_by_name ?? "Someone"} · {ago(r.created_at)} ({formatDateTime(r.created_at)})
+            {r.raised_by_name ?? "Someone"} ·{" "}
+            <time dateTime={new Date(r.created_at).toISOString()} title={formatDateTime(r.created_at)}>
+              {ago(r.created_at)}
+            </time>
           </span>
         </div>
       </header>
 
       <PhotoViewer photos={r.photo_paths.filter((p) => urls[p]).map((p, i) => ({ src: urls[p], alt: `Damage photo ${i + 1}` }))} />
 
-      <section className="grid gap-2">
-        <h2 className="text-xl font-bold">Details</h2>
+      <section aria-label="Details" className="grid gap-2">
         <p className="whitespace-pre-wrap text-lg">{r.details}</p>
         <dl className="grid grid-cols-[9rem_1fr] gap-x-4 gap-y-1 text-base">
           {r.reading ? (
@@ -99,7 +102,7 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
       ) : can(me.actor, "defects", "triage") ? (
         <CloseReport id={r.id} />
       ) : (
-        <p className="text-muted-foreground">The workshop will look at this and close it when it&apos;s sorted.</p>
+        <p className="text-muted-foreground">The workshop will look at this.</p>
       )}
     </div>
   );

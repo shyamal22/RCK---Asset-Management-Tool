@@ -14,6 +14,7 @@ export function CloseReport({ id }: { id: string }) {
   const [pending, start] = useTransition();
   return (
     <form
+      aria-label="Close report"
       className="surface grid gap-4 p-4"
       onSubmit={(e) => {
         e.preventDefault();
@@ -24,7 +25,6 @@ export function CloseReport({ id }: { id: string }) {
         });
       }}
     >
-      <h2 className="text-xl font-bold">Close this report</h2>
       <Segmented
         label="Outcome"
         value={status}
@@ -36,8 +36,7 @@ export function CloseReport({ id }: { id: string }) {
       />
       <Field
         id="close-note"
-        label={status === "fixed" ? "What was done" : "Reason for dismissing"}
-        placeholder={status === "fixed" ? "e.g. Replaced hose, tested under load" : "e.g. Not a fault, already booked in"}
+        label={status === "fixed" ? "What was done" : "Reason"}
         value={note}
         onChange={(e) => setNote(e.target.value)}
       />

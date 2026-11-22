@@ -13,7 +13,9 @@ import { installPressController } from "@/lib/feedback/press";
 export function TapFeedback() {
   useEffect(() => {
     const ios = isIos();
-    const stopPress = installPressController((el) => {
+    // Android buzzes when a press completes (finger lifted on the control): never for a touch that
+    // turned into a scroll, and pointerup counts as a user gesture so even the first tap can vibrate.
+    const stopPress = installPressController(undefined, (el) => {
       if (!ios && !el.closest("[data-no-haptic]")) haptic("tap");
     });
     const stopTriggers = installHapticTriggers();

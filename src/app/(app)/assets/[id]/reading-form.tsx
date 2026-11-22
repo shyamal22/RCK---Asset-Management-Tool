@@ -22,7 +22,7 @@ export function ReadingForm({ assetId, unitName }: { assetId: string; unitName: 
           const r = await safeAction(recordReadingAction({ assetId, reading }));
           if (!r.ok) return setError(r.error);
           setReading("");
-          setMsg(r.lower ? "Saved, but it's lower than the last reading, so the current reading wasn't changed. The workshop will check it." : "Saved");
+          setMsg(r.lower ? "Saved. Lower than the last reading, so the workshop will check it." : "Saved");
         });
       }}
     >

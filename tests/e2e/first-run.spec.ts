@@ -10,7 +10,7 @@ test("new company: Director is guided through setup once, then it gets out of th
 
   // Company details and key contacts are required before moving on.
   await expect(page.getByRole("link", { name: "Next" })).toHaveAttribute("aria-disabled", "true");
-  await expect(page.getByText("Fill in the company details and key contacts, then Save")).toBeVisible();
+  await expect(page.getByText("Fill in every field, then Save")).toBeVisible();
   await page.getByLabel("Company name").fill("RCK Group");
   await page.getByLabel("NZBN").fill("942904");
   await page.getByLabel("Workshop manager", { exact: true }).fill("Wayne Wiremu");

@@ -22,18 +22,20 @@ export function Greeting() {
   );
 }
 
-/** Section card with a heading and an optional "See all" link. Region name = title (tests, screen readers). */
+/** Section card with a heading; with href the heading itself links to the full list. Region name = title (tests, screen readers). */
 export function Panel({ title, href, children, className }: { title: string; href?: string; children: React.ReactNode; className?: string }) {
   return (
     <section aria-label={title} className={cn("surface grid content-start gap-3 p-4 md:p-5", className)}>
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-lg font-bold">{title}</h2>
+      <h2 className="text-lg font-bold">
         {href ? (
-          <Link href={href} className="-my-2 -mr-2 inline-flex min-h-11 items-center gap-0.5 rounded-full px-2 text-sm font-semibold text-[var(--indigo)]">
-            See all <ChevronRight className="size-4" aria-hidden />
+          <Link href={href} aria-label={`See all ${title}`} className="press -my-2 inline-flex min-h-11 items-center gap-1 rounded-full">
+            {title}
+            <ChevronRight className="size-5 text-[var(--indigo)]" aria-hidden />
           </Link>
-        ) : null}
-      </div>
+        ) : (
+          title
+        )}
+      </h2>
       {children}
     </section>
   );
@@ -69,7 +71,7 @@ export function FleetTiles({ s }: { s: FleetSummary }) {
 }
 
 /** Horizontal strip of machines that need a look (photo cards, scroll sideways). */
-export function AttentionStrip({ rows, photos, empty = "Nothing needs attention." }: { rows: AttentionRow[]; photos: Record<string, string>; empty?: string }) {
+export function AttentionStrip({ rows, photos, empty = "All good" }: { rows: AttentionRow[]; photos: Record<string, string>; empty?: string }) {
   if (!rows.length)
     return (
       <p className="flex items-center gap-2 text-muted-foreground">
@@ -107,7 +109,7 @@ export function AttentionStrip({ rows, photos, empty = "Nothing needs attention.
 
 /** Crew / Supervisor: their machines as a sideways strip with reading + status. */
 export function MachineStrip({ items, photos }: { items: AssetRow[]; photos: Record<string, string> }) {
-  if (!items.length) return <p className="text-muted-foreground">No machines assigned to your crew yet.</p>;
+  if (!items.length) return <p className="text-muted-foreground">No machines yet</p>;
   return (
     <ul className="bay-rail -mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 md:-mx-5 md:px-5">
       {items.map((a) => (
@@ -176,7 +178,7 @@ export function ReadingAlerts({ rows }: { rows: ReadingAlert[] }) {
   if (!rows.length)
     return (
       <p className="flex items-center gap-2 text-muted-foreground">
-        <CircleCheck className="size-5 text-status-green" aria-hidden /> All readings look right.
+        <CircleCheck className="size-5 text-status-green" aria-hidden /> All good
       </p>
     );
   return (
@@ -192,7 +194,8 @@ export function ReadingAlerts({ rows }: { rows: ReadingAlert[] }) {
                 {r.code} <span className="font-normal">{r.name}</span>
               </span>
               <span className="truncate text-sm text-muted-foreground">
-                {formatReading(r.reading, r.unit)} is lower than before · {r.entered_by ?? "someone"} · {ago(r.read_at)}
+                {formatReading(r.reading, r.unit)} <span aria-hidden>↓</span>
+                <span className="sr-only">lower</span> · {ago(r.read_at)}
               </span>
             </span>
           </Link>

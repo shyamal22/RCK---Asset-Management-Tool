@@ -12,12 +12,12 @@ const OFFLINE_HTML = `<!doctype html><html lang="en-NZ"><head><meta charset="utf
     background:linear-gradient(150deg,#0b0b10 0%,#2a0a6e 55%,#6f00ff 115%);
     font-family:Calibri,Carlito,system-ui,-apple-system,sans-serif;-webkit-tap-highlight-color:transparent}
   .dot{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;background:#ff7a1a;margin-right:.4rem}
-  h1{font-size:1.75rem;margin:.75rem 0 .25rem} p{margin:0 0 1.5rem;opacity:.75;font-size:1.1rem}
+  h1{font-size:1.75rem;margin:.75rem 0 1.5rem}
   a{display:inline-block;padding:1rem 2.25rem;border-radius:999px;background:#fff;color:#0b0b10;font-weight:700;font-size:1.1rem;text-decoration:none}
   a:active{transform:scale(.97)}
 </style></head><body><main>
 <div><span class="dot"></span><b>KRE</b> Asset Management Tool</div>
-<h1>No signal</h1><p>It'll load again as soon as you're back online.</p>
+<h1>No signal</h1>
 <a href="">Try again</a>
 </main><script>
 /* Reload only once a request really gets through: "online" can fire before the connection works,

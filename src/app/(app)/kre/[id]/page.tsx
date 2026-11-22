@@ -48,7 +48,7 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
 
       {invited ? (
         <p role="status" className="rounded-xl border p-3">
-          {invited === "email" ? "Client created. The Director has been emailed an invite." : "Client created. Email isn't set up, so send the Director the link below."}
+          {invited === "email" ? "Invite emailed" : "Email not set up. Send the link below."}
         </p>
       ) : null}
 
@@ -59,7 +59,7 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
         ) : invite ? (
           <div className="grid gap-3">
             <p>
-              Invited {invite.name} ({invite.email}) on {formatDate(invite.created_at)}. They sign up with that email at:
+              Invited {invite.name} ({invite.email}) · {formatDate(invite.created_at)}
             </p>
             <p className="break-all rounded-xl border p-3 font-mono text-sm" data-testid="invite-url">
               {joinUrl}
@@ -109,7 +109,6 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
           </div>
         ) : (
           <div className="max-w-md">
-            <p className="mb-3 text-muted-foreground">You can&apos;t see this client&apos;s data. Ask for read-only access when they need help; it shows in their audit log.</p>
             <StartSupportForm companyId={client.id} />
           </div>
         )}

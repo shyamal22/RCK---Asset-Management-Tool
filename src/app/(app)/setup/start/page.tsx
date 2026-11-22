@@ -38,7 +38,7 @@ export default async function StartPage({ searchParams }: { searchParams: Promis
           <li
             key={s.key}
             aria-current={n === i ? "step" : undefined}
-            className={cn("h-1.5 flex-1 rounded-full", n <= i ? "bg-[var(--indigo)]" : "bg-muted")}
+            className={cn("h-1.5 flex-1 rounded-full", n <= i ? "bg-[var(--indigo)]" : "bg-[var(--input)]")}
           >
             <span className="sr-only">{s.label}</span>
           </li>
@@ -59,7 +59,7 @@ export default async function StartPage({ searchParams }: { searchParams: Promis
           </Button>
         </form>
       )}
-      {i === 0 && !company_ready ? <p className="text-base">Fill in the company details and key contacts, then Save</p> : null}
+      {i === 0 && !company_ready ? <p className="text-base">Fill in every field, then Save</p> : null}
       {i === 1 && !ready ? <p className="text-base">Add at least one yard and one crew</p> : null}
     </div>
   );

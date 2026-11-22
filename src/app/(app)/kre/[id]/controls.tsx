@@ -131,7 +131,7 @@ export function SuspendControls({ companyId, suspended }: { companyId: string; s
   if (suspended)
     return (
       <div className="grid gap-3">
-        <p>On hold: its people can&apos;t see anything until you reactivate it.</p>
+        <p>On hold</p>
         <Button size="lg" className="h-12" disabled={a.pending} onClick={() => a.run(() => setSuspendedAction({ companyId, suspended: false }))}>
           Reactivate
         </Button>

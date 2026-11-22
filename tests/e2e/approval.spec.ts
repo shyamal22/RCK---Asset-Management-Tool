@@ -24,7 +24,10 @@ test("Director approves a pending person, who then lands on their home screen", 
   await card.getByRole("radio", { name: "Crew" }).click();
   await card.getByLabel("Crew").selectOption({ label: "Green" });
   await card.getByRole("button", { name: "Approve" }).click();
-  await expect(page.getByText("No one waiting")).toBeVisible();
+  // Nobody left waiting: the waiting block goes and Hemi is in the People list.
+  await expect(page.getByRole("region", { name: "Hemi Walker" })).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "Waiting for approval" })).toHaveCount(0);
+  await expect(page.getByRole("list", { name: "People" }).getByRole("link", { name: /Hemi Walker/ })).toBeVisible();
 
   await newbie.goto("/");
   await expect(newbie.getByRole("heading", { name: /^Home,/ })).toBeVisible();

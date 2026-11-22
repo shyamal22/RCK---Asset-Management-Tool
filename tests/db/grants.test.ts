@@ -17,6 +17,11 @@ const EXPECTED: Record<string, string[]> = {
   crews: ["INSERT", "SELECT", "UPDATE"],
   meter_readings: ["SELECT"],
   owner_entities: ["INSERT", "SELECT", "UPDATE"],
+  // Pre-checks: written only via save_precheck_template / submit_precheck / dismiss_precheck_item
+  precheck_answers: ["SELECT"],
+  precheck_template_items: ["SELECT"],
+  precheck_templates: ["SELECT"],
+  prechecks: ["SELECT"],
   sites: ["INSERT", "SELECT", "UPDATE"],
   temp_access: ["INSERT", "SELECT", "UPDATE"],
   user_flags: ["INSERT", "SELECT", "UPDATE"],

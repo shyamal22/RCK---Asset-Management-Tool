@@ -16,17 +16,12 @@ export function LogoUpload({ url }: { url: string | null }) {
   const [msg, setMsg] = useState<string | null>(null);
   const [pending, start] = useTransition();
   return (
-    <section className="surface grid gap-3 p-4" aria-labelledby="logo-h">
-      <h2 id="logo-h" className="text-lg font-bold">
-        Logo
-      </h2>
+    <section className="surface grid gap-3 p-4" aria-label="Logo">
       <div className="flex min-h-20 items-center rounded-xl border border-dashed border-input bg-white px-4 py-3">
         {url ? (
           // eslint-disable-next-line @next/next/no-img-element -- signed URL
           <img src={url} alt="Company logo" className="max-h-16 w-auto max-w-full object-contain" />
-        ) : (
-          <span className="text-muted-foreground">No logo yet. It goes on report headers and PDFs.</span>
-        )}
+        ) : null}
       </div>
       <input
         ref={input}
@@ -54,7 +49,7 @@ export function LogoUpload({ url }: { url: string | null }) {
         <ImageUp aria-hidden />
         {pending ? "Uploading…" : url ? "Change logo" : "Upload logo"}
       </Button>
-      <p className="text-sm text-muted-foreground">PNG with a transparent background works best. Up to 2 MB.</p>
+      <p className="text-sm text-muted-foreground">PNG, up to 2 MB</p>
       <FormError message={error} />
       <StatusNote message={msg} />
     </section>

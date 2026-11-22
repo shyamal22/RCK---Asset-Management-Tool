@@ -17,7 +17,7 @@ const reduced = () => typeof window !== "undefined" && window.matchMedia("(prefe
  * card's angle → sin/cos → one CSS matrix() (orbit-math.ts), written straight to the DOM.
  * Release snaps the nearest machine to the front; its details show below.
  */
-export function Orbit({ items }: { items: ShowItem[] }) {
+export function Orbit({ items, typeChosen = false }: { items: ShowItem[]; typeChosen?: boolean }) {
   const n = items.length;
   const stage = useRef<HTMLDivElement>(null);
   const cards = useRef<(HTMLAnchorElement | null)[]>([]);
@@ -230,7 +230,7 @@ export function Orbit({ items }: { items: ShowItem[] }) {
       </div>
 
       <div className="showroom-detail mx-auto grid w-full max-w-md gap-3 text-center" aria-live="polite" key={a.id}>
-        <p className="text-sm tabular-nums text-muted-foreground">
+        <p className="sr-only">
           {focus + 1} of {n}
         </p>
         <h2 className="text-3xl leading-tight font-bold">
@@ -240,7 +240,7 @@ export function Orbit({ items }: { items: ShowItem[] }) {
           <StatusDot tone={STATUS_TONE[a.status]} label={STATUS_LABELS[a.status]} />
           {a.flag ? <FlagBadge {...a.flag} /> : null}
           <span className="font-bold tabular-nums">{formatReading(a.current_reading, a.tracking_unit)}</span>
-          <span className="text-muted-foreground">{[a.type_name, a.crew_name, a.site_name].filter(Boolean).join(" · ")}</span>
+          <span className="text-muted-foreground">{[typeChosen ? null : a.type_name, a.crew_name, a.site_name].filter(Boolean).join(" · ")}</span>
         </div>
         <Button asChild size="lg" className="mx-auto h-12 w-[min(100%,16rem)]">
           <Link href={`/assets/${a.id}`} aria-label="Open asset page">

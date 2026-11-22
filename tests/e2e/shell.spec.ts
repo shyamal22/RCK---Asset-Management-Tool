@@ -13,7 +13,7 @@ const HOMES = {
   supervisor: ["Needs attention", "Crew machines", "Open reports"],
   workshop: ["Damage reports", "Readings to check", "Needs attention"],
   office: ["Waiting for approval", "Damage reports"],
-  director: ["Fleet by type", "Latest damage reports", "Needs attention"],
+  director: ["Fleet by type", "Damage reports", "Needs attention"],
 } as const;
 
 for (const [type, sections] of Object.entries(HOMES)) {

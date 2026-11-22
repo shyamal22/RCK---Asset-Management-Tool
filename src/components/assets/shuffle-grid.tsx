@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { Shuffle, Truck } from "lucide-react";
+import { Truck } from "lucide-react";
 import { StatusDot } from "@/components/status-dot";
 import { STATUS_LABELS, STATUS_TONE, formatReading } from "@/lib/assets/labels";
 import { Toggle } from "@/components/ui/toggle";
@@ -12,8 +12,7 @@ import type { ShowItem } from "./showroom";
 const SORTS: { key: SortKey; label: string }[] = [
   { key: "problems", label: "Problems first" },
   { key: "code", label: "A–Z" },
-  { key: "reading", label: "Most hours / km" },
-  { key: "shuffle", label: "Shuffle" },
+  { key: "reading", label: "Most used" },
 ];
 
 /** Shuffle grid: a button click re-sorts the array; the grid simply renders the new order. */
@@ -34,7 +33,6 @@ export function ShuffleGrid({ items }: { items: ShowItem[] }) {
             }}
             className="h-11 rounded-full px-4 text-sm font-semibold data-[state=on]:border-[var(--onyx)] data-[state=on]:bg-[var(--onyx)] data-[state=on]:text-white"
           >
-            {s.key === "shuffle" ? <Shuffle aria-hidden /> : null}
             {s.label}
           </Toggle>
         ))}

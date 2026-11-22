@@ -51,15 +51,10 @@ export default async function EditAssetPage({ params, searchParams }: { params: 
         <h2 id="unit-h" className="text-xl font-bold">
           Tracked by {UNIT_LABELS[a.tracking_unit].name.toLowerCase()}
         </h2>
-        {can(me.actor, "asset_tracking_unit", "edit") ? (
-          <ChangeUnit assetId={a.id} unit={a.tracking_unit} />
-        ) : (
-          <p className="text-muted-foreground">Only a Director or the Workshop lead can change this.</p>
-        )}
+        {can(me.actor, "asset_tracking_unit", "edit") ? <ChangeUnit assetId={a.id} unit={a.tracking_unit} /> : null}
       </section>
       {can(me.actor, "assets", "delete") ? (
-        <section className="grid gap-3" aria-labelledby="archive-h">
-          <h2 id="archive-h" className="text-xl font-bold">Archive</h2>
+        <section className="grid gap-3 border-t border-border pt-6" aria-label="Archive">
           <ArchiveAsset assetId={a.id} code={a.code} />
         </section>
       ) : null}

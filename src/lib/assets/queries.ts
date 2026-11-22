@@ -30,6 +30,7 @@ export type AssetRow = {
   vin_serial: string | null;
   photo_path: string | null;
   notes: string | null;
+  last_precheck_at: string | null;
 };
 
 export type AssetFilters = { q?: string; type?: string; status?: string; site?: string; crew?: string };
@@ -38,7 +39,7 @@ const SELECT = sql`
   select a.id, a.code, a.name, a.asset_type_id as type_id, t.name as type_name, a.make, a.model, a.year,
          a.tracking_unit, a.current_reading, a.current_reading_at, a.status,
          a.site_id, s.name as site_name, a.crew_id, c.name as crew_name, a.owner_entity_id, o.name as owner_name,
-         a.rego, a.vin_serial, a.photo_path, a.notes
+         a.rego, a.vin_serial, a.photo_path, a.notes, a.last_precheck_at
   from public.assets a
   join public.asset_types t on t.id = a.asset_type_id
   left join public.sites s on s.id = a.site_id

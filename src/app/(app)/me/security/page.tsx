@@ -14,7 +14,7 @@ export default async function SecurityPage() {
   const shared = canShare ? await sharedDevice() : null;
   return (
     <div className="grid max-w-sm gap-6">
-      <h1 className="text-2xl font-bold">Unlock</h1>
+      <h1 className="text-2xl font-bold">PIN and Face ID</h1>
       <SecurityForms />
       {keys.length ? (
         <ul className="grid gap-2" aria-label="Passkeys">

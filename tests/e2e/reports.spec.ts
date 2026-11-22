@@ -34,10 +34,10 @@ test("Crew reports damage with photos; machine goes red; Workshop marks it fixed
   await expect(formError(page)).toHaveText("Is it still usable?");
   await page.getByRole("radio", { name: "Unusable" }).click();
   await expect(page.getByText("PAV-01 will be marked Unusable", { exact: false })).toBeVisible();
-  await page.getByLabel("Current hours (if you know)").fill("7012");
+  await page.getByLabel("Hours (optional)").fill("7012");
   await page.getByRole("button", { name: "Send report" }).click();
 
-  await expect(page.getByText("Report sent. The workshop can see it now.")).toBeVisible();
+  await expect(page.getByText("Report sent", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Screed heater not working" })).toBeVisible();
   await expect(page.getByRole("img", { name: "Damage photo 1" })).toBeVisible();
   await expect(page.getByText("The workshop will look at this")).toBeVisible();

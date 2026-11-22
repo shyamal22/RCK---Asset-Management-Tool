@@ -18,8 +18,7 @@ export function SharedTablet({ isShared }: { isShared: boolean }) {
       else setError(r.error);
     });
   return (
-    <section className="grid gap-3 border-t pt-6">
-      <h2 className="text-xl font-bold">Shared tablet</h2>
+    <section className="grid gap-3 border-t pt-6" aria-label="Shared tablet">
       {isShared ? (
         <Button variant="outline" size="lg" className="h-12" disabled={pending} onClick={() => save(false)}>
           Stop sharing this device

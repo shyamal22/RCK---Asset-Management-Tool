@@ -13,11 +13,17 @@ type Item = { href: string; label: string; icon: IconName };
 export function navItems(me: ActiveUser): Item[] {
   const items: Item[] = [{ href: "/", label: "Home", icon: "home" }];
   if (can(me.actor, "assets", "view")) items.push({ href: "/assets", label: "Assets", icon: "assets" });
+  if (can(me.actor, "prechecks", "view")) items.push({ href: "/prechecks", label: "Checks", icon: "checks" });
   if (can(me.actor, "defects", "view")) items.push({ href: "/reports", label: "Reports", icon: "reports" });
   if (me.isPlatformAdmin) items.push({ href: "/kre", label: "Clients", icon: "clients" });
   if (setupSections(me.actor).length) items.push({ href: "/setup", label: "Setup", icon: "setup" });
   items.push({ href: "/me", label: "Me", icon: "me" });
   return items;
+}
+
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  return ((parts[0]?.[0] ?? "") + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase() || "Me";
 }
 
 /** Phone tab header (Konsta/iOS large-title feel): just the company, one line, so the screen starts high. */
@@ -67,7 +73,7 @@ export function AppShell({
       aside={
         <>
           <Brand me={me} />
-          <nav aria-label="Main" className="grid gap-1">
+          <nav aria-label="Main" data-press-instant className="grid gap-1">
             {items.map((i) => (
               <NavLink key={i.href} {...i} variant="side" />
             ))}
@@ -78,7 +84,7 @@ export function AppShell({
     >
       <StatusBarBackdrop />
       <div className="flex min-h-dvh min-w-0 flex-col md:p-3 md:pl-0 md:group-data-[collapsed=true]/side:pl-3">
-        <PhoneHeader brand={<PhoneBrand me={me} />} companyName={me.companyName || "KRE Asset Management"} done={shared ? <DoneButton /> : null} hasSetup={hasSetup} />
+        <PhoneHeader brand={<PhoneBrand me={me} />} initials={initials(me.name)} companyName={me.companyName || "KRE Asset Management"} done={shared ? <DoneButton /> : null} hasSetup={hasSetup} />
         <ScreenTracker />
         <main className="min-w-0 flex-1 overflow-x-clip rounded-t-[2rem] bg-[var(--paper)] px-4 pt-6 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:rounded-[2rem] md:px-10 md:pt-10 md:pb-10 md:group-data-[collapsed=true]/side:pt-16">
           <div className="-mt-3 mb-3 hidden md:block md:empty:hidden">
@@ -88,9 +94,10 @@ export function AppShell({
         </main>
         <nav
           aria-label="Main"
-          className="fixed inset-x-0 bottom-0 z-50 flex border-t border-border bg-background px-[max(env(safe-area-inset-left),env(safe-area-inset-right))] pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_30px_-20px_rgba(11,11,16,.35)] md:hidden"
+          data-press-instant
+          className="nav-pill fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+0.5rem)] z-50 flex h-[4.25rem] rounded-full px-1.5 md:hidden"
         >
-          {items.map((i) => (
+          {items.filter((i) => i.href !== "/me").map((i) => (
             <NavLink key={i.href} {...i} variant="bottom" />
           ))}
         </nav>

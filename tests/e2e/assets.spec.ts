@@ -77,7 +77,8 @@ test("Workshop adds a roller, records readings, edits it and adds a photo", asyn
 
   // Not a lead: can't change Hours ↔ Km, can't archive.
   await page.getByRole("link", { name: "Edit asset" }).click();
-  await expect(page.getByText("Only a Director or the Workshop lead can change this.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Tracked by hours" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Change to/ })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Archive asset" })).toHaveCount(0);
 });
 
@@ -123,18 +124,18 @@ test("search by name or code and filter; Crew only sees their crew's machines", 
   await expect(bays.getByRole("link", { name: "Paver, 1" })).toHaveAttribute("aria-current", "true");
   await expect(page.getByText("1 asset", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "PAV-01 Big paver" })).toBeVisible();
-  await expect(page.getByText("1 of 1")).toBeVisible();
+  await expect(page.getByRole("link", { name: "PAV-01 Big paver" })).toHaveAttribute("aria-current", "true");
   // The glow behind the front machine is its status colour (Available = green).
   await expect(page.getByRole("group", { name: /Machines, drag to spin/ })).toHaveAttribute("data-backlight", "green");
   // Orbit wheel: arrow keys bring the next machine to the front.
   await page.goto("/assets?type=all");
-  await expect(page.getByText("1 of 2")).toBeVisible();
+  await expect(page.getByRole("link", { name: "PAV-01 Big paver" })).toHaveAttribute("aria-current", "true");
   await expect(page.getByRole("heading", { name: "PAV-01 Big paver" })).toBeVisible();
   await page.getByRole("group", { name: /Machines, drag to spin/ }).focus();
   await page.keyboard.press("ArrowRight");
   await expect(page.getByRole("heading", { name: "TRK-03 Tipper" })).toBeVisible();
   await expect(page.getByRole("group", { name: /Machines, drag to spin/ })).toHaveAttribute("data-backlight", "yellow"); // in workshop
-  await expect(page.getByText("2 of 2")).toBeVisible();
+  await expect(page.getByRole("link", { name: "TRK-03 Tipper" })).toHaveAttribute("aria-current", "true");
   await page.getByRole("button", { name: "Next machine" }).click();
   await expect(page.getByRole("heading", { name: "PAV-01 Big paver" })).toBeVisible();
 
@@ -176,7 +177,7 @@ test("Director changes a truck to kilometres and archives an asset", async ({ pa
   await page.getByLabel("Reason for archiving (sold, scrapped…)").fill("Sold");
   page.once("dialog", (dlg) => dlg.accept());
   await page.getByRole("button", { name: "Archive asset" }).click();
-  await expect(page.getByText("Asset archived. Its history is kept.")).toBeVisible();
+  await expect(page.getByText("Asset archived", { exact: true })).toBeVisible();
   await page.goto("/assets");
   await expect(page.getByText("No assets yet.")).toBeVisible();
 });
