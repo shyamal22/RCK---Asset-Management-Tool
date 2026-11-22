@@ -221,3 +221,26 @@ h1 { letter-spacing: -0.01em; }
   .showroom { scroll-behavior: auto; }
   .showroom-card, .showroom-detail { transition: none; animation: none; }
 }
+
+/* Orbit wheel: cards are positioned by a matrix() written every frame (orbit.tsx) */
+.orbit-stage { --card-w: 11.5rem; --card-h: calc(var(--card-w) * 4 / 3); cursor: grab; perspective: none; }
+.orbit-stage:active { cursor: grabbing; }
+@media (min-width: 768px) { .orbit-stage { --card-w: 14rem; } }
+.orbit-card { will-change: transform, opacity; transform-origin: center; }
+.orbit-card[aria-current="true"] { box-shadow: 0 26px 50px -22px color-mix(in srgb, var(--indigo) 75%, transparent); }
+.orbit-floor {
+  position: absolute; left: 12%; right: 12%; bottom: 1.25rem; height: 3.5rem; border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--indigo) 22%, transparent), transparent);
+}
+
+/* Curved type rail: hover spotlights one, the rest dim; selected stays lit */
+.rail-item { transform: translate(-50%, -32px) scale(1); transition: transform .22s cubic-bezier(.2,.8,.2,1), opacity .22s, filter .22s; z-index: 1; }
+.rail-item[aria-current="true"] { transform: translate(-50%, -32px) scale(1.14); z-index: 2; }
+.rail-item[aria-current="true"] .rail-photo { border-color: var(--indigo); box-shadow: 0 0 0 4px color-mix(in srgb, var(--tangerine) 85%, transparent), 0 14px 26px -12px var(--indigo); }
+@media (hover: hover) {
+  .type-rail:has(.rail-item:hover) .rail-item:not(:hover) { opacity: .38; filter: saturate(.2); }
+  .rail-item:hover { transform: translate(-50%, -32px) scale(1.28); z-index: 3; }
+}
+.rail-item:focus-visible { transform: translate(-50%, -32px) scale(1.28); z-index: 3; outline: none; }
+.rail-item:focus-visible .rail-photo { box-shadow: 0 0 0 4px var(--tangerine); }
+@media (prefers-reduced-motion: reduce) { .rail-item { transition: none; } }

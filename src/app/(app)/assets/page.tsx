@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { SlidersHorizontal, Truck } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import { requirePermission } from "@/lib/auth/guard";
 import { can } from "@/lib/permissions/check";
 import { cn } from "@/lib/utils";
 import { ASSET_STATUSES, STATUS_LABELS } from "@/lib/assets/labels";
 import { flagsFor } from "@/lib/breakdowns/queries";
 import { assetOptions, listAssets, photoUrls, runAs, typeBays, type AssetFilters } from "@/lib/assets/queries";
-import { AssetCard } from "@/components/assets/asset-card";
-import { Showroom } from "@/components/assets/showroom";
+import { Orbit } from "@/components/assets/orbit";
+import { ShuffleGrid } from "@/components/assets/shuffle-grid";
+import { TypeRail } from "@/components/assets/type-rail";
 import { BayRail } from "@/components/assets/bay-rail";
 import { Button } from "@/components/ui/button";
 
@@ -33,6 +34,7 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
   }));
   const flags = await runAs(me, (tx) => flagsFor(tx, list.map((a) => a.id)));
   const photos = await photoUrls([...list.map((a) => a.photo_path), ...bays.map((b) => b.photo_path)]);
+  const items = list.map((a) => ({ ...a, photo: a.photo_path ? photos[a.photo_path] : undefined, flag: flags[a.id] }));
   const filtered = !!(f.q || f.type || f.status || f.site || f.crew);
   const moreFilters = !!(f.site || f.crew);
   const total = bays.reduce((n, b) => n + Number(b.n), 0);
@@ -95,20 +97,20 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
         </details>
       </form>
 
-      {/* Type bays: pick a kind of machine */}
-      <BayRail label="Asset types" className="bay-rail -mx-5 flex snap-x gap-3 overflow-x-auto px-5 pb-1 md:-mx-10 md:px-10">
-        <TypeBay label="All" n={total} href={href(f, { type: "" })} active={!f.type} photo={null} />
-        {bays.map((b) => (
-          <TypeBay
-            key={b.id}
-            label={b.name}
-            n={Number(b.n)}
-            href={href(f, { type: b.id })}
-            active={f.type === b.id}
-            photo={b.photo_path ? photos[b.photo_path] : null}
-          />
-        ))}
-      </BayRail>
+      {/* Curved rail of machine types */}
+      <TypeRail
+        items={[
+          { key: "all", label: "All", n: total, href: href(f, { type: "" }), active: !f.type, photo: null },
+          ...bays.map((b) => ({
+            key: b.id,
+            label: b.name,
+            n: Number(b.n),
+            href: href(f, { type: b.id }),
+            active: f.type === b.id,
+            photo: b.photo_path ? photos[b.photo_path] ?? null : null,
+          })),
+        ]}
+      />
 
       {/* Status chips */}
       <BayRail label="Quick filters" className="bay-rail -mx-5 flex gap-2 overflow-x-auto px-5 md:-mx-10 md:px-10">
@@ -143,10 +145,10 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
         </p>
         <div className="flex rounded-full border border-input bg-muted p-1 text-sm font-semibold">
           <Link href={href(f, { view: "" })} aria-current={!listView ? "page" : undefined} className={cn("rounded-full px-4 py-1.5", !listView && "bg-primary text-primary-foreground")}>
-            Showroom
+            Wheel
           </Link>
           <Link href={href(f, { view: "list" })} aria-current={listView ? "page" : undefined} className={cn("rounded-full px-4 py-1.5", listView && "bg-primary text-primary-foreground")}>
-            List
+            Grid
           </Link>
         </div>
       </div>
@@ -154,44 +156,11 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
       {list.length === 0 ? (
         <p className="py-10 text-center text-muted-foreground">{filtered ? "Nothing matches." : "No assets yet."}</p>
       ) : listView ? (
-        <ul className="grid gap-2">
-          {list.map((a) => (
-            <li key={a.id}>
-              <AssetCard a={a} photo={a.photo_path ? photos[a.photo_path] : undefined} flag={flags[a.id]} />
-            </li>
-          ))}
-        </ul>
+        <ShuffleGrid key={`${f.type}-${f.status}-${f.q}-${f.site}-${f.crew}`} items={items} />
       ) : (
-        <Showroom key={`${f.type}-${f.status}-${f.q}-${f.site}-${f.crew}`} items={list.map((a) => ({ ...a, photo: a.photo_path ? photos[a.photo_path] : undefined, flag: flags[a.id] }))} />
+        <Orbit key={`${f.type}-${f.status}-${f.q}-${f.site}-${f.crew}`} items={items} />
       )}
     </div>
   );
 }
 
-function TypeBay({ label, n, href, active, photo }: { label: string; n: number; href: string; active: boolean; photo: string | null }) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "true" : undefined}
-      aria-label={`${label}, ${n}`}
-      className={cn(
-        "group relative flex h-36 w-28 shrink-0 snap-start flex-col justify-end overflow-hidden rounded-[1.5rem] border-2 bg-muted transition-transform",
-        active ? "border-[var(--indigo)] shadow-[0_14px_28px_-14px_var(--indigo)]" : "border-transparent hover:-translate-y-0.5",
-      )}
-    >
-      {photo ? (
-        // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL
-        <img src={photo} alt="" className="absolute inset-0 size-full object-cover" />
-      ) : (
-        <span className="absolute inset-0 flex items-center justify-center bg-[var(--brand-gradient)]" style={{ background: "var(--brand-gradient)" }}>
-          <Truck className="size-9 text-white/80" aria-hidden />
-        </span>
-      )}
-      <span className="relative bg-gradient-to-t from-black/75 to-transparent px-3 pt-8 pb-2.5 text-left text-white">
-        <span className="block text-sm leading-tight font-bold">{label}</span>
-        <span className="text-xs opacity-80">{n}</span>
-      </span>
-      {active ? <span className="absolute top-2.5 right-2.5 size-2.5 rounded-full bg-[var(--tangerine)] ring-2 ring-white" aria-hidden /> : null}
-    </Link>
-  );
-}

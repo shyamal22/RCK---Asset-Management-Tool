@@ -123,9 +123,25 @@ test("search by name or code and filter; Crew only sees their crew's machines", 
   // Status chips
   await page.getByRole("navigation", { name: "Quick filters" }).getByRole("link", { name: "In workshop" }).click();
   await expect(page.getByText("Nothing matches.")).toBeVisible();
-  // List view still there for desk work
+  // Orbit wheel: arrow keys bring the next machine to the front.
+  await page.goto("/assets");
+  await expect(page.getByText("1 of 2")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "PAV-01 Big paver" })).toBeVisible();
+  await page.getByRole("group", { name: /Machines, drag to spin/ }).focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("heading", { name: "TRK-03 Tipper" })).toBeVisible();
+  await expect(page.getByText("2 of 2")).toBeVisible();
+  await page.getByRole("button", { name: "Next machine" }).click();
+  await expect(page.getByRole("heading", { name: "PAV-01 Big paver" })).toBeVisible();
+
+  // Shuffle grid: buttons re-sort instantly.
   await page.goto("/assets?view=list");
-  await expect(page.getByRole("link", { name: "PAV-01 Big paver" })).toBeVisible();
+  const cards = page.getByRole("region", { name: "Machines" }).getByRole("link");
+  await expect(cards.first()).toHaveAccessibleName("PAV-01 Big paver");
+  await page.getByRole("button", { name: "Problems first" }).click();
+  await expect(cards.first()).toHaveAccessibleName("TRK-03 Tipper");
+  await page.getByRole("button", { name: "A–Z" }).click();
+  await expect(cards.first()).toHaveAccessibleName("PAV-01 Big paver");
 
   const crew = await makeE2EUser(co.id, "crew", { crewId: co.crewId });
   const p = await (await browser.newContext()).newPage();
