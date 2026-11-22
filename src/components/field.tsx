@@ -35,7 +35,7 @@ export function FormError({ message }: { message?: string | null }) {
 export function Screen({ title, subtitle, wide, children }: { title: string; subtitle?: string; wide?: boolean; children: React.ReactNode }) {
   return (
     <>
-      <header className={cn("auth-hero auth-rise flex flex-col gap-3 px-7 pt-[max(1.5rem,env(safe-area-inset-top))] pb-10 md:w-full md:px-2", wide ? "md:max-w-3xl" : "md:max-w-md")}>
+      <header className={cn("auth-hero auth-rise flex flex-col gap-3 px-7 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-10 md:w-full md:px-2", wide ? "md:max-w-3xl" : "md:max-w-md")}>
         <p className="flex items-center gap-2 text-base">
           <span className="size-2.5 rounded-full bg-[var(--tangerine)]" aria-hidden />
           <span className="font-bold tracking-wide">KRE</span>

@@ -42,6 +42,7 @@ export function TypeRail({ items }: { items: RailItem[] }) {
           <Link
             key={it.key}
             href={it.href}
+            scroll={false}
             aria-current={it.active ? "true" : undefined}
             aria-label={`${it.label}, ${it.n}`}
             className="rail-item absolute flex w-[5.5rem] flex-col items-center gap-1.5 text-center"
@@ -50,7 +51,7 @@ export function TypeRail({ items }: { items: RailItem[] }) {
             <span className="rail-photo relative block size-16 overflow-hidden rounded-full border-[3px] border-white bg-muted shadow-[0_10px_22px_-12px_var(--indigo)]">
               {it.photo ? (
                 // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL
-                <img src={it.photo} alt="" className="size-full object-cover" />
+                <img src={it.photo} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
               ) : (
                 <span className="flex size-full items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
                   <Truck className="size-6 text-white/85" aria-hidden />

@@ -90,3 +90,9 @@ Each has a default that will be used unless you say otherwise.
 Crew: Report damage button, my machines strip, my reports. Supervisor: needs attention, crew machines, open reports.
 Workshop: fleet tiles, damage reports, readings to check, needs attention. Office: fleet tiles, approvals, reports.
 Director: headline numbers, fleet by type (stacked status bars + table for screen readers), latest reports, needs attention. E2E home checks now use "Kia ora, <first name>" and the new section names.
+
+## 22/11/2026 — Phone feel, iPhone home-screen fit, switches, tap feedback, collapsible menu
+iPhone: viewport-fit=cover, web app manifest + KRE icons, Apple web-app tags, onyx status-bar strip, safe-area padding, no page bounce/zoom-on-input.
+Feedback: light vibration on taps (Android; iOS 18 system tick), stronger buzz on errors, "Saved" pill above the bottom nav, tangerine loading bar, pressed look on cards, bottom-nav tab pulses while loading.
+Switches for on/off settings (Workshop lead, sign-up link). Wheel: flick momentum, no re-render mid-spin, quick arrow taps add up. Filters no longer jump to top; photo links cached (no re-download flashing).
+Desktop side menu hides (button or Ctrl+B, remembered). Home: date only on top; tiles All working / Damaged / Unusable with status-colour wash, counted with no overlap.

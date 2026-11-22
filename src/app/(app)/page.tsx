@@ -41,7 +41,7 @@ export default async function Home() {
   ]);
   const d: HomeData = { ...data, name: me.name, photos };
   return (
-    <div className="max-w-5xl">
+    <div>
       {t === "crew" ? <CrewHome d={d} /> : null}
       {t === "supervisor" ? <SupervisorHome d={d} /> : null}
       {t === "workshop" ? <WorkshopHome d={d} /> : null}

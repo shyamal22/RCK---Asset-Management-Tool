@@ -11,12 +11,17 @@ test("Director turns the sign-up link off/on and regenerates it", async ({ page,
   expect(oldUrl).toContain(`/join/${co.code}`);
 
   const visitor = await browser.newPage();
-  await page.getByRole("button", { name: "Turn link off" }).click();
-  await expect(page.getByRole("button", { name: "Turn link on" })).toBeVisible();
+  const linkSwitch = page.getByRole("switch", { name: "Sign-up link" });
+  await expect(linkSwitch).toBeChecked();
+  await linkSwitch.click();
+  await expect(linkSwitch).not.toBeChecked();
+  await expect(linkSwitch).toBeEnabled(); // saved
   await visitor.goto(`/join/${co.code}`);
   await expect(visitor.getByRole("heading", { name: "Link not active" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Turn link on" }).click();
+  await linkSwitch.click();
+  await expect(linkSwitch).toBeChecked();
+  await expect(linkSwitch).toBeEnabled();
   page.once("dialog", (d) => d.accept());
   await page.getByRole("button", { name: "New link" }).click();
   await expect(page.getByTestId("signup-url")).not.toHaveText(oldUrl);

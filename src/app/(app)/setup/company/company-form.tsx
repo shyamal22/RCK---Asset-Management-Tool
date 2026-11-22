@@ -1,4 +1,5 @@
 "use client";
+import { StatusNote } from "@/components/feedback/status-note";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, FormError } from "@/components/field";
@@ -49,7 +50,7 @@ export function CompanyForm({ initial, onSaved, submitLabel = "Save" }: { initia
       <Field id="labour-rate" label="Internal labour rate ($/hr ex GST)" inputMode="decimal" value={v.labourRate} onChange={set("labourRate")} />
       <Field id="approval-limit" label="Director approval limit ($ ex GST)" inputMode="decimal" value={v.approvalLimit} onChange={set("approvalLimit")} />
       <FormError message={error} />
-      {msg ? <p role="status">{msg}</p> : null}
+      <StatusNote message={msg} />
       <Button type="submit" size="lg" className="h-12" disabled={pending}>
         {submitLabel}
       </Button>

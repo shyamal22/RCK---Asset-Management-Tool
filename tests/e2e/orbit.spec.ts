@@ -20,7 +20,19 @@ test("dragging the wheel brings the next machine to the front; tapping a side ca
   await page.mouse.move(box.x + box.width * 0.7, y);
   await page.mouse.down();
   await page.mouse.move(box.x + box.width * 0.35, y, { steps: 10 });
+  await page.waitForTimeout(150); // finger rests before lifting: no flick, lands on the next one
   await page.mouse.up();
+  await expect(page.getByRole("heading", { name: "ROL-02 Roller 2" })).toBeVisible();
+
+  // A quick flick carries on past the next machine.
+  await page.mouse.move(box.x + box.width * 0.6, y);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * 0.35, y, { steps: 3 });
+  await page.mouse.up();
+  await expect(page.getByRole("heading", { name: /ROL-0[45]/ })).toBeVisible();
+  // Back to the start with the arrow button for the rest of the story.
+  for (let i = 0; i < 3; i++) await page.getByRole("button", { name: "Previous machine" }).click();
+  await page.getByRole("button", { name: "Next machine" }).click();
   await expect(page.getByRole("heading", { name: "ROL-02 Roller 2" })).toBeVisible();
   // A drag never opens a machine.
   await expect(page).toHaveURL(/\/assets$/);

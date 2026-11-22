@@ -14,6 +14,14 @@ export async function fleetSummary(tx: Tx) {
     flag: "red" | "yellow";
     n: number;
   }[];
+  // Headline tiles split the fleet with no overlap: a machine is in at most one of them.
+  const [tiles] = (await tx.execute(sql`
+    with a as (select id, status from public.assets where deleted_at is null),
+         f as (select asset_id, flag from public.asset_flags((select coalesce(array_agg(id), '{}') from a)))
+    select count(*) filter (where a.status in ('available', 'in_use') and f.flag is null)::int as all_working,
+           count(*) filter (where f.flag = 'yellow' and a.status <> 'unusable')::int as damaged,
+           count(*) filter (where a.status = 'unusable' or f.flag = 'red')::int as unusable_any
+    from a left join f on f.asset_id = a.id`)) as unknown as { all_working: number; damaged: number; unusable_any: number }[];
   const by = Object.fromEntries(statuses.map((r) => [r.status, Number(r.n)])) as Partial<Record<AssetStatus, number>>;
   const total = statuses.reduce((n, r) => n + Number(r.n), 0);
   return {
@@ -24,6 +32,12 @@ export async function fleetSummary(tx: Tx) {
     parked: (by.parked ?? 0) + (by.disposed ?? 0),
     red: Number(flags.find((f) => f.flag === "red")?.n ?? 0),
     yellow: Number(flags.find((f) => f.flag === "yellow")?.n ?? 0),
+    /** Working and no open damage report. */
+    allWorking: Number(tiles?.all_working ?? 0),
+    /** Open damage report, machine still usable (yellow flag). */
+    damaged: Number(tiles?.damaged ?? 0),
+    /** Can't be used: status unusable or a red report. */
+    unusableAny: Number(tiles?.unusable_any ?? 0),
   };
 }
 export type FleetSummary = Awaited<ReturnType<typeof fleetSummary>>;

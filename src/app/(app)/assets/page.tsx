@@ -119,9 +119,10 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
           <Link
             key={s || "all"}
             href={href(f, { status: s })}
+            scroll={false}
             aria-current={(f.status ?? "") === s ? "true" : undefined}
             className={cn(
-              "shrink-0 rounded-full border px-4 py-2 text-sm font-semibold whitespace-nowrap",
+              "press inline-flex min-h-11 shrink-0 items-center rounded-full border px-4 text-sm font-semibold whitespace-nowrap transition-colors",
               (f.status ?? "") === s ? "border-[var(--onyx)] bg-[var(--onyx)] text-white" : "border-input bg-background",
             )}
           >

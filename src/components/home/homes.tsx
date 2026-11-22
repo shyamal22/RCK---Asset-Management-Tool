@@ -50,7 +50,7 @@ export function CrewHome({ d }: { d: HomeData }) {
   const mine = d.reports;
   return (
     <div className="grid gap-5">
-      <Greeting name={d.name} line={mine.length ? `You have ${mine.length} open ${mine.length === 1 ? "report" : "reports"}.` : undefined} />
+      <Greeting />
       <ReportDamage />
       <Panel title="My machines" href="/assets">
         <MachineStrip items={d.machines} photos={d.photos} />
@@ -65,7 +65,7 @@ export function CrewHome({ d }: { d: HomeData }) {
 export function SupervisorHome({ d }: { d: HomeData }) {
   return (
     <div className="grid gap-5">
-      <Greeting name={d.name} />
+      <Greeting />
       <ReportDamage />
       <Panel title="Needs attention" href="/assets?view=list">
         <AttentionStrip rows={d.attention} photos={d.photos} empty="All your crew's machines are good to go." />
@@ -83,7 +83,7 @@ export function SupervisorHome({ d }: { d: HomeData }) {
 export function WorkshopHome({ d }: { d: HomeData }) {
   return (
     <div className="grid gap-5">
-      <Greeting name={d.name} line={d.fleet.red ? `${d.fleet.red} machine${d.fleet.red === 1 ? " is" : "s are"} flagged red.` : undefined} />
+      <Greeting />
       <FleetTiles s={d.fleet} />
       <div className="grid gap-5 lg:grid-cols-2">
         <Panel title="Damage reports" href="/reports">
@@ -103,7 +103,7 @@ export function WorkshopHome({ d }: { d: HomeData }) {
 export function OfficeHome({ d }: { d: HomeData }) {
   return (
     <div className="grid gap-5">
-      <Greeting name={d.name} />
+      <Greeting />
       <FleetTiles s={d.fleet} />
       <div className="grid gap-5 lg:grid-cols-2">
         <Pending n={d.pending} />
@@ -118,7 +118,7 @@ export function OfficeHome({ d }: { d: HomeData }) {
 export function DirectorHome({ d }: { d: HomeData }) {
   return (
     <div className="grid gap-5">
-      <Greeting name={d.name} line={`${d.fleet.total} machines · ${d.fleet.working} working`} />
+      <Greeting />
       {d.pending ? <Pending n={d.pending} /> : null}
       <FleetTiles s={d.fleet} />
       <div className="grid gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">

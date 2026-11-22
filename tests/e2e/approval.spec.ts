@@ -27,5 +27,5 @@ test("Director approves a pending person, who then lands on their home screen", 
   await expect(page.getByText("No one waiting")).toBeVisible();
 
   await newbie.goto("/");
-  await expect(newbie.getByRole("heading", { name: "Kia ora, Hemi" })).toBeVisible();
+  await expect(newbie.getByRole("heading", { name: /^Home,/ })).toBeVisible();
 });

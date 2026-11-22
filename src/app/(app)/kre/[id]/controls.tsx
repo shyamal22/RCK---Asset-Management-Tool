@@ -1,4 +1,5 @@
 "use client";
+import { StatusNote } from "@/components/feedback/status-note";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -22,7 +23,7 @@ function useAction() {
   return { error, msg, pending, run };
 }
 
-const Status = ({ msg }: { msg: string | null }) => (msg ? <p role="status">{msg}</p> : null);
+const Status = ({ msg }: { msg: string | null }) => <StatusNote message={msg} />;
 
 export function ResendInviteButton({ companyId }: { companyId: string }) {
   const a = useAction();

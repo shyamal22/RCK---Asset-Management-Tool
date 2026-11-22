@@ -1,21 +1,25 @@
 "use client";
-import { useTransition } from "react";
+import { useOptimistic, useTransition } from "react";
+import { SwitchRow } from "@/components/switch-row";
 import { Button } from "@/components/ui/button";
 import { setSignupLinkAction } from "./actions";
 
 export function SignupLinkControls({ enabled }: { enabled: boolean }) {
   const [pending, start] = useTransition();
+  const [on, setOn] = useOptimistic(enabled);
   return (
     <div className="grid gap-3">
-      <Button
-        size="lg"
-        className="h-12"
-        variant={enabled ? "outline" : "default"}
+      <SwitchRow
+        label="Sign-up link"
+        checked={on}
         disabled={pending}
-        onClick={() => start(() => setSignupLinkAction({ enabled: !enabled }))}
-      >
-        {enabled ? "Turn link off" : "Turn link on"}
-      </Button>
+        onCheckedChange={(v) =>
+          start(async () => {
+            setOn(v);
+            await setSignupLinkAction({ enabled: v });
+          })
+        }
+      />
       <Button
         size="lg"
         variant="outline"

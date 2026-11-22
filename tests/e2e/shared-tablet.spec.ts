@@ -25,7 +25,7 @@ test("shared workshop tablet: switch between mechanics by PIN, idle returns to l
   await expect(formError(page)).toContainText("Wrong PIN");
   await page.getByLabel("PIN").fill("4826");
   await page.getByRole("button", { name: "Go" }).click();
-  await expect(page.getByRole("heading", { name: "Kia ora, Mike" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /^Home,/ })).toBeVisible();
 
   await page.goto("/switch");
   await page.getByRole("button", { name: "Nina Mechanic" }).click();

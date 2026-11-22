@@ -1,4 +1,5 @@
 "use client";
+import { StatusNote } from "@/components/feedback/status-note";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, FormError } from "@/components/field";
@@ -28,7 +29,7 @@ export function ChangeUnit({ assetId, unit }: { assetId: string; unit: TrackingU
       <Field id="unit-reading" label={`Current ${UNIT_LABELS[other].name.toLowerCase()}`} inputMode="decimal" value={reading} onChange={(e) => setReading(e.target.value)} />
       <Field id="unit-reason" label="Reason for the change" value={reason} onChange={(e) => setReason(e.target.value)} />
       <FormError message={error} />
-      {msg ? <p role="status">{msg}</p> : null}
+      <StatusNote message={msg} />
       <Button type="submit" variant="outline" size="lg" className="h-12" disabled={pending}>
         Change to {UNIT_LABELS[other].name.toLowerCase()}
       </Button>

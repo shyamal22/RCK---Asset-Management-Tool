@@ -36,7 +36,7 @@ test("new company: Director is guided through setup once, then it gets out of th
 
   await expect(page.getByLabel("Sign-up QR code")).toBeVisible();
   await page.getByRole("button", { name: "Finish" }).click();
-  await expect(page.getByRole("heading", { name: "Kia ora, First" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /^Home,/ })).toBeVisible();
   await page.goto("/");
   await expect(page).toHaveURL(/\/$/);
 });

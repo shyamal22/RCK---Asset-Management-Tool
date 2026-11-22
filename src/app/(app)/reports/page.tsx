@@ -42,10 +42,10 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
             const thumb = photos[r.photo_paths[0] ?? r.asset_photo ?? ""];
             return (
               <li key={r.id}>
-                <Link href={`/reports/${r.id}`} className="surface flex min-h-20 items-center gap-3 p-2 pr-4 hover:bg-accent" aria-label={`${r.code} ${r.title}`}>
+                <Link href={`/reports/${r.id}`} className="press surface flex min-h-20 items-center gap-3 p-2 pr-4 hover:bg-accent" aria-label={`${r.code} ${r.title}`}>
                   <div className={cn("size-16 shrink-0 overflow-hidden rounded-xl border-l-4 bg-muted", r.severity === "unusable" ? "border-status-red" : "border-status-yellow")}>
                     {/* eslint-disable-next-line @next/next/no-img-element -- signed URL */}
-                    {thumb ? <img src={thumb} alt="" className="size-full object-cover" /> : null}
+                    {thumb ? <img src={thumb} alt="" loading="lazy" decoding="async" className="size-full object-cover" /> : null}
                   </div>
                   <div className="grid min-w-0 flex-1 gap-0.5">
                     <span className="truncate text-lg font-bold">

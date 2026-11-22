@@ -1,4 +1,5 @@
 "use client";
+import { StatusNote } from "@/components/feedback/status-note";
 import { useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/field";
@@ -39,7 +40,7 @@ export function PhotoUpload({ assetId, hasPhoto }: { assetId: string; hasPhoto: 
         {pending ? "Uploading…" : hasPhoto ? "Change photo" : "Add photo"}
       </Button>
       <FormError message={error} />
-      {msg ? <p role="status">{msg}</p> : null}
+      <StatusNote message={msg} />
     </div>
   );
 }

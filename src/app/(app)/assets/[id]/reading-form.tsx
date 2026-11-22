@@ -1,4 +1,5 @@
 "use client";
+import { StatusNote } from "@/components/feedback/status-note";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, FormError } from "@/components/field";
@@ -26,7 +27,7 @@ export function ReadingForm({ assetId, unitName }: { assetId: string; unitName: 
     >
       <Field id="new-reading" label={`New reading (${unitName.toLowerCase()})`} inputMode="decimal" value={reading} onChange={(e) => setReading(e.target.value)} />
       <FormError message={error} />
-      {msg ? <p role="status">{msg}</p> : null}
+      <StatusNote message={msg} />
       <Button type="submit" size="lg" className="h-12" disabled={pending}>
         Save reading
       </Button>

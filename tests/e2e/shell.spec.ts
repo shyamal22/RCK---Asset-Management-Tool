@@ -92,3 +92,30 @@ test("Me page shows type and signs out", async ({ page }) => {
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL(/\/sign-in$/);
 });
+
+test("desktop side menu hides so the screen gets the full width, and stays hidden on the next page", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "phones use the bottom nav");
+  const co = await makeE2ECompany();
+  const u = await makeE2EUser(co.id, "director");
+  await signIn(page, u.email);
+  const panel = page.locator("main");
+  const before = (await panel.boundingBox())!.width;
+  await page.getByRole("button", { name: "Hide menu" }).click();
+  await expect(page.getByRole("button", { name: "Show menu" })).toBeVisible();
+  await expect.poll(async () => (await panel.boundingBox())!.width).toBeGreaterThan(before + 150);
+  await expect(mainNav(page)).toHaveCount(0);
+
+  await page.goto("/assets");
+  await expect(page.getByRole("button", { name: "Show menu" })).toBeVisible();
+  await page.getByRole("button", { name: "Show menu" }).click();
+  await expect(mainNav(page).getByRole("link", { name: "Assets" })).toBeVisible();
+});
+
+test("home tiles: All working, Damaged, Unusable", async ({ page }) => {
+  const co = await makeE2ECompany();
+  const u = await makeE2EUser(co.id, "director");
+  await signIn(page, u.email);
+  const tiles = page.getByRole("list", { name: "Fleet at a glance" }).getByRole("listitem");
+  await expect(tiles).toHaveText([/All working\s*0/, /Damaged\s*0/, /Unusable\s*0/]);
+  await expect(page.getByRole("heading", { name: /^Home, \w+day, \d{1,2} \w+ \d{4}$/ })).toBeVisible();
+});

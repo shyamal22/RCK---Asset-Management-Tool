@@ -1,4 +1,5 @@
 "use client";
+import { StatusNote } from "@/components/feedback/status-note";
 import { useRef, useState, useTransition } from "react";
 import { ImageUp } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -54,7 +55,7 @@ export function LogoUpload({ url }: { url: string | null }) {
       </Button>
       <p className="text-sm text-muted-foreground">PNG with a transparent background works best. Up to 2 MB.</p>
       <FormError message={error} />
-      {msg ? <p role="status">{msg}</p> : null}
+      <StatusNote message={msg} />
     </section>
   );
 }

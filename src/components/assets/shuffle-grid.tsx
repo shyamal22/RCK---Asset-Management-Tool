@@ -42,11 +42,11 @@ export function ShuffleGrid({ items }: { items: ShowItem[] }) {
       <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {order.map((a) => (
           <li key={a.id}>
-            <Link href={`/assets/${a.id}`} aria-label={`${a.code} ${a.name}`} className="surface group block overflow-hidden hover:-translate-y-0.5 hover:shadow-lg">
+            <Link href={`/assets/${a.id}`} aria-label={`${a.code} ${a.name}`} className="press surface group block overflow-hidden hover:shadow-lg">
               <span className="relative block aspect-[4/3] bg-muted">
                 {a.photo ? (
                   // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL
-                  <img src={a.photo} alt="" className="size-full object-cover" />
+                  <img src={a.photo} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
                 ) : (
                   <span className="flex size-full items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
                     <Truck className="size-8 text-white/80" aria-hidden />

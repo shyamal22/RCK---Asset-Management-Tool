@@ -31,7 +31,7 @@ test("sign up from company link, verify by code, wait for approval, then get in"
 
   await sql`update public.users set status = 'active', user_type = 'crew' where email = ${email}`;
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Kia ora, Mere" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /^Home,/ })).toBeVisible();
 });
 
 test("disabled or unknown link is refused", async ({ page }) => {

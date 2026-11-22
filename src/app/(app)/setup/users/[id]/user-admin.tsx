@@ -1,4 +1,6 @@
 "use client";
+import { SwitchRow } from "@/components/switch-row";
+import { StatusNote } from "@/components/feedback/status-note";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -49,10 +51,7 @@ export function UserAdmin({ user, crews, isSelf }: Props) {
           </select>
         </div>
         {userType === "workshop" ? (
-          <label className="flex h-12 items-center gap-3 text-lg">
-            <input type="checkbox" className="size-6" checked={lead} onChange={(e) => setLead(e.target.checked)} />
-            Workshop lead
-          </label>
+          <SwitchRow label="Workshop lead" checked={lead} onCheckedChange={setLead} />
         ) : null}
         <Button
           size="lg"
@@ -85,7 +84,7 @@ export function UserAdmin({ user, crews, isSelf }: Props) {
           </Button>
         )}
       </section>
-      {msg ? <p role="status" className="text-base">{msg}</p> : null}
+      <StatusNote message={msg} />
       <FormError message={error} />
     </div>
   );

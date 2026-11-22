@@ -22,7 +22,9 @@ export function Orbit({ items }: { items: ShowItem[] }) {
   const cards = useRef<(HTMLAnchorElement | null)[]>([]);
   const pos = useRef(0);
   const raf = useRef(0);
-  const drag = useRef<{ x: number; start: number; moved: boolean } | null>(null);
+  const drag = useRef<{ x: number; start: number; moved: boolean; samples: { x: number; t: number }[] } | null>(null);
+  const moving = useRef(false);
+  const aim = useRef(0); // where the wheel is heading; quick repeated taps build on it
   const focusRef = useRef(0);
   const [focus, setFocus] = useState(0);
 
@@ -42,27 +44,30 @@ export function Orbit({ items }: { items: ShowItem[] }) {
       card.style.pointerEvents = p.front > 0.45 ? "auto" : "none";
       card.tabIndex = i === focusRef.current ? 0 : -1;
     });
-    const f = nearest(pos.current, n);
-    if (f !== focusRef.current) {
-      focusRef.current = f;
-      setFocus(f);
-    }
+    focusRef.current = nearest(pos.current, n);
+    // Re-rendering the details panel mid-spin makes the wheel stutter on phones: only sync once it rests.
+    if (!moving.current) setFocus(focusRef.current);
   }, [n]);
 
   const animateTo = useCallback(
     (target: number) => {
       cancelAnimationFrame(raf.current);
+      aim.current = target;
       if (reduced()) {
         pos.current = target;
+        moving.current = false;
         return draw();
       }
       const from = pos.current;
       const t0 = performance.now();
-      const dur = 320;
+      // Longer travel gets a little more time, so a flick glides instead of jumping.
+      const dur = Math.min(720, 280 + 140 * Math.abs(target - from));
+      moving.current = true;
       const tick = (t: number) => {
         const k = Math.min(1, (t - t0) / dur);
         const e = 1 - (1 - k) ** 3; // ease-out
         pos.current = from + (target - from) * e;
+        if (k >= 1) moving.current = false;
         draw();
         if (k < 1) raf.current = requestAnimationFrame(tick);
       };
@@ -71,10 +76,21 @@ export function Orbit({ items }: { items: ShowItem[] }) {
     [draw],
   );
 
+  /** Arrow buttons / keys: one machine on from where the wheel is heading (not where it is mid-spin). */
+  const nudge = useCallback(
+    (dir: 1 | -1) => {
+      let t = Math.round(aim.current) + dir;
+      if (n > WRAP_MAX) t = Math.max(0, Math.min(n - 1, t));
+      animateTo(t);
+    },
+    [animateTo, n],
+  );
+
   const go = useCallback((i: number) => animateTo(targetFor(n > WRAP_MAX ? Math.max(0, Math.min(n - 1, i)) : ((i % n) + n) % n, pos.current, n)), [animateTo, n]);
 
   useLayoutEffect(() => {
     pos.current = 0;
+    aim.current = 0;
     focusRef.current = 0;
     setFocus(0);
     draw();
@@ -106,7 +122,9 @@ export function Orbit({ items }: { items: ShowItem[] }) {
           onPointerDown={(e) => {
             if (e.pointerType === "mouse" && e.button !== 0) return;
             cancelAnimationFrame(raf.current);
-            drag.current = { x: e.clientX, start: pos.current, moved: false };
+            moving.current = false;
+            aim.current = pos.current;
+            drag.current = { x: e.clientX, start: pos.current, moved: false, samples: [{ x: e.clientX, t: e.timeStamp }] };
           }}
           onPointerMove={(e) => {
             const d = drag.current;
@@ -115,9 +133,12 @@ export function Orbit({ items }: { items: ShowItem[] }) {
             const dx = e.clientX - d.x;
             if (!d.moved && Math.abs(dx) > 6) {
               d.moved = true;
+              moving.current = true;
               el.setPointerCapture(e.pointerId);
             }
             if (!d.moved) return;
+            d.samples.push({ x: e.clientX, t: e.timeStamp });
+            if (d.samples.length > 6) d.samples.shift();
             const rx = Math.min(el.clientWidth * 0.42, 420);
             let next = d.start - dx / rx / step;
             if (n > WRAP_MAX) next = Math.max(-0.4, Math.min(n - 0.6, next));
@@ -125,22 +146,34 @@ export function Orbit({ items }: { items: ShowItem[] }) {
             cancelAnimationFrame(raf.current);
             raf.current = requestAnimationFrame(draw);
           }}
-          onPointerUp={() => {
+          onPointerUp={(e) => {
             const d = drag.current;
-            if (d?.moved) animateTo(targetFor(nearest(pos.current, n), pos.current, n));
+            if (d?.moved && stage.current) {
+              // Flick: carry the finger's speed over the last ~100 ms forward, then land on the nearest machine.
+              const recent = d.samples.filter((s) => e.timeStamp - s.t < 100);
+              const first = recent[0] ?? d.samples[0];
+              const v = recent.length > 1 ? (e.clientX - first.x) / Math.max(16, e.timeStamp - first.t) : 0; // px per ms
+              const rx = Math.min(stage.current.clientWidth * 0.42, 420);
+              // Slow drags (under 0.4 px/ms) land where the finger left them; a flick adds up to two machines.
+              const fling = Math.abs(v) < 0.4 ? 0 : Math.max(-2, Math.min(2, -(v * 240) / rx / step));
+              let landing = Math.round(pos.current + fling);
+              if (n > WRAP_MAX) landing = Math.max(0, Math.min(n - 1, landing));
+              animateTo(landing);
+            }
             setTimeout(() => (drag.current = null), 0);
           }}
           onPointerCancel={() => {
             drag.current = null;
+            moving.current = false;
             animateTo(targetFor(nearest(pos.current, n), pos.current, n));
           }}
           onKeyDown={(e) => {
             if (e.key === "ArrowRight") {
               e.preventDefault();
-              go(focusRef.current + 1);
+              nudge(1);
             } else if (e.key === "ArrowLeft") {
               e.preventDefault();
-              go(focusRef.current - 1);
+              nudge(-1);
             }
           }}
         >
@@ -182,11 +215,11 @@ export function Orbit({ items }: { items: ShowItem[] }) {
         </div>
         {n > 1 ? (
           <>
-            <Button type="button" variant="outline" size="icon-lg" className="absolute top-1/2 left-0 z-[1001] -translate-y-1/2 shadow" onClick={() => go(focusRef.current - 1)}>
+            <Button type="button" variant="outline" size="icon-lg" className="absolute top-1/2 left-0 z-[1001] -translate-y-1/2 shadow" onClick={() => nudge(-1)}>
               <ChevronLeft aria-hidden />
               <span className="sr-only">Previous machine</span>
             </Button>
-            <Button type="button" variant="outline" size="icon-lg" className="absolute top-1/2 right-0 z-[1001] -translate-y-1/2 shadow" onClick={() => go(focusRef.current + 1)}>
+            <Button type="button" variant="outline" size="icon-lg" className="absolute top-1/2 right-0 z-[1001] -translate-y-1/2 shadow" onClick={() => nudge(1)}>
               <ChevronRight aria-hidden />
               <span className="sr-only">Next machine</span>
             </Button>

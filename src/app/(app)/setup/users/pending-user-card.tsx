@@ -1,4 +1,5 @@
 "use client";
+import { SwitchRow } from "@/components/switch-row";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -57,10 +58,7 @@ export function PendingUserCard({
             </div>
           ) : null}
           {userType === "workshop" ? (
-            <label className="flex h-12 items-center gap-3 text-lg">
-              <input type="checkbox" className="size-6" checked={lead} onChange={(e) => setLead(e.target.checked)} />
-              Workshop lead
-            </label>
+            <SwitchRow label="Workshop lead" checked={lead} onCheckedChange={setLead} />
           ) : null}
           <FormError message={error} />
           <div className="grid grid-cols-2 gap-3">

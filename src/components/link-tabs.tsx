@@ -12,9 +12,10 @@ export function LinkTabs({ items, label }: { items: { href: string; label: strin
         <Link
           key={t.href}
           href={t.href}
+          scroll={false}
           aria-current={t.active ? "page" : undefined}
           className={cn(
-            "inline-flex h-9 items-center rounded-full px-4 transition-[color,box-shadow]",
+            "inline-flex h-9 items-center rounded-full px-4 transition-[color,box-shadow,background-color] active:scale-95",
             t.active ? "bg-background text-[var(--indigo)] shadow-[0_4px_14px_-6px_var(--indigo)]" : "hover:text-foreground",
           )}
         >

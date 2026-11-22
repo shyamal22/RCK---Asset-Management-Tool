@@ -110,6 +110,25 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Phone feel: onyx behind the status bar and rubber-band, no page bounce, no grey tap flash,
+     no double-tap zoom delay, no text-size jumps when rotating. */
+  html {
+    background: var(--onyx);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  html, body { overscroll-behavior-y: none; }
+  a, button, [role="button"], [role="switch"], [role="radio"], [role="tab"], label, summary {
+    touch-action: manipulation;
+  }
+  button, [role="button"], [role="switch"], [role="radio"], [role="tab"], nav a {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  /* iOS zooms into any field under 16px: never let that happen. */
+  input, select, textarea { font-size: max(16px, 1em); }
 }
 /* ── Sign-in screens (layout after afgprogrammer "Login Page 3", Apache-2.0): onyx → electric indigo
    header, white sheet with big rounded top corners, grouped input card, centred pill button.
@@ -244,3 +263,57 @@ h1 { letter-spacing: -0.01em; }
 .rail-item:focus-visible { transform: translate(-50%, -32px) scale(1.28); z-index: 3; outline: none; }
 .rail-item:focus-visible .rail-photo { box-shadow: 0 0 0 4px var(--tangerine); }
 @media (prefers-reduced-motion: reduce) { .rail-item { transition: none; } }
+
+/* ── Touch feedback ── */
+/* Cards and rows that are links: sink slightly under the finger. */
+.press { transition: transform .12s ease-out, box-shadow .2s; }
+.press:active { transform: scale(.97); }
+/* Loading bar while the next screen comes in. */
+.nav-progress {
+  position: fixed; z-index: 70; left: 0; top: env(safe-area-inset-top); height: 3px; width: 100%;
+  background: var(--tangerine); box-shadow: 0 0 10px var(--tangerine);
+  transform-origin: left; transform: scaleX(0); animation: nav-busy 8s cubic-bezier(.1,.7,.2,1) forwards;
+}
+.nav-progress[data-state="done"] { animation: nav-done .3s ease-out forwards; }
+@keyframes nav-busy { from { transform: scaleX(.08); } to { transform: scaleX(.92); } }
+@keyframes nav-done { from { transform: scaleX(.92); opacity: 1; } to { transform: scaleX(1); opacity: 0; } }
+/* "Saved" pill: floats above the bottom nav on phones, bottom-centre on desktop. */
+.status-note {
+  position: fixed; z-index: 65; left: 50%; bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  display: flex; align-items: center; gap: .5rem; padding: .75rem 1.25rem; border-radius: 999px;
+  background: var(--onyx); color: #fff; font-weight: 700; box-shadow: 0 16px 40px -16px rgba(11,11,16,.6);
+  transform: translateX(-50%); animation: note-in .28s cubic-bezier(.2,.8,.2,1) both; white-space: nowrap;
+}
+@media (min-width: 768px) { .status-note { bottom: 1.75rem; } }
+@keyframes note-in { from { opacity: 0; transform: translate(-50%, 14px) scale(.96); } to { opacity: 1; transform: translate(-50%, 0); } }
+/* Errors give a short shake so the eye goes there. */
+[role="alert"]:not([data-quiet]) { animation: alert-nudge .4s cubic-bezier(.36,.07,.19,.97); }
+@keyframes alert-nudge { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+@media (prefers-reduced-motion: reduce) {
+  .press:active { transform: none; }
+  .nav-progress, .status-note, [role="alert"] { animation: none; }
+  .nav-progress { transform: scaleX(.6); }
+}
+/* Sideways rails: momentum scrolling, and a swipe on the rail never turns into "go back". */
+.bay-rail, .showroom { overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+
+/* Home headline tiles: a light wash of their status colour, strongest top-left. */
+.status-tile {
+  --tone: var(--status-green);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--tone) 24%, #fff) 0%, color-mix(in srgb, var(--tone) 7%, #fff) 100%);
+  border-color: color-mix(in srgb, var(--tone) 30%, #fff);
+  color: var(--onyx);
+  box-shadow: 0 14px 30px -24px var(--tone);
+}
+.status-tile[data-tone="yellow"] { --tone: var(--status-yellow); }
+.status-tile[data-tone="red"] { --tone: var(--status-red); }
+.status-tile-icon { background: var(--tone); }
+
+/* Collapsible side menu (tablet / desktop): the menu column slides to zero and the panel takes the room. */
+@media (min-width: 768px) {
+  .side-frame { grid-template-columns: 15rem minmax(0, 1fr); transition: grid-template-columns .28s cubic-bezier(.2,.8,.2,1); }
+  .side-frame[data-collapsed="true"] { grid-template-columns: 0rem minmax(0, 1fr); }
+  .side-menu { min-width: 0; overflow: hidden; transition: opacity .2s, transform .28s cubic-bezier(.2,.8,.2,1); }
+  .side-frame[data-collapsed="true"] .side-menu { opacity: 0; transform: translateX(-1.5rem); padding-inline: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .side-frame, .side-menu { transition: none; } }

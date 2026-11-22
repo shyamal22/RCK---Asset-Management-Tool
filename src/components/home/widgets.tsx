@@ -9,14 +9,15 @@ import type { ReportRow } from "@/lib/breakdowns/queries";
 import type { AttentionRow, FleetSummary, ReadingAlert, TypeRow } from "@/lib/home/queries";
 import type { AssetRow } from "@/lib/assets/queries";
 
-/** "Kia ora, Wayne" + today's date in NZ. */
-export function Greeting({ name, line }: { name: string; line?: string }) {
-  const today = new Intl.DateTimeFormat("en-NZ", { timeZone: "Pacific/Auckland", weekday: "long", day: "numeric", month: "long" }).format(new Date());
+/** Today's date in NZ: the only thing above the dashboard (Sam, 22/11/2026: no greeting, no summary line). */
+export function Greeting() {
+  const today = new Intl.DateTimeFormat("en-NZ", { timeZone: "Pacific/Auckland", weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date());
   return (
-    <header className="grid gap-1">
-      <p className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">{today}</p>
-      <h1 className="text-3xl font-bold">Kia ora, {name.split(" ")[0]}</h1>
-      {line ? <p className="text-muted-foreground">{line}</p> : null}
+    <header>
+      <h1 className="text-2xl font-bold md:text-3xl">
+        <span className="sr-only">Home, </span>
+        {today}
+      </h1>
     </header>
   );
 }
@@ -39,38 +40,30 @@ export function Panel({ title, href, children, className }: { title: string; hre
 }
 
 const TILES = [
-  { key: "working", label: "Working", icon: CircleCheck, tone: "bg-status-green", href: "/assets?status=available" },
-  { key: "workshop", label: "In workshop", icon: Wrench, tone: "bg-status-yellow", href: "/assets?status=in_workshop" },
-  { key: "unusable", label: "Unusable", icon: TriangleAlert, tone: "bg-status-red", href: "/assets?status=unusable" },
+  { key: "allWorking", label: "All working", icon: CircleCheck, tone: "green", href: "/assets" },
+  { key: "damaged", label: "Damaged", icon: Wrench, tone: "yellow", href: "/reports" },
+  { key: "unusableAny", label: "Unusable", icon: TriangleAlert, tone: "red", href: "/assets?status=unusable" },
 ] as const;
 
-/** Headline numbers: one glance at the fleet (each tile has an icon + label, never colour alone). */
+/**
+ * Headline numbers: three tiles washed in their status colour (green / yellow / red), each with an
+ * icon and a label so colour is never the only signal. No machine is counted twice: All working = working with
+ * no open report; Damaged = open report but still usable; Unusable = status unusable or a red report.
+ */
 export function FleetTiles({ s }: { s: FleetSummary }) {
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4" role="list" aria-label="Fleet at a glance">
+    <div className="grid grid-cols-3 gap-2 md:gap-3" role="list" aria-label="Fleet at a glance">
       {TILES.map((t) => (
-        <Link key={t.key} role="listitem" href={t.href} className="surface grid gap-2 p-4 hover:-translate-y-0.5">
-          <span className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-            <span className={cn("flex size-6 items-center justify-center rounded-full text-white", t.tone)}>
+        <Link key={t.key} role="listitem" href={t.href} data-tone={t.tone} className="press status-tile grid gap-2 rounded-[1.25rem] border p-3 md:p-4">
+          <span className="flex items-center gap-1.5 text-sm font-semibold md:gap-2">
+            <span className="status-tile-icon flex size-6 shrink-0 items-center justify-center rounded-full text-white">
               <t.icon className="size-3.5" aria-hidden />
             </span>
-            {t.label}
+            <span className="leading-tight">{t.label}</span>
           </span>
           <span className="text-4xl leading-none font-bold tabular-nums">{s[t.key]}</span>
         </Link>
       ))}
-      <Link role="listitem" href="/reports" className="surface grid gap-2 p-4 hover:-translate-y-0.5">
-        <span className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-          <span className="flex size-6 items-center justify-center rounded-full bg-[var(--tangerine)] text-[var(--onyx)]">
-            <TriangleAlert className="size-3.5" aria-hidden />
-          </span>
-          Damage flags
-        </span>
-        <span className="text-4xl leading-none font-bold tabular-nums">{s.red + s.yellow}</span>
-        <span className="text-xs text-muted-foreground">
-          {s.red} red · {s.yellow} yellow
-        </span>
-      </Link>
     </div>
   );
 }
@@ -87,11 +80,11 @@ export function AttentionStrip({ rows, photos, empty = "Nothing needs attention.
     <ul className="bay-rail -mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 md:-mx-5 md:px-5">
       {rows.map((a) => (
         <li key={a.id} className="w-40 shrink-0 snap-start">
-          <Link href={`/assets/${a.id}`} aria-label={`${a.code} ${a.name}`} className="block overflow-hidden rounded-2xl border border-border bg-card hover:-translate-y-0.5">
+          <Link href={`/assets/${a.id}`} aria-label={`${a.code} ${a.name}`} className="press block overflow-hidden rounded-2xl border border-border bg-card hover:-translate-y-0.5">
             <span className="relative block aspect-[4/3] bg-muted">
               {a.photo_path && photos[a.photo_path] ? (
                 // eslint-disable-next-line @next/next/no-img-element -- signed URL
-                <img src={photos[a.photo_path]} alt="" className="size-full object-cover" />
+                <img src={photos[a.photo_path]} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
               ) : (
                 <span className="flex size-full items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
                   <Truck className="size-7 text-white/80" aria-hidden />
@@ -119,11 +112,11 @@ export function MachineStrip({ items, photos }: { items: AssetRow[]; photos: Rec
     <ul className="bay-rail -mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 md:-mx-5 md:px-5">
       {items.map((a) => (
         <li key={a.id} className="w-36 shrink-0 snap-start">
-          <Link href={`/assets/${a.id}`} aria-label={`${a.code} ${a.name}`} className="block overflow-hidden rounded-2xl border border-border bg-card">
+          <Link href={`/assets/${a.id}`} aria-label={`${a.code} ${a.name}`} className="press block overflow-hidden rounded-2xl border border-border bg-card">
             <span className="relative block aspect-square bg-muted">
               {a.photo_path && photos[a.photo_path] ? (
                 // eslint-disable-next-line @next/next/no-img-element -- signed URL
-                <img src={photos[a.photo_path]} alt="" className="size-full object-cover" />
+                <img src={photos[a.photo_path]} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
               ) : (
                 <span className="flex size-full items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
                   <Truck className="size-7 text-white/80" aria-hidden />
@@ -156,10 +149,10 @@ export function ReportFeed({ reports, photos, empty = "No open damage reports." 
         const thumb = photos[r.photo_paths[0] ?? ""];
         return (
           <li key={r.id}>
-            <Link href={`/reports/${r.id}`} className="flex items-center gap-3 rounded-xl p-1.5 hover:bg-accent" aria-label={`${r.code} ${r.title}`}>
+            <Link href={`/reports/${r.id}`} className="press flex items-center gap-3 rounded-xl p-1.5 hover:bg-accent" aria-label={`${r.code} ${r.title}`}>
               <span className={cn("size-12 shrink-0 overflow-hidden rounded-lg border-l-4 bg-muted", r.severity === "unusable" ? "border-status-red" : "border-status-yellow")}>
                 {/* eslint-disable-next-line @next/next/no-img-element -- signed URL */}
-                {thumb ? <img src={thumb} alt="" className="size-full object-cover" /> : null}
+                {thumb ? <img src={thumb} alt="" loading="lazy" decoding="async" className="size-full object-cover" /> : null}
               </span>
               <span className="grid min-w-0 flex-1">
                 <span className="truncate font-bold">
@@ -190,7 +183,7 @@ export function ReadingAlerts({ rows }: { rows: ReadingAlert[] }) {
     <ul className="grid gap-1">
       {rows.map((r) => (
         <li key={r.id}>
-          <Link href={`/assets/${r.asset_id}`} className="flex items-center gap-3 rounded-xl p-1.5 hover:bg-accent">
+          <Link href={`/assets/${r.asset_id}`} className="press flex items-center gap-3 rounded-xl p-1.5 hover:bg-accent">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent text-[var(--indigo)]">
               <Gauge className="size-5" aria-hidden />
             </span>
