@@ -9,6 +9,9 @@ import { getAsset, photoUrls, recentReadings, runAs } from "@/lib/assets/queries
 import { StatusDot } from "@/components/status-dot";
 import { Button } from "@/components/ui/button";
 import { ReadingForm } from "./reading-form";
+import { flagsFor, listReports } from "@/lib/breakdowns/queries";
+import { SEVERITY, ago } from "@/lib/breakdowns/labels";
+import { FlagBadge } from "@/components/assets/flag-badge";
 
 export const dynamic = "force-dynamic";
 
@@ -17,10 +20,17 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
   const { id } = await params;
   const data = await runAs(me, async (tx) => {
     const a = await getAsset(tx, id);
-    return a ? { a, readings: await recentReadings(tx, a.id) } : null;
+    return a
+      ? {
+          a,
+          readings: await recentReadings(tx, a.id),
+          flag: (await flagsFor(tx, [a.id]))[a.id],
+          reports: can(me.actor, "defects", "view") ? await listReports(tx, { status: "open", asset: a.id }) : [],
+        }
+      : null;
   });
   if (!data) notFound();
-  const { a, readings } = data;
+  const { a, readings, flag, reports } = data;
   const photo = a.photo_path ? (await photoUrls([a.photo_path]))[a.photo_path] : undefined;
   const canEdit = can(me.actor, "assets", "edit");
   const details: [string, string | null][] = [
@@ -49,7 +59,10 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
           <h1 className="text-2xl font-bold">
             {a.code} <span className="font-normal">{a.name}</span>
           </h1>
-          <StatusDot tone={STATUS_TONE[a.status]} label={STATUS_LABELS[a.status]} />
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusDot tone={STATUS_TONE[a.status]} label={STATUS_LABELS[a.status]} />
+            {flag ? <FlagBadge {...flag} /> : null}
+          </div>
           <p className="text-lg font-bold tabular-nums" data-testid="current-reading">
             {formatReading(a.current_reading, a.tracking_unit)}
           </p>
@@ -57,10 +70,38 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
         </div>
       </header>
 
-      {canEdit ? (
-        <Button asChild variant="outline" size="lg" className="h-12 w-fit">
-          <Link href={`/setup/assets/${a.id}`}>Edit asset</Link>
-        </Button>
+      <div className="flex flex-wrap gap-2">
+        {can(me.actor, "defects", "create") ? (
+          <Button asChild size="lg" className="h-12 bg-[var(--tangerine)] text-[var(--onyx)] hover:bg-[var(--tangerine)]/90">
+            <Link href={`/reports/new?asset=${a.id}`}>Report damage</Link>
+          </Button>
+        ) : null}
+        {canEdit ? (
+          <Button asChild variant="outline" size="lg" className="h-12 w-fit">
+            <Link href={`/setup/assets/${a.id}`}>Edit asset</Link>
+          </Button>
+        ) : null}
+      </div>
+
+      {reports.length ? (
+        <section aria-labelledby="open-reports-h" className="grid gap-2">
+          <h2 id="open-reports-h" className="text-xl font-bold">Open damage reports</h2>
+          <ul className="grid gap-2">
+            {reports.map((r) => (
+              <li key={r.id}>
+                <Link href={`/reports/${r.id}`} className="surface flex items-center justify-between gap-3 p-3 hover:bg-accent">
+                  <span className="min-w-0">
+                    <span className="block truncate font-bold">{r.title}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {r.raised_by_name ?? "Someone"} · {ago(r.created_at)}
+                    </span>
+                  </span>
+                  <StatusDot tone={SEVERITY[r.severity].tone} label={SEVERITY[r.severity].label} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       ) : null}
 
       <section aria-labelledby="details-h" className="grid gap-2">

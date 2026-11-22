@@ -9,6 +9,7 @@ type Item = { href: string; label: string; icon: IconName };
 export function navItems(me: ActiveUser): Item[] {
   const items: Item[] = [{ href: "/", label: "Home", icon: "home" }];
   if (can(me.actor, "assets", "view")) items.push({ href: "/assets", label: "Assets", icon: "assets" });
+  if (can(me.actor, "defects", "view")) items.push({ href: "/reports", label: "Reports", icon: "reports" });
   if (me.isPlatformAdmin) items.push({ href: "/kre", label: "Clients", icon: "clients" });
   if (setupSections(me.actor).length) items.push({ href: "/setup", label: "Setup", icon: "setup" });
   items.push({ href: "/me", label: "Me", icon: "me" });

@@ -3,12 +3,13 @@ import { Truck } from "lucide-react";
 import { StatusDot } from "@/components/status-dot";
 import { STATUS_LABELS, STATUS_TONE, formatReading } from "@/lib/assets/labels";
 import type { AssetRow } from "@/lib/assets/queries";
+import { FlagBadge } from "./flag-badge";
 
 /** Phone-first asset card: photo, code + name, status colour (docs/10). */
-export function AssetCard({ a, photo }: { a: AssetRow; photo?: string }) {
+export function AssetCard({ a, photo, href, flag }: { a: AssetRow; photo?: string; href?: string; flag?: { flag: "yellow" | "red"; n: number } }) {
   return (
     <Link
-      href={`/assets/${a.id}`}
+      href={href ?? `/assets/${a.id}`}
       className="flex min-h-20 items-center gap-3 surface p-2 pr-4 hover:bg-accent"
       aria-label={`${a.code} ${a.name}`}
     >
@@ -29,7 +30,10 @@ export function AssetCard({ a, photo }: { a: AssetRow; photo?: string }) {
           {a.crew_name ? ` · ${a.crew_name}` : ""}
         </span>
       </div>
-      <StatusDot tone={STATUS_TONE[a.status]} label={STATUS_LABELS[a.status]} />
+      <span className="grid shrink-0 justify-items-end gap-1">
+        <StatusDot tone={STATUS_TONE[a.status]} label={STATUS_LABELS[a.status]} />
+        {flag ? <FlagBadge {...flag} /> : null}
+      </span>
     </Link>
   );
 }

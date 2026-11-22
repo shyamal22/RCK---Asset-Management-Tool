@@ -4,6 +4,7 @@ import { requirePermission } from "@/lib/auth/guard";
 import { can } from "@/lib/permissions/check";
 import { cn } from "@/lib/utils";
 import { ASSET_STATUSES, STATUS_LABELS } from "@/lib/assets/labels";
+import { flagsFor } from "@/lib/breakdowns/queries";
 import { assetOptions, listAssets, photoUrls, runAs, typeBays, type AssetFilters } from "@/lib/assets/queries";
 import { AssetCard } from "@/components/assets/asset-card";
 import { Showroom } from "@/components/assets/showroom";
@@ -30,6 +31,7 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
     bays: await typeBays(tx, f),
     opts: await assetOptions(tx),
   }));
+  const flags = await runAs(me, (tx) => flagsFor(tx, list.map((a) => a.id)));
   const photos = await photoUrls([...list.map((a) => a.photo_path), ...bays.map((b) => b.photo_path)]);
   const filtered = !!(f.q || f.type || f.status || f.site || f.crew);
   const moreFilters = !!(f.site || f.crew);
@@ -155,12 +157,12 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
         <ul className="grid gap-2">
           {list.map((a) => (
             <li key={a.id}>
-              <AssetCard a={a} photo={a.photo_path ? photos[a.photo_path] : undefined} />
+              <AssetCard a={a} photo={a.photo_path ? photos[a.photo_path] : undefined} flag={flags[a.id]} />
             </li>
           ))}
         </ul>
       ) : (
-        <Showroom key={`${f.type}-${f.status}-${f.q}-${f.site}-${f.crew}`} items={list.map((a) => ({ ...a, photo: a.photo_path ? photos[a.photo_path] : undefined }))} />
+        <Showroom key={`${f.type}-${f.status}-${f.q}-${f.site}-${f.crew}`} items={list.map((a) => ({ ...a, photo: a.photo_path ? photos[a.photo_path] : undefined, flag: flags[a.id] }))} />
       )}
     </div>
   );

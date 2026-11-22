@@ -52,7 +52,7 @@ Work top to bottom. Tick each box when done (see CLAUDE.md "Done means").
 - [ ] Offline support: queue submissions and photos, sync when back online
 - [ ] Flags: Usable → yellow, Broken/problem answer → red; pre-check overall flag = worst item; NO automatic work orders
 - [ ] Pre-check report view (red/yellow first) with per-item actions: create WO (pre-filled, linked), dismiss with reason, leave open
-- [ ] Breakdown report (any user type): asset, title, details, 1+ photos, Still usable (yellow) / Unusable (red); notifications; Unusable sets asset status
+- [x] Breakdown report (any user type): asset, title, details, 1+ photos, Still usable (yellow) / Unusable (red); notifications; Unusable sets asset status — built early at Sam's request (22/11/2026); notifications come with M2b
 - [ ] Asset overall flag (green/yellow/red) from open items; clears when dismissed or WO signed off
 - [ ] Store last pre-check date and user per asset; pre-check history per asset
 - [ ] Asset status Parked / not in use (excluded from missed-check rules)

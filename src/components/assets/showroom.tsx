@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Truck } from "lucide-react";
 import { StatusDot } from "@/components/status-dot";
 import { Button } from "@/components/ui/button";
+import { FlagBadge } from "./flag-badge";
 import { STATUS_LABELS, STATUS_TONE, formatReading, type AssetStatus, type TrackingUnit } from "@/lib/assets/labels";
 
 export type ShowItem = {
@@ -17,6 +18,7 @@ export type ShowItem = {
   crew_name: string | null;
   site_name: string | null;
   photo?: string;
+  flag?: { flag: "yellow" | "red"; n: number };
 };
 
 /**
@@ -111,6 +113,7 @@ export function Showroom({ items }: { items: ShowItem[] }) {
               <span className="absolute top-3 left-3 rounded-full bg-white/90 px-3 py-1 backdrop-blur">
                 <StatusDot tone={STATUS_TONE[it.status]} label={STATUS_LABELS[it.status]} />
               </span>
+              {it.flag ? <FlagBadge {...it.flag} className="absolute top-3.5 right-3 shadow" /> : null}
               <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-4 pt-10 pb-4 text-left text-white">
                 <span className="block text-2xl leading-none font-bold">{it.code}</span>
                 <span className="block truncate text-base opacity-90">{it.name}</span>
@@ -155,6 +158,7 @@ export function Showroom({ items }: { items: ShowItem[] }) {
         </h2>
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-base">
           <StatusDot tone={STATUS_TONE[a.status]} label={STATUS_LABELS[a.status]} />
+          {a.flag ? <FlagBadge {...a.flag} /> : null}
           <span className="font-bold tabular-nums">{formatReading(a.current_reading, a.tracking_unit)}</span>
           <span className="text-muted-foreground">{[a.type_name, a.crew_name, a.site_name].filter(Boolean).join(" · ")}</span>
         </div>

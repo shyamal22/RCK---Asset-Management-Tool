@@ -3,6 +3,7 @@ import { asUser } from "@db/client";
 import { requireActive } from "@/lib/auth/session";
 import { can } from "@/lib/permissions/check";
 import { redirect } from "next/navigation";
+import { openCounts } from "@/lib/breakdowns/queries";
 import { CrewHome, DirectorHome, OfficeHome, SupervisorHome, WorkshopHome } from "@/components/home/homes";
 
 export const dynamic = "force-dynamic";
@@ -23,14 +24,17 @@ export default async function Home() {
         )) as unknown as { n: number }[])[0].n,
       )
     : 0;
+  const reports = can(me.actor, "defects", "view")
+    ? await asUser({ id: me.id, sessionId: me.sessionId }, (tx) => openCounts(tx))
+    : { red: 0, yellow: 0, mine: 0 };
   return (
     <div className="grid gap-4">
       <h1 className="text-2xl font-bold">{me.name}</h1>
-      {me.userType === "crew" ? <CrewHome /> : null}
-      {me.userType === "supervisor" ? <SupervisorHome /> : null}
-      {me.userType === "workshop" ? <WorkshopHome /> : null}
-      {me.userType === "office" ? <OfficeHome pending={pending} /> : null}
-      {me.userType === "director" ? <DirectorHome pending={pending} /> : null}
+      {me.userType === "crew" ? <CrewHome reports={reports} /> : null}
+      {me.userType === "supervisor" ? <SupervisorHome reports={reports} /> : null}
+      {me.userType === "workshop" ? <WorkshopHome reports={reports} /> : null}
+      {me.userType === "office" ? <OfficeHome pending={pending} reports={reports} /> : null}
+      {me.userType === "director" ? <DirectorHome pending={pending} reports={reports} /> : null}
     </div>
   );
 }
