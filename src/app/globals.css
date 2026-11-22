@@ -203,3 +203,21 @@
 }
 select:not([data-slot]), textarea:not([data-slot]) { border-radius: 0.875rem; }
 h1 { letter-spacing: -0.01em; }
+
+/* Showroom: the focused machine is full size; neighbours shrink and fade with distance (--d: 0..1) */
+.showroom { scrollbar-width: none; scroll-behavior: smooth; }
+.showroom::-webkit-scrollbar { display: none; }
+.showroom-card {
+  --d: 1;
+  transform: scale(calc(1 - 0.14 * var(--d)));
+  opacity: calc(1 - 0.5 * var(--d));
+  transition: transform .25s ease-out, opacity .25s ease-out, box-shadow .25s;
+}
+.showroom-card[aria-current="true"] { box-shadow: 0 24px 50px -24px color-mix(in srgb, var(--indigo) 70%, transparent); }
+.showroom-detail { animation: auth-rise .45s cubic-bezier(.2,.8,.2,1) both; }
+.bay-rail { scrollbar-width: none; }
+.bay-rail::-webkit-scrollbar { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .showroom { scroll-behavior: auto; }
+  .showroom-card, .showroom-detail { transition: none; animation: none; }
+}

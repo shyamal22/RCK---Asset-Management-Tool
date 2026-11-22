@@ -36,7 +36,7 @@ function Brand({ me }: { me: ActiveUser }) {
 export function AppShell({ me, shared, children }: { me: ActiveUser; shared: boolean; children: React.ReactNode }) {
   const items = navItems(me);
   return (
-    <div className="app-theme md:grid md:grid-cols-[15rem_1fr]">
+    <div className="app-theme md:grid md:grid-cols-[15rem_minmax(0,1fr)]">
       <aside className="hidden md:flex md:flex-col md:gap-8 md:p-6">
         <Brand me={me} />
         <nav aria-label="Main" className="grid gap-1">
@@ -46,7 +46,7 @@ export function AppShell({ me, shared, children }: { me: ActiveUser; shared: boo
         </nav>
         {shared ? <DoneButton className="mt-auto" /> : null}
       </aside>
-      <div className="flex min-h-dvh flex-col md:p-3 md:pl-0">
+      <div className="flex min-h-dvh min-w-0 flex-col md:p-3 md:pl-0">
         <header className="flex items-end justify-between gap-3 px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-8 md:hidden">
           <Brand me={me} />
           {shared ? <DoneButton /> : null}

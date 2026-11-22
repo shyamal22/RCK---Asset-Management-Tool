@@ -101,3 +101,22 @@ export async function photoUrls(paths: (string | null)[]): Promise<Record<string
   for (const d of data ?? []) if (d.path && d.signedUrl) out[d.path] = d.signedUrl;
   return out;
 }
+
+export type TypeBay = { id: string; name: string; n: number; photo_path: string | null };
+
+/** One bay per type the user can see machines of: count + a cover photo (newest asset photo of that type). */
+export async function typeBays(tx: Tx, f: Omit<AssetFilters, "type">): Promise<TypeBay[]> {
+  const where: SQL[] = [sql`a.deleted_at is null`];
+  const q = f.q?.trim();
+  if (q) where.push(sql`(a.name ilike ${`%${q}%`} or a.code ilike ${`%${q}%`} or a.rego ilike ${`%${q}%`})`);
+  if (uuidOk(f.site)) where.push(sql`a.site_id = ${f.site}`);
+  if (uuidOk(f.crew)) where.push(sql`a.crew_id = ${f.crew}`);
+  return (await tx.execute(sql`
+    select t.id, t.name, count(a.id)::int as n,
+           (array_agg(a.photo_path order by a.updated_at desc) filter (where a.photo_path is not null))[1] as photo_path
+    from public.asset_types t
+    join public.assets a on a.asset_type_id = t.id and ${sql.join(where, sql` and `)}
+    where t.deleted_at is null
+    group by t.id, t.name, t.sort_order
+    order by t.sort_order, t.name`)) as unknown as TypeBay[];
+}

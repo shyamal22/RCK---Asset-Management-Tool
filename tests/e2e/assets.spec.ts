@@ -94,6 +94,8 @@ test("search by name or code and filter; Crew only sees their crew's machines", 
   await signIn(page, d.email);
   await page.goto("/assets");
   await expect(page.getByText("2 assets")).toBeVisible();
+  // The bay and showroom rows scroll inside themselves; the page never scrolls sideways.
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
   await page.getByLabel("Search assets").fill("trk-03");
   await page.getByRole("button", { name: "Search" }).click();
   await expect(page.getByText("1 asset", { exact: true })).toBeVisible();
@@ -104,10 +106,26 @@ test("search by name or code and filter; Crew only sees their crew's machines", 
   await page.getByRole("link", { name: "Clear" }).click();
   await expect(page).toHaveURL(/\/assets$/);
   await expect(page.getByLabel("Search assets")).toHaveValue("");
+  await page.locator("summary", { hasText: "Filter" }).click();
   await page.getByLabel("Status").selectOption({ label: "In workshop" });
-  await page.getByRole("button", { name: "Search" }).click();
+  await page.getByRole("button", { name: "Apply" }).click();
   await expect(page.getByText("1 asset", { exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "TRK-03 Tipper" })).toBeVisible();
+
+  // Type bays + showroom: pick Pavers, the focused machine's details show below.
+  await page.goto("/assets");
+  const bays = page.getByRole("navigation", { name: "Asset types" });
+  await expect(bays.getByRole("link", { name: "All, 2" })).toHaveAttribute("aria-current", "true");
+  await bays.getByRole("link", { name: "Paver, 1" }).click();
+  await expect(page.getByText("1 asset", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "PAV-01 Big paver" })).toBeVisible();
+  await expect(page.getByText("1 of 1")).toBeVisible();
+  // Status chips
+  await page.getByRole("navigation", { name: "Quick filters" }).getByRole("link", { name: "In workshop" }).click();
+  await expect(page.getByText("Nothing matches.")).toBeVisible();
+  // List view still there for desk work
+  await page.goto("/assets?view=list");
+  await expect(page.getByRole("link", { name: "PAV-01 Big paver" })).toBeVisible();
 
   const crew = await makeE2EUser(co.id, "crew", { crewId: co.crewId });
   const p = await (await browser.newContext()).newPage();
