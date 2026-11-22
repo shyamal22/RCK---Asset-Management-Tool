@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Screen } from "@/components/field";
 import { SignUpForm } from "@/components/auth/sign-up-form";
 import { SsoButtons } from "@/components/auth/sso-buttons";
@@ -12,6 +13,9 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
     return (
       <Screen title="Link not active">
         <p className="text-lg">Ask your manager for a new sign-up link.</p>
+        <Link href="/sign-in" className="press inline-flex min-h-12 items-center justify-center text-base font-semibold">
+          Back to sign in
+        </Link>
       </Screen>
     );
   }

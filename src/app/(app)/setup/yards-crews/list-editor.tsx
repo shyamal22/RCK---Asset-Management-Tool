@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { useState, useTransition } from "react";
 import { Pencil, Archive } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,7 @@ export function ListEditor({ title, kind, items }: { title: string; kind: Kind; 
   const run = (fn: () => Promise<{ ok: boolean; error?: string }>, after?: () => void) =>
     start(async () => {
       setError(null);
-      const r = await fn();
+      const r = await safeAction(fn());
       if (!r.ok) return setError(r.error ?? "Couldn't save");
       after?.();
     });

@@ -10,7 +10,9 @@ export type IconName = keyof typeof ICONS;
 export function NavLink({ href, label, icon, variant }: { href: string; label: string; icon: IconName; variant: "bottom" | "side" }) {
   const Icon = ICONS[icon];
   const path = usePathname();
-  const active = href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`);
+  // Editing or adding a machine lives under /setup/assets but belongs to the Assets tab.
+  const section = path.startsWith("/setup/assets") ? "/assets" : path;
+  const active = href === "/" ? section === "/" : section === href || section.startsWith(`${href}/`);
   return (
     <Link
       href={href}

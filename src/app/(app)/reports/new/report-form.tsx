@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, X } from "lucide-react";
@@ -56,7 +57,7 @@ export function ReportForm({ asset }: { asset: Asset }) {
           const fd = new FormData();
           fd.set("data", JSON.stringify({ assetId: asset.id, title, details, severity, reading, ...(where ?? {}) }));
           photos.forEach((p) => fd.append("photos", p.file));
-          const r = await raiseBreakdownAction(fd);
+          const r = await safeAction(raiseBreakdownAction(fd));
           if (!r.ok) return setError(r.error);
           router.push(`/reports/${r.id}?sent=1`);
         });

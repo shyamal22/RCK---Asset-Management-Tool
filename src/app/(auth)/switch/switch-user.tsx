@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,7 @@ export function SwitchUser({ people }: { people: { id: string; name: string }[] 
       onSubmit={(e) => {
         e.preventDefault();
         start(async () => {
-          const r = await switchUserAction({ userId: who.id, pin });
+          const r = await safeAction(switchUserAction({ userId: who.id, pin }));
           if (r.ok) return router.replace("/");
           setPin("");
           setError(r.error);

@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { SwitchRow } from "@/components/switch-row";
 import { StatusNote } from "@/components/feedback/status-note";
 import { useState, useTransition } from "react";
@@ -28,7 +29,7 @@ export function UserAdmin({ user, crews, isSelf }: Props) {
     start(async () => {
       setError(null);
       setMsg(null);
-      const r = await fn();
+      const r = await safeAction(fn());
       if (r && !r.ok) setError(r.error ?? "Couldn't save");
       else setMsg(ok);
     });

@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { useMachineFeedback } from "@/components/auth/machine-state";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { useState, useTransition } from "react";
@@ -20,7 +21,7 @@ export function SignInForm({ notice }: { notice?: string }) {
   const [pending, start] = useTransition();
   const setMachine = useMachineFeedback(pending, error);
 
-  if (verify) return <CodeEntry contact={verify} purpose="signup" onVerified={() => router.replace("/")} />;
+  if (verify) return <CodeEntry contact={verify} purpose="signup" onVerified={() => router.replace("/")} onBack={() => setVerify(null)} />;
 
   return (
     <form
@@ -31,7 +32,7 @@ export function SignInForm({ notice }: { notice?: string }) {
         const c = contactSchema.safeParse(toContact(contact));
         if (!c.success) return setError(c.error.issues[0]?.message ?? "Check your details");
         start(async () => {
-          const r = await signInAction({ contact: c.data, password });
+          const r = await safeAction(signInAction({ contact: c.data, password }));
           if (r.ok) {
             setMachine("ok");
             return router.replace("/");

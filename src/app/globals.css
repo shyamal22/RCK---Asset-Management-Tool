@@ -127,6 +127,11 @@
     user-select: none;
     -webkit-touch-callout: none;
   }
+  /* Long-press on a card or photo: no Safari link preview or "Save to Photos" sheet, and app chrome
+     isn't selectable text. Typed fields stay selectable. */
+  a[href], img { -webkit-touch-callout: none; -webkit-user-drag: none; }
+  a[href], nav, header, label { -webkit-user-select: none; user-select: none; }
+  input, textarea, select, [contenteditable] { -webkit-user-select: text; user-select: text; }
   /* iOS zooms into any field under 16px: never let that happen. */
   input, select, textarea { font-size: max(16px, 1em); }
 }
@@ -317,3 +322,15 @@ h1 { letter-spacing: -0.01em; }
   .side-frame[data-collapsed="true"] .side-menu { opacity: 0; transform: translateX(-1.5rem); padding-inline: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .side-frame, .side-menu { transition: none; } }
+
+/* "You're in a browser" tip (iPhone, not installed): floats under the status bar, above everything but the loading bar. */
+.open-in-app-hint {
+  position: fixed; z-index: 66; left: .75rem; right: .75rem; top: calc(env(safe-area-inset-top) + .5rem);
+  display: flex; align-items: flex-start; gap: .75rem; padding: .875rem 1rem; border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--onyx) 94%, var(--indigo)); color: #fff;
+  box-shadow: 0 18px 40px -18px rgba(11,11,16,.7); animation: note-in .3s cubic-bezier(.2,.8,.2,1) both;
+}
+@media (min-width: 768px) { .open-in-app-hint { left: auto; width: 26rem; } }
+
+/* Phone turned sideways: keep everything clear of the notch / Dynamic Island (0 in portrait and on desktops). */
+.side-frame, .auth-theme { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }

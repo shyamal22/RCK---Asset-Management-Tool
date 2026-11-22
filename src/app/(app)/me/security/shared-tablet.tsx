@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ export function SharedTablet({ isShared }: { isShared: boolean }) {
   const [pending, start] = useTransition();
   const save = (shared: boolean) =>
     start(async () => {
-      const r = await setSharedTabletAction({ shared, label });
+      const r = await safeAction(setSharedTabletAction({ shared, label }));
       if (r.ok) router.refresh();
       else setError(r.error);
     });

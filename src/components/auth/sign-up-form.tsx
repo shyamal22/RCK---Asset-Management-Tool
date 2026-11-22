@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { useMachineFeedback } from "@/components/auth/machine-state";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { useState, useTransition } from "react";
@@ -28,7 +29,7 @@ export function SignUpForm({ code }: { code: string }) {
   useMachineFeedback(pending, error);
   const form = useForm<z.infer<typeof formSchema>>({ resolver: zodResolver(formSchema), defaultValues: { name: "", password: "" } });
 
-  if (sent) return <CodeEntry contact={sent} purpose="signup" onVerified={() => router.replace("/waiting")} />;
+  if (sent) return <CodeEntry contact={sent} purpose="signup" onVerified={() => router.replace("/waiting")} onBack={() => setSent(null)} />;
 
   return (
     <form
@@ -39,7 +40,7 @@ export function SignUpForm({ code }: { code: string }) {
         if (!c.success) return setContactError(c.error.issues[0]?.message);
         setContactError(undefined);
         start(async () => {
-          const r = await signUpAction({ code, name: values.name, contact: c.data, password: values.password });
+          const r = await safeAction(signUpAction({ code, name: values.name, contact: c.data, password: values.password }));
           if (r.ok) setSent(c.data);
           else setError(r.error);
         });

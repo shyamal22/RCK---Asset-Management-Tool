@@ -111,7 +111,7 @@ export function Orbit({ items }: { items: ShowItem[] }) {
 
   return (
     <section className="grid grid-cols-[minmax(0,1fr)] gap-4" aria-label="Showroom">
-      <div className="relative min-w-0">
+      <div className="relative isolate min-w-0">
         <div
           ref={stage}
           tabIndex={0}

@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, FormError } from "@/components/field";
@@ -18,7 +19,7 @@ export function CloseReport({ id }: { id: string }) {
         e.preventDefault();
         start(async () => {
           setError(null);
-          const r = await closeBreakdownAction({ id, status, note });
+          const r = await safeAction(closeBreakdownAction({ id, status, note }));
           if (!r.ok) setError(r.error);
         });
       }}

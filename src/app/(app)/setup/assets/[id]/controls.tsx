@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { StatusNote } from "@/components/feedback/status-note";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ export function ChangeUnit({ assetId, unit }: { assetId: string; unit: TrackingU
         e.preventDefault();
         start(async () => {
           setError(null);
-          const r = await changeUnitAction({ assetId, unit: other, reading, reason });
+          const r = await safeAction(changeUnitAction({ assetId, unit: other, reading, reason }));
           if (!r.ok) return setError(r.error);
           setMsg(`Now tracked by ${UNIT_LABELS[other].name.toLowerCase()}`);
         });
@@ -49,7 +50,7 @@ export function ArchiveAsset({ assetId, code }: { assetId: string; code: string 
         if (!confirm(`Archive ${code}? It leaves all lists but its history is kept.`)) return;
         start(async () => {
           setError(null);
-          const r = await archiveAssetAction({ assetId, reason });
+          const r = await safeAction(archiveAssetAction({ assetId, reason }));
           if (r && !r.ok) setError(r.error);
         });
       }}

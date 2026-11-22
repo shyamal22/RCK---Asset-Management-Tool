@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { Camera } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -136,14 +137,14 @@ export function AssetForm({ initial, opts }: { initial: AssetFormValues; opts: O
           setError(null);
           if (!editing && !photo) return setError("Add a photo of the machine");
           if (editing) {
-            const r = await updateAssetAction(v);
+            const r = await safeAction(updateAssetAction(v));
             if (!r.ok) return setError(r.error);
             router.push(`/assets/${initial.id}`);
           } else {
             const fd = new FormData();
             fd.set("data", JSON.stringify(v));
             fd.set("photo", photo!);
-            const r = await createAssetAction(fd);
+            const r = await safeAction(createAssetAction(fd));
             if (!r.ok) return setError(r.error);
             router.push(r.photoSaved ? `/assets/${r.id}` : `/setup/assets/${r.id}?photo=failed`);
           }

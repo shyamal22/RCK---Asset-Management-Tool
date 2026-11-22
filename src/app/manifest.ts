@@ -3,6 +3,7 @@ import type { MetadataRoute } from "next";
 /** Installable on phones ("Add to Home Screen"): opens full screen, portrait, onyx behind the status bar. */
 export default function manifest(): MetadataRoute.Manifest {
   return {
+    id: "/",
     name: "KRE Asset Management Tool",
     short_name: "KRE Assets",
     start_url: "/",

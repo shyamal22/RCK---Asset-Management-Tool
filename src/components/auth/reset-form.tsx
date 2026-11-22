@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { useMachineFeedback } from "@/components/auth/machine-state";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { useState, useTransition } from "react";
@@ -19,7 +20,7 @@ export function ResetForm() {
   useMachineFeedback(pending, error);
   const contact = { method: "email" as const, email: email.trim().toLowerCase() };
 
-  if (step === "code") return <CodeEntry contact={contact} purpose="recovery" onVerified={() => setStep("password")} />;
+  if (step === "code") return <CodeEntry contact={contact} purpose="recovery" onVerified={() => setStep("password")} onBack={() => setStep("ask")} />;
 
   if (step === "password")
     return (
@@ -28,7 +29,7 @@ export function ResetForm() {
         onSubmit={(e) => {
           e.preventDefault();
           start(async () => {
-            const r = await setNewPasswordAction({ password });
+            const r = await safeAction(setNewPasswordAction({ password }));
             if (r.ok) router.replace("/");
             else setError(r.error);
           });
@@ -51,7 +52,7 @@ export function ResetForm() {
         const c = contactSchema.safeParse(contact);
         if (!c.success) return setError("Enter a valid email");
         start(async () => {
-          const r = await resendCodeAction({ contact: c.data, purpose: "recovery" });
+          const r = await safeAction(resendCodeAction({ contact: c.data, purpose: "recovery" }));
           if (r.ok) setStep("code");
           else setError(r.error);
         });

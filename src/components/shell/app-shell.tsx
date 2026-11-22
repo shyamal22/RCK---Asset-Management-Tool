@@ -5,6 +5,8 @@ import { NavLink, type IconName } from "./nav-link";
 import { DoneButton } from "./done-button";
 import { StatusBarBackdrop } from "./status-bar";
 import { SideFrame } from "./side-frame";
+import { PhoneHeader } from "./phone-header";
+import { BackButton, ScreenTracker } from "./back-bar";
 
 type Item = { href: string; label: string; icon: IconName };
 
@@ -48,6 +50,7 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const items = navItems(me);
+  const hasSetup = items.some((i) => i.href === "/setup");
   return (
     <SideFrame
       initialCollapsed={sideCollapsed}
@@ -65,16 +68,17 @@ export function AppShell({
     >
       <StatusBarBackdrop />
       <div className="flex min-h-dvh min-w-0 flex-col md:p-3 md:pl-0 md:group-data-[collapsed=true]/side:pl-3">
-        <header className="flex items-end justify-between gap-3 px-5 pt-[calc(env(safe-area-inset-top)+1.25rem)] pb-8 md:hidden">
-          <Brand me={me} />
-          {shared ? <DoneButton /> : null}
-        </header>
-        <main className="flex-1 rounded-t-[2.5rem] bg-background px-5 pt-8 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:rounded-[2rem] md:px-10 md:pt-10 md:pb-10 md:group-data-[collapsed=true]/side:pt-16">
+        <PhoneHeader brand={<Brand me={me} />} companyName={me.companyName || "KRE Asset Management"} done={shared ? <DoneButton /> : null} hasSetup={hasSetup} />
+        <ScreenTracker />
+        <main className="min-w-0 flex-1 overflow-x-clip rounded-t-[2.5rem] bg-background px-5 pt-8 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:rounded-[2rem] md:px-10 md:pt-10 md:pb-10 md:group-data-[collapsed=true]/side:pt-16">
+          <div className="-mt-3 mb-3 hidden md:block md:empty:hidden">
+            <BackButton hasSetup={hasSetup} className="-ml-2 text-[var(--indigo)]" />
+          </div>
           {children}
         </main>
         <nav
           aria-label="Main"
-          className="fixed inset-x-0 bottom-0 z-50 flex border-t border-border bg-background pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_30px_-20px_rgba(11,11,16,.35)] md:hidden"
+          className="fixed inset-x-0 bottom-0 z-50 flex border-t border-border bg-background px-[max(env(safe-area-inset-left),env(safe-area-inset-right))] pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_30px_-20px_rgba(11,11,16,.35)] md:hidden"
         >
           {items.map((i) => (
             <NavLink key={i.href} {...i} variant="bottom" />

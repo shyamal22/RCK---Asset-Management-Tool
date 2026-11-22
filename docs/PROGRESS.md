@@ -96,3 +96,9 @@ iPhone: viewport-fit=cover, web app manifest + KRE icons, Apple web-app tags, on
 Feedback: light vibration on taps (Android; iOS 18 system tick), stronger buzz on errors, "Saved" pill above the bottom nav, tangerine loading bar, pressed look on cards, bottom-nav tab pulses while loading.
 Switches for on/off settings (Workshop lead, sign-up link). Wheel: flick momentum, no re-render mid-spin, quick arrow taps add up. Filters no longer jump to top; photo links cached (no re-download flashing).
 Desktop side menu hides (button or Ctrl+B, remembered). Home: date only on top; tiles All working / Damaged / Unusable with status-colour wash, counted with no overlap.
+
+## 22/11/2026 — Installed iPhone app: no browser bars, no dead ends
+Browser bars in Sam's screenshot = iOS in-app browser (link opened from another app). Fixes: photos open in an in-app viewer (never a supabase.co link), maps open the phone's Maps app, "You're in a browser" tip on iPhone when not installed, manifest id.
+App-like navigation: "‹ Back" bar on every screen below a tab (keeps list filters), in-app error and Not found screens, sign-in screens always have a way back, Waiting has "Check again".
+Poor signal: forms keep typed text/photos and show "Couldn't send" instead of crashing (safeAction); service worker shows our own "No signal" screen and reloads when signal returns.
+Fixed the Assets wheel making the phone page 16px too wide (page zoomed out / wobbled sideways); wheel arrows no longer draw over the bottom tabs; long-press link previews off; landscape safe areas.

@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { useMachineFeedback } from "@/components/auth/machine-state";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { useState, useTransition } from "react";
@@ -17,7 +18,7 @@ export function DeviceCode({ sendTo }: { sendTo: string }) {
   const send = () =>
     start(async () => {
       setError(null);
-      const r = await sendDeviceCodeAction();
+      const r = await safeAction(sendDeviceCodeAction());
       if (r.ok) setSent(true);
       else setError(r.error);
     });
@@ -39,7 +40,7 @@ export function DeviceCode({ sendTo }: { sendTo: string }) {
       onSubmit={(e) => {
         e.preventDefault();
         start(async () => {
-          const r = await verifyDeviceCodeAction({ token });
+          const r = await safeAction(verifyDeviceCodeAction({ token }));
           if (r.ok) router.replace("/");
           else setError(r.error);
         });

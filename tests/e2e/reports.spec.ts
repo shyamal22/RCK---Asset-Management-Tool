@@ -41,6 +41,14 @@ test("Crew reports damage with photos; machine goes red; Workshop marks it fixed
   await expect(page.getByRole("heading", { name: "Screed heater not working" })).toBeVisible();
   await expect(page.getByRole("img", { name: "Damage photo 1" })).toBeVisible();
   await expect(page.getByText("The workshop will look at this")).toBeVisible();
+  // Photos open full screen inside the app, never as a link to the storage address.
+  await expect(page.locator('a[href*="supabase"], a[href*="/storage/v1/"]')).toHaveCount(0);
+  await page.getByRole("button", { name: "View damage photo 1" }).click();
+  const viewer = page.getByRole("dialog", { name: "Damage photo 1" });
+  await expect(viewer).toBeVisible();
+  await viewer.getByRole("button", { name: "Close photo" }).click();
+  await expect(viewer).toBeHidden();
+  expect(new URL(page.url()).pathname).toMatch(/^\/reports\//);
 
   await page.goto(`/assets/${paver.id}`);
   await expect(page.getByText("Unusable").first()).toBeVisible();

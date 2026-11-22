@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { StatusNote } from "@/components/feedback/status-note";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ export function ReadingForm({ assetId, unitName }: { assetId: string; unitName: 
         start(async () => {
           setError(null);
           setMsg(null);
-          const r = await recordReadingAction({ assetId, reading });
+          const r = await safeAction(recordReadingAction({ assetId, reading }));
           if (!r.ok) return setError(r.error);
           setReading("");
           setMsg(r.lower ? "Saved, but it's lower than the last reading, so the current reading wasn't changed. The workshop will check it." : "Saved");

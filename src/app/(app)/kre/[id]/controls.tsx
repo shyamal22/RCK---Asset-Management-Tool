@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { StatusNote } from "@/components/feedback/status-note";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,7 @@ function useAction() {
     start(async () => {
       setError(null);
       setMsg(null);
-      const r = await fn();
+      const r = await safeAction(fn());
       if (!r.ok) return setError(r.error);
       if (done) setMsg(done);
     });
@@ -36,7 +37,7 @@ export function ResendInviteButton({ companyId }: { companyId: string }) {
         disabled={a.pending}
         onClick={() =>
           a.run(async () => {
-            const r = await resendInviteAction({ companyId });
+            const r = await safeAction(resendInviteAction({ companyId }));
             return r.ok && !r.emailed ? { ok: false, error: "Email isn't set up. Send them the link above." } : r;
           }, "Invite sent again")
         }

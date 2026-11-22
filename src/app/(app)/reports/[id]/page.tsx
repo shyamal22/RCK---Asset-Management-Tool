@@ -1,6 +1,9 @@
+import { PhotoViewer } from "@/components/photo-viewer";
 import Link from "next/link";
 import { sql } from "drizzle-orm";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
+import { mapsHref } from "@/lib/geo/maps";
 import { requirePermission } from "@/lib/auth/guard";
 import { can } from "@/lib/permissions/check";
 import { formatDateTime } from "@/lib/dates";
@@ -28,6 +31,7 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
   const urls = await photoUrls([...r.photo_paths, company?.logo_path ?? null]);
   const logo = company?.logo_path ? urls[company.logo_path] : undefined;
   const sev = SEVERITY[r.severity];
+  const ua = (await headers()).get("user-agent");
   return (
     <div className="grid max-w-3xl gap-6">
       {/* Report header: company logo (Setup → Company) */}
@@ -59,16 +63,7 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
         </div>
       </header>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" aria-label="Photos">
-        {r.photo_paths.map((p, i) =>
-          urls[p] ? (
-            <a key={p} href={urls[p]} target="_blank" rel="noreferrer" className="surface block aspect-square overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element -- signed URL */}
-              <img src={urls[p]} alt={`Damage photo ${i + 1}`} className="size-full object-cover" />
-            </a>
-          ) : null,
-        )}
-      </div>
+      <PhotoViewer photos={r.photo_paths.filter((p) => urls[p]).map((p, i) => ({ src: urls[p], alt: `Damage photo ${i + 1}` }))} />
 
       <section className="grid gap-2">
         <h2 className="text-xl font-bold">Details</h2>
@@ -84,7 +79,7 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
             <>
               <dt className="text-muted-foreground">Location</dt>
               <dd>
-                <a className="text-[var(--indigo)] underline" href={`https://www.google.com/maps?q=${r.lat},${r.lng}`} target="_blank" rel="noreferrer">
+                <a className="text-[var(--indigo)] underline" href={mapsHref(r.lat, r.lng, r.code, ua)} target="_blank" rel="noreferrer">
                   Open in maps
                 </a>
               </dd>

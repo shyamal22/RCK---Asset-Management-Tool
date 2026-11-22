@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ export function NewClientForm() {
         e.preventDefault();
         start(async () => {
           setError(null);
-          const r = await createClientAction(v);
+          const r = await safeAction(createClientAction(v));
           if (!r.ok) return setError(r.error);
           router.push(`/kre/${r.id}?invited=${r.emailed ? "email" : "link"}`);
         });

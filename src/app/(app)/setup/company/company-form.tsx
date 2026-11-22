@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { StatusNote } from "@/components/feedback/status-note";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,7 @@ export function CompanyForm({ initial, onSaved, submitLabel = "Save" }: { initia
         e.preventDefault();
         start(async () => {
           setError(null);
-          const r = await saveCompanyAction(v);
+          const r = await safeAction(saveCompanyAction(v));
           if (!r.ok) return setError(r.error);
           setMsg("Saved");
           onSaved?.();

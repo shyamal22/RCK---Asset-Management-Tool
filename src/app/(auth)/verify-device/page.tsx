@@ -3,6 +3,8 @@ import { Screen } from "@/components/field";
 import { getProfile } from "@/lib/auth/session";
 import { currentDevice, markSessionVerified } from "@/lib/auth/device";
 import { DeviceCode } from "./device-code";
+import { Button } from "@/components/ui/button";
+import { signOutAction } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +20,11 @@ export default async function VerifyDevicePage() {
   return (
     <Screen title="New device" subtitle="Confirm it's you">
       <DeviceCode sendTo={p.email ?? p.mobile ?? ""} />
+      <form action={signOutAction}>
+        <Button type="submit" variant="ghost" className="h-12 w-full text-base">
+          Sign out
+        </Button>
+      </form>
     </Screen>
   );
 }

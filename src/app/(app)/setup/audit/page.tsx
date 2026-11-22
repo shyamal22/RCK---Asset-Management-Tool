@@ -79,7 +79,9 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
         </Button>
         {can(me.actor, "audit_log", "export") ? (
           <Button asChild variant="outline" className="h-11">
-            <a href={`/setup/audit/export?${qs({ page: undefined })}`}>Export CSV</a>
+            <a href={`/setup/audit/export?${qs({ page: undefined })}`} download="audit-log.csv">
+              Export CSV
+            </a>
           </Button>
         ) : null}
       </form>

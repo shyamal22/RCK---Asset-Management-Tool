@@ -1,0 +1,46 @@
+"use client";
+import { useEffect, useState } from "react";
+import { Smartphone, X } from "lucide-react";
+import { inBrowserOnIos } from "@/lib/feedback/standalone";
+
+const KEY = "kre-hint-dismissed";
+
+/**
+ * Links tapped in other apps (Claude, Teams, Outlook, email) always open in that app's browser sheet,
+ * with an X, the address and Safari buttons. No website can change that. When we're running that way on
+ * an iPhone, say so once, and point to the home-screen icon. Dismissed for the rest of the session.
+ */
+export function OpenInAppHint() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    let dismissed = false;
+    try {
+      dismissed = sessionStorage.getItem(KEY) === "1";
+    } catch {}
+    const nav = navigator as Navigator & { standalone?: boolean };
+    if (!dismissed && inBrowserOnIos(nav, window.matchMedia("(display-mode: standalone)").matches)) setShow(true);
+  }, []);
+  if (!show) return null;
+  return (
+    <aside aria-label="Open the app" className="open-in-app-hint">
+      <Smartphone className="mt-0.5 size-5 shrink-0 text-[var(--tangerine)]" aria-hidden />
+      <p className="grid gap-0.5 text-sm leading-snug">
+        <span className="font-bold">You&apos;re in a browser.</span>
+        <span>For the full-screen app, open KRE Assets from your home screen. Not there yet? Open this page in Safari, then Share → Add to Home Screen.</span>
+      </p>
+      <button
+        type="button"
+        aria-label="Hide this tip"
+        className="press -m-1 flex size-10 shrink-0 items-center justify-center rounded-full text-white/80"
+        onClick={() => {
+          setShow(false);
+          try {
+            sessionStorage.setItem(KEY, "1");
+          } catch {}
+        }}
+      >
+        <X className="size-5" aria-hidden />
+      </button>
+    </aside>
+  );
+}

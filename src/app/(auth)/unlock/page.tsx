@@ -3,6 +3,8 @@ import { Screen } from "@/components/field";
 import { getProfile } from "@/lib/auth/session";
 import { currentDevice, isUnlocked, userPasskeys } from "@/lib/auth/device";
 import { UnlockForm } from "./unlock-form";
+import { Button } from "@/components/ui/button";
+import { signOutAction } from "../actions";
 import { sql } from "drizzle-orm";
 import { adminDb } from "@db/client";
 
@@ -20,6 +22,11 @@ export default async function UnlockPage() {
   return (
     <Screen title={p.name} subtitle="Welcome back">
       <UnlockForm hasPin={has_pin} hasPasskey={hasPasskey} />
+      <form action={signOutAction}>
+        <Button type="submit" variant="ghost" className="h-12 w-full text-base">
+          Forgot your PIN? Sign in again
+        </Button>
+      </form>
     </Screen>
   );
 }

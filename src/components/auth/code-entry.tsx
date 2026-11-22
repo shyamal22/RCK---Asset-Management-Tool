@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { useMachineFeedback } from "@/components/auth/machine-state";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { useState, useTransition } from "react";
@@ -12,10 +13,13 @@ export function CodeEntry({
   contact,
   purpose,
   onVerified,
+  onBack,
 }: {
   contact: Contact;
   purpose: "signup" | "recovery";
   onVerified: () => void;
+  /** Typo in the address? Go back and fix it (an installed app has no browser back). */
+  onBack?: () => void;
 }) {
   const [token, setToken] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +35,7 @@ export function CodeEntry({
         e.preventDefault();
         setError(null);
         start(async () => {
-          const r = await verifyCodeAction({ contact, token, purpose });
+          const r = await safeAction(verifyCodeAction({ contact, token, purpose }));
           if (r.ok) onVerified();
           else setError(r.error);
         });
@@ -65,7 +69,7 @@ export function CodeEntry({
         disabled={pending}
         onClick={() =>
           start(async () => {
-            const r = await resendCodeAction({ contact, purpose });
+            const r = await safeAction(resendCodeAction({ contact, purpose }));
             setNotice(r.ok ? "New code sent" : null);
             if (!r.ok) setError(r.error);
           })
@@ -73,6 +77,11 @@ export function CodeEntry({
       >
         Send a new code
       </Button>
+      {onBack ? (
+        <Button type="button" variant="ghost" className="h-12 text-base" disabled={pending} onClick={onBack}>
+          {contact.method === "email" ? "Use a different email" : "Use a different number"}
+        </Button>
+      ) : null}
     </form>
   );
 }

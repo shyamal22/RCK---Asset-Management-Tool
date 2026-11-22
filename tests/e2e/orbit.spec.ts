@@ -12,6 +12,9 @@ test("dragging the wheel brings the next machine to the front; tapping a side ca
   await signIn(page, d.email);
   await page.goto("/assets");
   await expect(page.getByRole("heading", { name: "ROL-01 Roller 1" })).toBeVisible();
+  // The side cards of the wheel must never make the page wider than the phone (it zooms out and wobbles sideways).
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+  expect(await page.evaluate(() => window.innerWidth)).toBe(page.viewportSize()!.width);
 
   const stage = page.getByRole("group", { name: /drag to spin/ });
   await stage.scrollIntoViewIfNeeded();
@@ -30,7 +33,8 @@ test("dragging the wheel brings the next machine to the front; tapping a side ca
   await page.mouse.move(box.x + box.width * 0.35, y, { steps: 3 });
   await page.mouse.up();
   await expect(page.getByRole("heading", { name: /ROL-0[45]/ })).toBeVisible();
-  // Back to the start with the arrow button for the rest of the story.
+  // Back to the start with the arrow button for the rest of the story (wheel mid-screen, clear of the bottom tabs).
+  await stage.evaluate((el) => el.scrollIntoView({ block: "center" }));
   for (let i = 0; i < 3; i++) await page.getByRole("button", { name: "Previous machine" }).click();
   await page.getByRole("button", { name: "Next machine" }).click();
   await expect(page.getByRole("heading", { name: "ROL-02 Roller 2" })).toBeVisible();

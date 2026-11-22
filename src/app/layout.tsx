@@ -3,6 +3,8 @@ import { Carlito } from "next/font/google";
 import { Suspense } from "react";
 import { NavProgress } from "@/components/feedback/nav-progress";
 import { TapFeedback } from "@/components/feedback/tap-feedback";
+import { OpenInAppHint } from "@/components/feedback/open-in-app-hint";
+import { ServiceWorker } from "@/components/feedback/service-worker";
 import "./globals.css";
 
 const carlito = Carlito({
@@ -38,6 +40,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <NavProgress />
         </Suspense>
         <TapFeedback />
+        <OpenInAppHint />
+        <ServiceWorker />
         {children}
       </body>
     </html>

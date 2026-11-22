@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { StatusNote } from "@/components/feedback/status-note";
 import { useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,7 @@ export function PhotoUpload({ assetId, hasPhoto }: { assetId: string; hasPhoto: 
             const fd = new FormData();
             fd.set("assetId", assetId);
             fd.set("photo", await shrinkPhoto(file));
-            const r = await uploadPhotoAction(fd);
+            const r = await safeAction(uploadPhotoAction(fd));
             if (!r.ok) return setError(r.error);
             setMsg("Photo saved");
             if (input.current) input.current.value = "";

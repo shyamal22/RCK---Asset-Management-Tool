@@ -1,4 +1,5 @@
 "use client";
+import { safeAction } from "@/lib/safe-action";
 import { StatusNote } from "@/components/feedback/status-note";
 import { useRef, useState, useTransition } from "react";
 import { ImageUp } from "lucide-react";
@@ -41,7 +42,7 @@ export function LogoUpload({ url }: { url: string | null }) {
             setMsg(null);
             const fd = new FormData();
             fd.set("logo", f);
-            const r = await uploadLogoAction(fd);
+            const r = await safeAction(uploadLogoAction(fd));
             if (!r.ok) return setError(r.error);
             setMsg("Logo saved");
             router.refresh();
