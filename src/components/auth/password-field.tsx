@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { passwordStrength, suggestPassword } from "@/lib/auth/password-strength";
 import { useMachineState } from "./machine-state";
 
-const BAR = ["bg-[var(--tangerine)]", "bg-[var(--tangerine)]", "bg-[var(--indigo-soft)]", "bg-[var(--indigo)]", "bg-[var(--indigo)]"];
+const BAR = ["bg-[var(--tangerine)]", "bg-[var(--tangerine)]", "bg-[color-mix(in_srgb,var(--indigo)_55%,white)]", "bg-[var(--indigo)]", "bg-[var(--indigo)]"];
 
 /**
  * Password box: show/hide (the cab operator looks away), optional live strength + hint for new
@@ -63,16 +63,16 @@ export function PasswordField({
         </button>
       </div>
       {s ? (
-        <div id={`${id}-strength`} className="grid gap-1.5" aria-live="polite">
+        <div id={`${id}-strength`} className="pw-meter grid gap-1.5" aria-live="polite">
           <div className="grid grid-cols-4 gap-1" aria-hidden>
             {[1, 2, 3, 4].map((i) => (
-              <span key={i} className={cn("h-1.5 rounded-full bg-[var(--onyx-3)] transition-colors", current && i <= Math.max(1, s.score) && BAR[s.score])} />
+              <span key={i} className={cn("h-1.5 rounded-full bg-[var(--muted)] transition-colors", current && i <= Math.max(1, s.score) && BAR[s.score])} />
             ))}
           </div>
           {current ? (
             <p className="flex justify-between gap-3 text-sm">
-              <span className={s.ok ? "text-muted-foreground" : "text-[var(--tangerine)]"}>{s.hint ?? ""}</span>
-              {s.ok ? <span className={cn("font-bold", s.score >= 3 && "text-[var(--indigo-soft)]")}>{s.label}</span> : null}
+              <span className={s.ok ? "text-muted-foreground" : "text-destructive"}>{s.hint ?? ""}</span>
+              {s.ok ? <span className={cn("font-bold", s.score >= 3 && "text-[var(--indigo)]")}>{s.label}</span> : null}
             </p>
           ) : null}
         </div>
@@ -80,7 +80,7 @@ export function PasswordField({
       {onSuggest ? (
         <button
           type="button"
-          className="flex w-fit items-center gap-2 rounded-full px-1 py-2 text-base text-[var(--indigo-soft)] hover:underline"
+          className="pw-suggest flex w-fit items-center gap-2 rounded-full px-1 py-2 text-base text-[var(--indigo)] hover:underline"
           onClick={() => {
             const pw = suggestPassword();
             setCurrent(pw);

@@ -38,9 +38,11 @@ export function CodeEntry({
       }}
     >
       <p className="text-lg">Code sent to {sentTo}</p>
+      <div className="auth-card">
       <Field
         id="code"
         label="6-digit code"
+        placeholder="6-digit code"
         inputMode="numeric"
         autoComplete="one-time-code"
         pattern="\d{6}"
@@ -50,6 +52,7 @@ export function CodeEntry({
         className="text-center text-2xl tracking-[0.5em]"
         autoFocus
       />
+      </div>
       <FormError message={error} />
       {notice ? <p className="text-base">{notice}</p> : null}
       <SubmitButton pending={pending} disabled={token.length !== 6}>

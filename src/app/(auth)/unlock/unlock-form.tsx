@@ -51,9 +51,11 @@ export function UnlockForm({ hasPin, hasPasskey }: { hasPin: boolean; hasPasskey
             start(async () => done(await unlockWithPinAction(pin)));
           }}
         >
+          <div className="auth-card">
           <Field
             id="pin"
             label="PIN"
+            placeholder="PIN"
             type="password"
             inputMode="numeric"
             autoComplete="off"
@@ -63,6 +65,7 @@ export function UnlockForm({ hasPin, hasPasskey }: { hasPin: boolean; hasPasskey
             className="text-center text-3xl tracking-[0.5em]"
             autoFocus={!hasPasskey}
           />
+          </div>
           <SubmitButton pending={pending} disabled={pin.length < 4}>
             Unlock
           </SubmitButton>

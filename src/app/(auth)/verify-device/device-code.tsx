@@ -46,9 +46,11 @@ export function DeviceCode({ sendTo }: { sendTo: string }) {
       }}
     >
       <p className="text-lg">Code sent to {sendTo}</p>
+      <div className="auth-card">
       <Field
         id="code"
         label="6-digit code"
+        placeholder="6-digit code"
         inputMode="numeric"
         autoComplete="one-time-code"
         maxLength={6}
@@ -57,6 +59,7 @@ export function DeviceCode({ sendTo }: { sendTo: string }) {
         className="text-center text-2xl tracking-[0.5em]"
         autoFocus
       />
+      </div>
       <FormError message={error} />
       <SubmitButton pending={pending} disabled={token.length !== 6}>
         {pending ? "Checking…" : "Confirm"}

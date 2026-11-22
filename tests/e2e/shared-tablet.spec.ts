@@ -31,7 +31,9 @@ test("shared workshop tablet: switch between mechanics by PIN, idle returns to l
   await page.getByRole("button", { name: "Nina Mechanic" }).click();
   await page.getByLabel("PIN").fill("5937");
   await page.getByRole("button", { name: "Go" }).click();
-  await expect(page.getByRole("heading", { name: "Nina Mechanic" })).toBeVisible();
+  // The PIN step also shows the person's name; wait for Home itself before locking.
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("region", { name: "Job board" })).toBeVisible();
   await page.waitForLoadState("networkidle");
 
   await sql`update public.trusted_devices set unlocked_until = now() - interval '1 minute' where user_id = ${m2.id}`;

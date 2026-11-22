@@ -39,6 +39,7 @@ export function ContactInput({
           type="email"
           autoComplete="email"
           inputMode="email"
+          placeholder="Email"
           value={value.email}
           onChange={(e) => onChange({ ...value, email: e.target.value })}
           error={error}
@@ -50,7 +51,7 @@ export function ContactInput({
           type="tel"
           autoComplete="tel"
           inputMode="tel"
-          placeholder="021 123 4567"
+          placeholder="Mobile (021 123 4567)"
           value={value.mobile}
           onChange={(e) => onChange({ ...value, mobile: e.target.value })}
           error={error}

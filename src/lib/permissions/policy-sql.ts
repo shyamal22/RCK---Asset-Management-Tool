@@ -24,6 +24,22 @@ const ident = (s: string) => {
   return s;
 };
 
+/**
+ * Read check written so Postgres evaluates the per-user lookups ONCE per query (each `(select …)`
+ * becomes an InitPlan) instead of once per row. Same meaning as app.allows(area, 'view', …):
+ * own company + scope (all / crew / own), or a KRE admin with active support access.
+ */
+export function readExpr(area: Area, crewColumn: string | null, ownerColumn: string | null): string {
+  const a = `'${area}'`;
+  const crew = crewColumn ? `${crewColumn} = (select app.current_crew_id())` : "false";
+  const own = ownerColumn ? `${ownerColumn} = (select auth.uid())` : "false";
+  return (
+    `(company_id = (select app.current_company_id()) and case (select app.permission_scope(${a}, 'view')) ` +
+    `when 'all' then true when 'crew' then ${crew} when 'own' then ${own} else false end) ` +
+    `or ((select app.is_platform_admin()) and app.has_support(company_id))`
+  );
+}
+
 export function policySql(spec: PolicySpec): string {
   const t = ident(spec.table);
   const crew = spec.crewColumn ? ident(spec.crewColumn) : "null";
@@ -33,7 +49,8 @@ export function policySql(spec: PolicySpec): string {
     `app.allows('${spec.area}', '${action}', company_id, ${crew}::uuid, ${owner}::uuid)`;
   const out: string[] = [`alter table public.${t} enable row level security;`];
 
-  const read = spec.softDelete ? `${allows("view")} and deleted_at is null` : allows("view");
+  const readCore = readExpr(spec.area, spec.crewColumn ? ident(spec.crewColumn) : null, spec.ownerColumn ? ident(spec.ownerColumn) : null);
+  const read = spec.softDelete ? `(${readCore}) and deleted_at is null` : readCore;
   out.push(`create policy ${t}_select on public.${t} for select to authenticated using (${read});`);
   if (actions.includes("create")) {
     out.push(`create policy ${t}_insert on public.${t} for insert to authenticated with check (${allows("create")});`);

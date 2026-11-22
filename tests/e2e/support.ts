@@ -80,6 +80,15 @@ export async function signIn(page: Page, email: string, password = PASSWORD) {
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
   await page.waitForURL((u) => !u.pathname.startsWith("/sign-in"));
+  // Sign-in goes to "/" first and the server may then send Director/Office on to /verify-device,
+  // so wait until a destination has actually rendered before deciding.
+  await page
+    .getByRole("navigation", { name: "Main" })
+    .or(page.getByRole("button", { name: "Send code" }))
+    .or(page.getByRole("heading", { name: /Waiting for approval|Not approved/ }))
+    .or(page.getByRole("button", { name: "Unlock" }))
+    .first()
+    .waitFor();
   await page.waitForLoadState("networkidle");
   if (new URL(page.url()).pathname === "/verify-device") {
     const t0 = Date.now() - 1000;

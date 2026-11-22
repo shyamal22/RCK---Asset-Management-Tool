@@ -16,7 +16,7 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
     );
   }
   return (
-    <Screen title={`Join ${company.name}`}>
+    <Screen title={`Join ${company.name}`} subtitle="Create your account">
       <SsoButtons signupCode={code} />
       <SignUpForm code={code} />
     </Screen>

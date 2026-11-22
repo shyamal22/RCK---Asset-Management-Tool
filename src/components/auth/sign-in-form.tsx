@@ -24,7 +24,7 @@ export function SignInForm({ notice }: { notice?: string }) {
 
   return (
     <form
-      className="grid gap-4"
+      className="auth-rise grid gap-6"
       onSubmit={(e) => {
         e.preventDefault();
         setError(null);
@@ -44,15 +44,17 @@ export function SignInForm({ notice }: { notice?: string }) {
         });
       }}
     >
-      <ContactInput value={contact} onChange={setContact} />
-      <PasswordField id="password" label="Password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <div className="auth-card">
+        <ContactInput value={contact} onChange={setContact} />
+        <PasswordField id="password" label="Password" placeholder="Password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      </div>
       <FormError message={error} />
+      <Link href="/reset" className="py-1 text-center text-base">
+        Forgot password?
+      </Link>
       <SubmitButton pending={pending} disabled={false}>
         {pending ? "Signing in…" : "Sign in"}
       </SubmitButton>
-      <Link href="/reset" className="py-3 text-center text-base underline">
-        Forgot password
-      </Link>
     </form>
   );
 }

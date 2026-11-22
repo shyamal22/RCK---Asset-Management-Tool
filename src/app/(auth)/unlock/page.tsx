@@ -18,7 +18,7 @@ export default async function UnlockPage() {
   )) as unknown as { has_pin: boolean }[];
   const hasPasskey = (await userPasskeys(p.id)).length > 0;
   return (
-    <Screen title={p.name}>
+    <Screen title={p.name} subtitle="Welcome back">
       <UnlockForm hasPin={has_pin} hasPasskey={hasPasskey} />
     </Screen>
   );

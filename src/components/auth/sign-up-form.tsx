@@ -32,7 +32,7 @@ export function SignUpForm({ code }: { code: string }) {
 
   return (
     <form
-      className="grid gap-4"
+      className="auth-rise grid gap-6"
       onSubmit={form.handleSubmit((values) => {
         setError(null);
         const c = contactSchema.safeParse(toContact(contact));
@@ -45,17 +45,20 @@ export function SignUpForm({ code }: { code: string }) {
         });
       })}
     >
-      <Field id="name" label="Your name" autoComplete="name" {...form.register("name")} error={form.formState.errors.name?.message} />
+      <div className="auth-card">
+      <Field id="name" label="Your name" placeholder="Your name" autoComplete="name" {...form.register("name")} error={form.formState.errors.name?.message} />
       <ContactInput value={contact} onChange={setContact} error={contactError} />
       <PasswordField
         id="password"
         label="Password"
+        placeholder="Password"
         autoComplete="new-password"
         meter
         onSuggest={(pw) => form.setValue("password", pw, { shouldValidate: true })}
         {...form.register("password")}
         error={form.formState.errors.password?.message}
       />
+      </div>
       <FormError message={error} />
       <SubmitButton pending={pending} disabled={false}>
         {pending ? "Creating account…" : "Create account"}

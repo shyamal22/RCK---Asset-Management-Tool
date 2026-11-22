@@ -1,3 +1,4 @@
+import { AuthSheet } from "@/components/auth/auth-shell";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -30,12 +31,22 @@ export function FormError({ message }: { message?: string | null }) {
   );
 }
 
-/** Content of an account screen; the (auth) layout supplies the hero and sheet. */
-export function Screen({ title, children }: { title: string; children: React.ReactNode }) {
+/** An account screen: gradient header (title + line) and the white sheet below it. */
+export function Screen({ title, subtitle, wide, children }: { title: string; subtitle?: string; wide?: boolean; children: React.ReactNode }) {
   return (
-    <div className="auth-form flex flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight text-balance">{title}</h1>
-      {children}
-    </div>
+    <>
+      <header className={cn("auth-hero auth-rise flex flex-col gap-3 px-7 pt-[max(1.5rem,env(safe-area-inset-top))] pb-10 md:w-full md:px-2", wide ? "md:max-w-3xl" : "md:max-w-md")}>
+        <p className="flex items-center gap-2 text-base">
+          <span className="size-2.5 rounded-full bg-[var(--tangerine)]" aria-hidden />
+          <span className="font-bold tracking-wide">KRE</span>
+          <span className="opacity-75">Asset Management Tool</span>
+        </p>
+        <h1 className="mt-10 text-[2.75rem] leading-none font-normal tracking-tight text-balance md:mt-6">{title}</h1>
+        {subtitle ? <p className="text-lg opacity-90">{subtitle}</p> : null}
+      </header>
+      <AuthSheet wide={wide}>
+        <div className={cn("auth-form auth-rise mx-auto flex w-full flex-col gap-6", wide ? "max-w-3xl" : "max-w-sm")}>{children}</div>
+      </AuthSheet>
+    </>
   );
 }

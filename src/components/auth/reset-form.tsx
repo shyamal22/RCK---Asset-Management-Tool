@@ -34,7 +34,7 @@ export function ResetForm() {
           });
         }}
       >
-        <PasswordField id="new-password" label="New password" autoComplete="new-password" meter onSuggest={setPassword} value={password} onChange={(e) => setPassword(e.target.value)} />
+        <div className="auth-card"><PasswordField id="new-password" label="New password" placeholder="New password" autoComplete="new-password" meter onSuggest={setPassword} value={password} onChange={(e) => setPassword(e.target.value)} /></div>
         <FormError message={error} />
         <SubmitButton pending={pending} disabled={false}>
           Save password
@@ -57,7 +57,7 @@ export function ResetForm() {
         });
       }}
     >
-      <Field id="email" label="Email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <div className="auth-card"><Field id="email" label="Email" placeholder="Email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
       <FormError message={error} />
       <SubmitButton pending={pending} disabled={false}>
         Send code

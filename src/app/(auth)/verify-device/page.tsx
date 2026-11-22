@@ -16,7 +16,7 @@ export default async function VerifyDevicePage() {
     redirect("/");
   }
   return (
-    <Screen title="New device">
+    <Screen title="New device" subtitle="Confirm it's you">
       <DeviceCode sendTo={p.email ?? p.mobile ?? ""} />
     </Screen>
   );
