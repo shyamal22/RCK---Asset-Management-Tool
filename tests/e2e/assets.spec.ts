@@ -63,7 +63,7 @@ test("Workshop adds a roller, records readings, edits it and adds a photo", asyn
   await expect(page.locator('p[role="alert"]')).toHaveText("Code ROL-01 is already used");
 
   // Edit: status + name; photo.
-  await page.goto("/assets");
+  await page.goto("/assets?type=all");
   await page.getByRole("link", { name: "ROL-01 Roller 1" }).click();
   await page.getByRole("link", { name: "Edit asset" }).click();
   await page.getByLabel("Asset photo").setInputFiles({ name: "roller.png", mimeType: "image/png", buffer: PNG });
@@ -92,7 +92,7 @@ test("search by name or code and filter; Crew only sees their crew's machines", 
 
   const d = await makeE2EUser(co.id, "director");
   await signIn(page, d.email);
-  await page.goto("/assets");
+  await page.goto("/assets?type=all");
   await expect(page.getByText("2 assets")).toBeVisible();
   // The bay and showroom rows scroll inside themselves; the page never scrolls sideways.
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
@@ -104,7 +104,7 @@ test("search by name or code and filter; Crew only sees their crew's machines", 
   await page.getByRole("button", { name: "Search" }).click();
   await expect(page.getByRole("link", { name: "PAV-01 Big paver" })).toBeVisible();
   await page.getByRole("link", { name: "Clear" }).click();
-  await expect(page).toHaveURL(/\/assets$/);
+  await expect(page).toHaveURL(/\/assets\?type=all$/);
   await expect(page.getByLabel("Search assets")).toHaveValue("");
   await page.locator("summary", { hasText: "Filter" }).click();
   await page.getByLabel("Status").selectOption({ label: "In workshop" });
@@ -112,30 +112,34 @@ test("search by name or code and filter; Crew only sees their crew's machines", 
   await expect(page.getByText("1 asset", { exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "TRK-03 Tipper" })).toBeVisible();
 
-  // Type bays + showroom: pick Pavers, the focused machine's details show below.
+  // The page opens on the machine types only (no wheel, no status chips); picking Pavers brings up that group.
   await page.goto("/assets");
   const bays = page.getByRole("navigation", { name: "Asset types" });
-  await expect(bays.getByRole("link", { name: "All, 2" })).toHaveAttribute("aria-current", "true");
+  await expect(bays.getByRole("link", { name: "All, 2" })).toBeVisible();
+  await expect(page.getByRole("group", { name: /Machines, drag to spin/ })).toHaveCount(0);
+  await expect(page.getByLabel("Search assets")).toHaveCount(0);
+  await expect(page.getByRole("navigation", { name: "Quick filters" })).toHaveCount(0);
   await bays.getByRole("link", { name: "Paver, 1" }).click();
+  await expect(bays.getByRole("link", { name: "Paver, 1" })).toHaveAttribute("aria-current", "true");
   await expect(page.getByText("1 asset", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "PAV-01 Big paver" })).toBeVisible();
   await expect(page.getByText("1 of 1")).toBeVisible();
-  // Status chips
-  await page.getByRole("navigation", { name: "Quick filters" }).getByRole("link", { name: "In workshop" }).click();
-  await expect(page.getByText("Nothing matches.")).toBeVisible();
+  // The glow behind the front machine is its status colour (Available = green).
+  await expect(page.getByRole("group", { name: /Machines, drag to spin/ })).toHaveAttribute("data-backlight", "green");
   // Orbit wheel: arrow keys bring the next machine to the front.
-  await page.goto("/assets");
+  await page.goto("/assets?type=all");
   await expect(page.getByText("1 of 2")).toBeVisible();
   await expect(page.getByRole("heading", { name: "PAV-01 Big paver" })).toBeVisible();
   await page.getByRole("group", { name: /Machines, drag to spin/ }).focus();
   await page.keyboard.press("ArrowRight");
   await expect(page.getByRole("heading", { name: "TRK-03 Tipper" })).toBeVisible();
+  await expect(page.getByRole("group", { name: /Machines, drag to spin/ })).toHaveAttribute("data-backlight", "yellow"); // in workshop
   await expect(page.getByText("2 of 2")).toBeVisible();
   await page.getByRole("button", { name: "Next machine" }).click();
   await expect(page.getByRole("heading", { name: "PAV-01 Big paver" })).toBeVisible();
 
   // Shuffle grid: buttons re-sort instantly.
-  await page.goto("/assets?view=list");
+  await page.goto("/assets?type=all&view=list");
   const cards = page.getByRole("region", { name: "Machines" }).getByRole("link");
   await expect(cards.first()).toHaveAccessibleName("PAV-01 Big paver");
   await page.getByRole("button", { name: "Problems first" }).click();
@@ -146,7 +150,7 @@ test("search by name or code and filter; Crew only sees their crew's machines", 
   const crew = await makeE2EUser(co.id, "crew", { crewId: co.crewId });
   const p = await (await browser.newContext()).newPage();
   await signIn(p, crew.email);
-  await p.goto("/assets");
+  await p.goto("/assets?type=all");
   await expect(p.getByRole("link", { name: "PAV-01 Big paver" })).toBeVisible();
   await expect(p.getByRole("link", { name: "TRK-03 Tipper" })).toHaveCount(0);
   await expect(p.getByRole("link", { name: "Add asset" })).toHaveCount(0);

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { sql } from "drizzle-orm";
 import { z } from "zod";
 import { actAs } from "@/lib/auth/guard";
+import { adminDb } from "@db/client";
 import { dbMessage } from "@/lib/db-message";
 import { PHOTO_BUCKET } from "@/lib/assets/queries";
 import { readingInput } from "@/lib/assets/schema";
@@ -13,6 +14,8 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 type Result<T = object> = ({ ok: true } & T) | { ok: false; error: string };
 
 const raiseSchema = z.object({
+  /** Made by the form when it opens, so a resend after a dropped reply can't raise the report twice. */
+  id: z.uuid().optional(),
   assetId: z.uuid("Pick the machine"),
   title: z.string().trim().min(3, "Say what's wrong in a few words").max(120),
   details: z.string().trim().min(3, "Add some details").max(2000),
@@ -43,19 +46,28 @@ export async function raiseBreakdownAction(form: FormData): Promise<Result<{ id:
       // The reporter must be able to see the machine (RLS).
       const [a] = (await tx.execute(sql`select id from public.assets where id = ${d.assetId}`)) as unknown as { id: string }[];
       if (!a) return { ok: false as const, error: "Not permitted" };
+      // A resend of a report that already went through: nothing more to do.
+      // Checked across all reports (not just the ones RLS shows), so an id that belongs to someone else is refused.
+      if (d.id) {
+        const [done] = (await adminDb.execute(sql`select id, raised_by from public.breakdown_reports where id = ${d.id}`)) as unknown as { id: string; raised_by: string }[];
+        if (done) return done.raised_by === me.id ? { ok: true as const, id: done.id } : { ok: false as const, error: "Not permitted" };
+      }
       const storage = supabaseAdmin().storage.from(PHOTO_BUCKET);
       const paths: string[] = [];
-      for (const f of files) {
-        const path = `${me.companyId}/breakdowns/${d.assetId}/${randomUUID()}.${f.type.split("/")[1].replace("jpeg", "jpg")}`;
-        const up = await storage.upload(path, f, { contentType: f.type });
+      for (const [n, f] of files.entries()) {
+        // Named from the report id when there is one, so a resend overwrites rather than duplicates.
+        // Prefixed with the sender's own id, so it can only ever overwrite their own upload.
+        const name = d.id ? `${me.id}-${d.id}-${n + 1}` : randomUUID();
+        const path = `${me.companyId}/breakdowns/${d.assetId}/${name}.${f.type.split("/")[1].replace("jpeg", "jpg")}`;
+        const up = await storage.upload(path, f, { contentType: f.type, upsert: !!d.id });
         if (up.error) {
-          if (paths.length) await storage.remove(paths);
+          if (paths.length && !d.id) await storage.remove(paths);
           return { ok: false as const, error: "A photo didn't upload. Try again." };
         }
         paths.push(path);
       }
       const [{ id }] = (await tx.execute(sql`select public.raise_breakdown(${d.assetId}, ${d.title}, ${d.details}, ${d.severity},
-        ${pgTextArray(paths)}::text[], ${d.reading ?? null}, ${d.lat ?? null}, ${d.lng ?? null}) as id`)) as unknown as { id: string }[];
+        ${pgTextArray(paths)}::text[], ${d.reading ?? null}, ${d.lat ?? null}, ${d.lng ?? null}, ${d.id ?? null}::uuid) as id`)) as unknown as { id: string }[];
       revalidatePath("/reports");
       revalidatePath(`/assets/${d.assetId}`);
       return { ok: true as const, id };

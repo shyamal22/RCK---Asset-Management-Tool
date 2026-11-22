@@ -42,6 +42,8 @@ export function ReportForm({ asset }: { asset: Asset }) {
   const [reading, setReading] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  // One id per report, made when the form opens: sending again after a dropped reply can't duplicate it.
+  const [reportId] = useState(() => crypto.randomUUID());
   useEffect(() => () => photos.forEach((p) => URL.revokeObjectURL(p.url)), [photos]);
 
   return (
@@ -55,9 +57,9 @@ export function ReportForm({ asset }: { asset: Asset }) {
         start(async () => {
           const where = await locate();
           const fd = new FormData();
-          fd.set("data", JSON.stringify({ assetId: asset.id, title, details, severity, reading, ...(where ?? {}) }));
+          fd.set("data", JSON.stringify({ id: reportId, assetId: asset.id, title, details, severity, reading, ...(where ?? {}) }));
           photos.forEach((p) => fd.append("photos", p.file));
-          const r = await safeAction(raiseBreakdownAction(fd));
+          const r = await safeAction(raiseBreakdownAction(fd), { offline: "Couldn't send: no signal. Tap Send again when you have signal. It won't be sent twice." });
           if (!r.ok) return setError(r.error);
           router.push(`/reports/${r.id}?sent=1`);
         });

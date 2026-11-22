@@ -5,7 +5,7 @@ import { BayRail } from "./bay-rail";
 export type RailItem = { key: string; label: string; n: number; href: string; active: boolean; photo: string | null };
 
 const GAP = 96; // px between items along the curve
-const H = 200;
+const H = 240; // tall enough for the lowest bay's label and count (they were clipped at 200)
 
 /** Point on the quadratic curve P0 → P2 bowed down through P1, at t ∈ [0,1]. */
 function at(t: number, w: number) {

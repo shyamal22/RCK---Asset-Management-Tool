@@ -52,7 +52,7 @@ export function CrewHome({ d }: { d: HomeData }) {
     <div className="grid gap-5">
       <Greeting />
       <ReportDamage />
-      <Panel title="My machines" href="/assets">
+      <Panel title="My machines" href="/assets?type=all">
         <MachineStrip items={d.machines} photos={d.photos} />
       </Panel>
       <Panel title="My reports" href="/reports">
@@ -70,7 +70,7 @@ export function SupervisorHome({ d }: { d: HomeData }) {
       <Panel title="Needs attention" href="/assets?view=list">
         <AttentionStrip rows={d.attention} photos={d.photos} empty="All your crew's machines are good to go." />
       </Panel>
-      <Panel title="Crew machines" href="/assets">
+      <Panel title="Crew machines" href="/assets?type=all">
         <MachineStrip items={d.machines} photos={d.photos} />
       </Panel>
       <Panel title="Open reports" href="/reports">

@@ -162,6 +162,13 @@
       "when": 1795320552775,
       "tag": "0022_company_contacts_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1795320553775,
+      "tag": "0023_breakdown_idempotent",
+      "breakpoints": true
     }
   ]
 }

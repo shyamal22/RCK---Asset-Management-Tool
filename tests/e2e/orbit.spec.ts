@@ -10,7 +10,7 @@ test("dragging the wheel brings the next machine to the front; tapping a side ca
   }
   const d = await makeE2EUser(co.id, "director");
   await signIn(page, d.email);
-  await page.goto("/assets");
+  await page.goto("/assets?type=all");
   await expect(page.getByRole("heading", { name: "ROL-01 Roller 1" })).toBeVisible();
   // The side cards of the wheel must never make the page wider than the phone (it zooms out and wobbles sideways).
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
@@ -39,12 +39,12 @@ test("dragging the wheel brings the next machine to the front; tapping a side ca
   await page.getByRole("button", { name: "Next machine" }).click();
   await expect(page.getByRole("heading", { name: "ROL-02 Roller 2" })).toBeVisible();
   // A drag never opens a machine.
-  await expect(page).toHaveURL(/\/assets$/);
+  await expect(page).toHaveURL(/\/assets\?type=all$/);
 
   // Tapping a card that isn't at the front spins it round instead of opening it.
   await page.getByRole("link", { name: "ROL-03 Roller 3" }).click();
   await expect(page.getByRole("heading", { name: "ROL-03 Roller 3" })).toBeVisible();
-  await expect(page).toHaveURL(/\/assets$/);
+  await expect(page).toHaveURL(/\/assets\?type=all$/);
   // Tapping the front card opens it.
   await page.getByRole("link", { name: "ROL-03 Roller 3" }).click();
   await expect(page).toHaveURL(/\/assets\/[0-9a-f-]{36}$/);

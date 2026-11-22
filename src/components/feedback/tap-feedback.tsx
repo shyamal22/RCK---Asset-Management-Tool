@@ -18,6 +18,9 @@ export function TapFeedback() {
       haptic("tap");
     };
     document.addEventListener("click", onClick, { capture: true });
+    // iPhone Safari only shows :active (pressed) styles when the page listens for touches.
+    const noop = () => {};
+    document.addEventListener("touchstart", noop, { passive: true });
 
     const seen = new WeakSet<Element>();
     const check = (el: Element) => {
@@ -38,6 +41,7 @@ export function TapFeedback() {
     mo.observe(document.body, { childList: true, subtree: true });
     return () => {
       document.removeEventListener("click", onClick, { capture: true });
+      document.removeEventListener("touchstart", noop);
       mo.disconnect();
     };
   }, []);

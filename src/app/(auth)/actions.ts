@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { and, eq, gt, sql } from "drizzle-orm";
 import { adminDb, asUser } from "@db/client";
 import { signInFailures, users } from "@db/schema";
-import { markDeviceVerified, markSessionVerified, registerDevice } from "@/lib/auth/device";
+import { markDeviceVerified, markSessionVerified, registerDevice, sharedDevice, touchUnlock } from "@/lib/auth/device";
 import { isLockedOut, LOCKOUT } from "@/lib/auth/policy";
 import { supabaseServer } from "@/lib/supabase/server";
 import { getIdentity, requestMeta } from "@/lib/auth/session";
@@ -40,6 +40,11 @@ async function afterSignIn(userId: string, accessToken: string, provedByCode: bo
   if (provedByCode || device.verifiedAt) {
     await markSessionVerified({ sessionId: sessionIdOf(accessToken), userId, companyId: u.companyId, deviceId: device.id });
   }
+  // A full sign-in (password or emailed code) proves more than a PIN, so it also unlocks this phone and
+  // clears wrong-PIN tries. Without this, "Forgot your PIN? Sign in again" (or 5 wrong PINs) looped back
+  // to the PIN screen forever.
+  await touchUnlock(device.id, true, !!(await sharedDevice()));
+  await adminDb.update(users).set({ failedPinAttempts: 0 }).where(eq(users.id, userId));
 }
 
 export async function signUpAction(input: unknown): Promise<ActionResult> {

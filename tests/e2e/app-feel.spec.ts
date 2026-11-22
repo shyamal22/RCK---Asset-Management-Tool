@@ -21,6 +21,16 @@ test("‹ Back returns to the list you came from, filters kept; opened cold it g
   await expect(page).toHaveURL(/\/assets\?view=list&status=available$/);
   await expect(page.getByRole("button", { name: "Back" })).toHaveCount(0); // tab root
 
+  // The phone's own back gesture keeps ‹ Back in step with history.
+  await page.getByRole("link", { name: "ROL-01 Roller 1" }).first().click();
+  await expect(page).toHaveURL(new RegExp(`/assets/${id}$`));
+  await page.getByRole("navigation", { name: "Main" }).locator("visible=true").getByRole("link", { name: "Assets" }).click();
+  await expect(page).toHaveURL(/\/assets$/);
+  await page.goBack();
+  await expect(page).toHaveURL(new RegExp(`/assets/${id}$`));
+  await page.getByRole("button", { name: "Back" }).click();
+  await expect(page).toHaveURL(/\/assets\?view=list&status=available$/);
+
   await page.goto(`/setup/assets/${id}`); // straight onto the edit screen
   await page.getByRole("button", { name: "Back" }).click();
   await expect(page).toHaveURL(new RegExp(`/assets/${id}$`));
@@ -60,7 +70,7 @@ test("no signal shows our own Try again screen, not the browser's error", async 
   await page.goto("/sign-in").catch(() => {});
   await expect(page.getByRole("heading", { name: "No signal" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Try again" })).toBeVisible();
-  // Signal back: it reloads by itself.
+  // Signal back: it notices and reloads by itself.
   await context.setOffline(false);
   await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible({ timeout: 15_000 });
 });
@@ -71,6 +81,10 @@ test("on an iPhone browser (not the home-screen app) a tip says how to get the f
   await p.goto("/sign-in");
   const tip = p.getByRole("complementary", { name: "Open the app" });
   await expect(tip).toContainText("open KRE Assets from your home screen");
+  await p.waitForTimeout(400); // entrance animation done: the tip must sit fully on screen
+  const box = (await tip.boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(p.viewportSize()!.width);
   await tip.getByRole("button", { name: "Hide this tip" }).click();
   await expect(tip).toBeHidden();
   await p.reload();

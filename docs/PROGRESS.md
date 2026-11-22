@@ -102,3 +102,9 @@ Browser bars in Sam's screenshot = iOS in-app browser (link opened from another 
 App-like navigation: "‹ Back" bar on every screen below a tab (keeps list filters), in-app error and Not found screens, sign-in screens always have a way back, Waiting has "Check again".
 Poor signal: forms keep typed text/photos and show "Couldn't send" instead of crashing (safeAction); service worker shows our own "No signal" screen and reloads when signal returns.
 Fixed the Assets wheel making the phone page 16px too wide (page zoomed out / wobbled sideways); wheel arrows no longer draw over the bottom tabs; long-press link previews off; landscape safe areas.
+
+## 22/11/2026 — Review fixes, Assets type-first, status backlight, tactile buttons
+Review fixes: full sign-in now also unlocks the phone (the "Forgot your PIN" / 5-wrong-PINs path looped back to the PIN screen); Back follows real history incl. the phone's back gesture and Setup lists; photo viewer handles pinch-zoom, safe areas, no background reloads; tip no longer slides off-screen; content stays copyable.
+Weak signal: damage reports carry their own id (migration 0023, applied to production), so a resend after a dropped reply can't raise it twice; "no signal" message no longer promises nothing was saved; server errors aren't blamed on signal; offline screen reloads only once a request really gets through.
+Assets (Sam): opens on the machine-type picker only; picking a type brings up the wheel; status chips removed; the front machine's glow is its status colour (green / yellow / red).
+Buttons have depth (raised, sink when pressed; iPhone now shows pressed states), recessed pick-one switches, bottom tabs on a soft pill that lights up as soon as it's tapped, screens glide in.

@@ -19,7 +19,13 @@ const OFFLINE_HTML = `<!doctype html><html lang="en-NZ"><head><meta charset="utf
 <div><span class="dot"></span><b>KRE</b> Asset Management Tool</div>
 <h1>No signal</h1><p>It'll load again as soon as you're back online.</p>
 <a href="">Try again</a>
-</main><script>addEventListener('online',function(){location.reload()})</script></body></html>`;
+</main><script>
+/* Reload only once a request really gets through: "online" can fire before the connection works,
+   and iPhones don't always fire it at all. Check every few seconds, and straight away on "online". */
+(function(){var busy=false;function check(){if(busy)return;busy=true;
+fetch(location.href,{method:'HEAD',cache:'no-store'}).then(function(){location.reload()},function(){busy=false})}
+setInterval(check,4000);addEventListener('online',function(){setTimeout(check,300)})})();
+</script></body></html>`;
 
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));

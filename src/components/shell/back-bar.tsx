@@ -4,27 +4,23 @@ import { useEffect } from "react";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { parentOf } from "@/lib/nav/parent";
+import { ScreenStack } from "@/lib/nav/screen-stack";
 
-// The previous screen in this session (module level so it survives screen changes).
-let current: string | null = null;
-let previous: string | null = null;
+// One per browser tab (module level, so it survives screen changes).
+const screens = new ScreenStack();
 
 function useTrackScreens() {
   const path = usePathname();
   const search = useSearchParams().toString();
   useEffect(() => {
-    const here = search ? `${path}?${search}` : path;
-    if (here !== current) {
-      previous = current;
-      current = here;
-    }
+    screens.visit(search ? `${path}?${search}` : path);
   }, [path, search]);
 }
 
 /**
  * "‹ Back" for screens below the main tabs. An installed iPhone app has no browser back button.
- * If we came from the parent screen, go back in history (keeps its filters and scroll); otherwise
- * (opened straight onto this screen, or arrived from somewhere else) go to the parent screen.
+ * When stepping back in history lands on the right screen, go back (the list keeps its filters and
+ * scroll); otherwise (opened straight onto this screen, or arrived from elsewhere) open the parent.
  */
 export function BackButton({ hasSetup, className }: { hasSetup: boolean; className?: string }) {
   useTrackScreens();
@@ -36,11 +32,7 @@ export function BackButton({ hasSetup, className }: { hasSetup: boolean; classNa
   return (
     <button
       type="button"
-      onClick={() => {
-        const prevPath = previous?.split("?")[0];
-        if (prevPath && prevPath === parent.split("?")[0] && window.history.length > 1) router.back();
-        else router.push(parent);
-      }}
+      onClick={() => (screens.backReaches(parent, path) ? router.back() : router.push(parent))}
       className={cn("press inline-flex min-h-11 items-center gap-0.5 rounded-full pr-3 text-base font-semibold", className)}
     >
       <ChevronLeft className="size-6" aria-hidden />

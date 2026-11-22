@@ -6,6 +6,7 @@ import { StatusDot } from "@/components/status-dot";
 import { Button } from "@/components/ui/button";
 import { STATUS_LABELS, STATUS_TONE, formatReading } from "@/lib/assets/labels";
 import { FlagBadge } from "./flag-badge";
+import { backlightFor } from "@/lib/assets/backlight";
 import { nearest, pose, relativeAngle, targetFor, WRAP_MAX } from "./orbit-math";
 import type { ShowItem } from "./showroom";
 
@@ -118,6 +119,7 @@ export function Orbit({ items }: { items: ShowItem[] }) {
           role="group"
           aria-roledescription="carousel"
           aria-label="Machines, drag to spin or use the arrow keys"
+          data-backlight={backlightFor(a.status, a.flag)}
           className="orbit-stage relative mx-auto h-[23rem] w-full touch-pan-y outline-none select-none md:h-[27rem]"
           onPointerDown={(e) => {
             if (e.pointerType === "mouse" && e.button !== 0) return;

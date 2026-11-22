@@ -64,6 +64,23 @@ describe("raising a damage report", () => {
   });
 });
 
+describe("sending the same report twice (weak signal)", () => {
+  it("a resend with the form's report id returns the saved report instead of raising another", async () => {
+    const key = crypto.randomUUID();
+    const send = (u: U) =>
+      run<{ id: string }>(
+        u,
+        sql`select public.raise_breakdown(${truck}, 'Cracked mirror', 'Driver side', 'usable', ${pgArray(photo())}::text[], null, null, null, ${key}::uuid) as id`,
+      ).then((r) => r[0].id);
+    expect(await send(p.yellow1)).toBe(key);
+    expect(await send(p.yellow1)).toBe(key);
+    const [{ n }] = (await adminDb.execute(sql`select count(*)::int as n from public.breakdown_reports where id = ${key}`)) as unknown as { n: number }[];
+    expect(n).toBe(1);
+    // Someone else can't reuse that id to reach the report.
+    await expectDbError(send(p.director), /Not permitted/);
+  });
+});
+
 describe("who sees which reports", () => {
   it("Crew: own; Supervisor: their crew's; Office/Workshop/Director: all", async () => {
     const g = await raise(p.green2, roller, "usable");

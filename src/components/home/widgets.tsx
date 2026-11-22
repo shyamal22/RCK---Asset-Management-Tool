@@ -40,7 +40,7 @@ export function Panel({ title, href, children, className }: { title: string; hre
 }
 
 const TILES = [
-  { key: "allWorking", label: "All working", icon: CircleCheck, tone: "green", href: "/assets" },
+  { key: "allWorking", label: "All working", icon: CircleCheck, tone: "green", href: "/assets?type=all" },
   { key: "damaged", label: "Damaged", icon: Wrench, tone: "yellow", href: "/reports" },
   { key: "unusableAny", label: "Unusable", icon: TriangleAlert, tone: "red", href: "/assets?status=unusable" },
 ] as const;

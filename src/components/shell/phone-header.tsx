@@ -11,13 +11,13 @@ export function PhoneHeader({ brand, companyName, done, hasSetup }: { brand: Rea
   const path = usePathname();
   if (isTabRoot(path))
     return (
-      <header className="flex items-end justify-between gap-3 px-5 pt-[calc(env(safe-area-inset-top)+1.25rem)] pb-8 md:hidden">
+      <header className="flex items-end justify-between gap-3 px-5 select-none pt-[calc(env(safe-area-inset-top)+1.25rem)] pb-8 md:hidden">
         {brand}
         {done}
       </header>
     );
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between gap-3 bg-[var(--onyx)] px-3 pt-[calc(env(safe-area-inset-top)+0.5rem)] pb-3 text-white md:hidden">
+    <header className="sticky top-0 z-40 flex select-none items-center justify-between gap-3 bg-[var(--onyx)] px-3 pt-[calc(env(safe-area-inset-top)+0.5rem)] pb-3 text-white md:hidden">
       <BackButton hasSetup={hasSetup} className="text-white" />
       <p className="truncate text-sm font-semibold text-white/70">{companyName}</p>
       {done}

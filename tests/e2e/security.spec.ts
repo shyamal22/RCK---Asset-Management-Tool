@@ -81,6 +81,18 @@ test("phone locks; PIN unlocks; 5 wrong PINs signs out", async ({ page }) => {
     if (i < 4) await expect(formError(page)).toContainText(`${4 - i} tries left`);
   }
   await expect(page).toHaveURL(/\/sign-in$/);
+  // Signing in again with the password gets back in (not stuck on the PIN screen).
+  await signIn(page, c.email);
+  await expect(page.getByRole("heading", { name: /^Home,/ })).toBeVisible();
+
+  // Forgot the PIN: the lock screen's escape signs out, and a password sign-in gets back in.
+  await page.waitForLoadState("networkidle");
+  await lock();
+  await page.goto("/unlock");
+  await page.getByRole("button", { name: "Forgot your PIN? Sign in again" }).click();
+  await expect(page).toHaveURL(/\/sign-in$/);
+  await signIn(page, c.email);
+  await expect(page.getByRole("heading", { name: /^Home,/ })).toBeVisible();
 });
 
 test("Face ID / fingerprint (passkey) unlocks the app", async ({ page, browserName }) => {

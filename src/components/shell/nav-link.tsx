@@ -11,7 +11,7 @@ export function NavLink({ href, label, icon, variant }: { href: string; label: s
   const Icon = ICONS[icon];
   const path = usePathname();
   // Editing or adding a machine lives under /setup/assets but belongs to the Assets tab.
-  const section = path.startsWith("/setup/assets") ? "/assets" : path;
+  const section = path.startsWith("/setup/assets/") ? "/assets" : path;
   const active = href === "/" ? section === "/" : section === href || section.startsWith(`${href}/`);
   return (
     <Link
@@ -19,24 +19,47 @@ export function NavLink({ href, label, icon, variant }: { href: string; label: s
       aria-current={active ? "page" : undefined}
       className={cn(
         variant === "bottom"
-          ? "group relative flex min-h-16 flex-1 flex-col items-center justify-center gap-0.5 text-sm transition-colors"
+          ? "group relative flex min-h-16 flex-1 flex-col items-center justify-center gap-1 text-sm transition-colors"
           : "relative flex h-12 items-center gap-3 rounded-full px-4 text-base transition-colors active:scale-[0.98]",
         variant === "bottom" && (active ? "font-bold text-[var(--indigo)]" : "text-muted-foreground"),
         variant === "side" && (active ? "bg-white font-bold text-[var(--indigo)]" : "text-white/80 hover:bg-white/10 hover:text-white"),
       )}
     >
-      <Pending variant={variant} active={active} />
-      <Icon className={variant === "bottom" ? "size-6 transition-transform group-active:scale-90" : "size-5"} aria-hidden />
+      {variant === "bottom" ? (
+        <BottomIcon Icon={Icon} active={active} />
+      ) : (
+        <>
+          <Pending />
+          <Icon className="size-5" aria-hidden />
+        </>
+      )}
       {label}
     </Link>
   );
 }
 
-/** Tangerine dot over the current tab; while the tapped tab loads it pulses there straight away. */
-function Pending({ variant, active }: { variant: "bottom" | "side"; active: boolean }) {
+/**
+ * Bottom tab icon on a soft indigo pill (the current tab). The tapped tab lights up straight away,
+ * before its screen has loaded, and its tangerine dot pulses until it arrives. Sinks when pressed.
+ */
+function BottomIcon({ Icon, active }: { Icon: (typeof ICONS)[IconName]; active: boolean }) {
   const { pending } = useLinkStatus();
-  if (variant === "side")
-    return pending ? <span className="absolute right-4 size-2 animate-pulse rounded-full bg-[var(--tangerine)]" aria-hidden /> : null;
-  if (!active && !pending) return null;
-  return <span className={cn("absolute top-1.5 size-1.5 rounded-full bg-[var(--tangerine)]", pending && "animate-ping")} aria-hidden />;
+  const lit = active || pending;
+  return (
+    <span
+      className={cn(
+        "relative flex h-8 w-16 items-center justify-center rounded-full transition-[background-color,box-shadow,scale] duration-200 group-active:scale-90",
+        lit && "bg-[color-mix(in_srgb,var(--indigo)_13%,transparent)] text-[var(--indigo)] shadow-[inset_0_1px_3px_rgb(11_11_16/.10)]",
+      )}
+    >
+      <Icon className="size-6" aria-hidden />
+      {lit ? <span className={cn("absolute -top-0.5 right-3.5 size-1.5 rounded-full bg-[var(--tangerine)]", pending && "animate-ping")} aria-hidden /> : null}
+    </span>
+  );
+}
+
+/** Side menu: a tangerine dot pulses on the tapped item while its screen loads. */
+function Pending() {
+  const { pending } = useLinkStatus();
+  return pending ? <span className="absolute right-4 size-2 animate-pulse rounded-full bg-[var(--tangerine)]" aria-hidden /> : null;
 }
