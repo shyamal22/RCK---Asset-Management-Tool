@@ -3,7 +3,13 @@
 ## Status
 - GitHub: done — github.com/shyamal22/RCK---Asset-Management-Tool, CI green.
 - Supabase: project created (Sydney), env vars set, personal access token saved, migrations applied (21/11/2026).
-- Still to do: fix NEXT_PUBLIC_SUPABASE_URL, Resend, DNS, auth config, Vercel.
+- Resend: kreconsulting.co.nz verified; Supabase sends codes via Resend SMTP; the app has its own
+  sending-only key (RESEND_API_KEY in Vercel) for Director invites.
+- Vercel: project kre-asset-management (team kre-consulting, Sydney), auto-deploys `main` from GitHub,
+  live at https://assets.kreconsulting.co.nz (CNAME in Netlify DNS); the vercel.app address redirects there.
+- KRE admin: Sam@kreconsulting.co.nz (Director of KRE Consulting, the platform company). First sign-in:
+  "Forgot password" on the sign-in page to set a password by code.
+- Still to do (Sam): turn on 2FA on Vercel; delete any API tokens pasted in chat.
 
 ## To do next (Sam), in order
 1. ~~**GitHub**~~ — done.
