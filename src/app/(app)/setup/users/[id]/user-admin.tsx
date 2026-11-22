@@ -2,28 +2,23 @@
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Field, FormError } from "@/components/field";
+import { FormError } from "@/components/field";
 import { Segmented } from "@/components/segmented";
 import { USER_TYPES, USER_TYPE_LABELS, type UserType } from "@/lib/permissions/types";
-import { grantActingAction, revokeActingAction, setActiveAction, updateAccessAction } from "../actions";
+import { setActiveAction, updateAccessAction } from "../actions";
 
 type Props = {
   user: { id: string; userType: UserType; crewId: string | null; lead: boolean; active: boolean };
   crews: { id: string; name: string }[];
-  acting: { id: string; userType: UserType; reason: string; ends: string }[];
   isSelf: boolean;
-  defaultEnd: string;
 };
 
 const typeOptions = USER_TYPES.map((t) => ({ value: t, label: USER_TYPE_LABELS[t] }));
 
-export function UserAdmin({ user, crews, acting, isSelf, defaultEnd }: Props) {
+export function UserAdmin({ user, crews, isSelf }: Props) {
   const [userType, setUserType] = useState(user.userType);
   const [crewId, setCrewId] = useState(user.crewId ?? "");
   const [lead, setLead] = useState(user.lead);
-  const [actType, setActType] = useState<UserType>("workshop");
-  const [endsOn, setEndsOn] = useState(defaultEnd);
-  const [reason, setReason] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -66,32 +61,6 @@ export function UserAdmin({ user, crews, acting, isSelf, defaultEnd }: Props) {
           onClick={() => run(() => updateAccessAction({ userId: user.id, userType, crewId: crewId || null, workshopLead: lead }), "Saved")}
         >
           Save
-        </Button>
-      </section>
-
-      <section className="grid gap-3" aria-label="Acting access">
-        <h2 className="text-xl font-bold">Acting access</h2>
-        {acting.map((a) => (
-          <div key={a.id} className="flex items-center justify-between gap-3 rounded-xl border p-3">
-            <span>
-              {USER_TYPE_LABELS[a.userType]} until {a.ends} · {a.reason}
-            </span>
-            <Button variant="outline" disabled={pending} onClick={() => run(() => revokeActingAction({ id: a.id, userId: user.id }), "Ended")}>
-              End now
-            </Button>
-          </div>
-        ))}
-        <Segmented label="Acting as" value={actType} onChange={setActType} options={typeOptions} />
-        <Field id="ends-on" label="Until" type="date" value={endsOn} onChange={(e) => setEndsOn(e.target.value)} />
-        <Field id="reason" label="Reason" value={reason} onChange={(e) => setReason(e.target.value)} />
-        <Button
-          size="lg"
-          variant="outline"
-          className="h-12"
-          disabled={pending || !user.active || reason.trim().length < 2}
-          onClick={() => run(() => grantActingAction({ userId: user.id, userType: actType, endsOn, reason }), "Acting access given")}
-        >
-          Give acting access
         </Button>
       </section>
 

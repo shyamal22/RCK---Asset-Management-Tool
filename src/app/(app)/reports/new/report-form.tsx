@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Camera, X } from "lucide-react";
 import { Field, FormError } from "@/components/field";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { SubmitButton } from "@/components/auth/submit-button";
 import { cn } from "@/lib/utils";
 import { shrinkPhoto } from "@/lib/assets/shrink";
@@ -111,13 +112,13 @@ export function ReportForm({ asset }: { asset: Asset }) {
         <Label htmlFor="report-details" className="text-base">
           Details
         </Label>
-        <textarea
+        <Textarea
           id="report-details"
           rows={4}
           value={details}
           onChange={(e) => setDetails(e.target.value)}
           placeholder="Where on the machine, what happened, anything the workshop should know"
-          className="rounded-[0.875rem] border border-input bg-background p-3 text-lg"
+          className="min-h-28 rounded-[0.875rem] p-3 text-lg"
         />
       </div>
 

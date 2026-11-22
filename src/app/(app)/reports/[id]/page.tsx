@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { sql } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { requirePermission } from "@/lib/auth/guard";
 import { can } from "@/lib/permissions/check";
@@ -16,12 +17,29 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
   const me = await requirePermission("defects", "view");
   const { id } = await params;
   const { sent } = await searchParams;
-  const r = await runAs(me, (tx) => getReport(tx, id));
+  const { r, company } = await runAs(me, async (tx) => ({
+    r: await getReport(tx, id),
+    company: ((await tx.execute(sql`select name, logo_path from public.companies where id = app.current_company_id()`)) as unknown as {
+      name: string;
+      logo_path: string | null;
+    }[])[0],
+  }));
   if (!r) notFound();
-  const urls = await photoUrls(r.photo_paths);
+  const urls = await photoUrls([...r.photo_paths, company?.logo_path ?? null]);
+  const logo = company?.logo_path ? urls[company.logo_path] : undefined;
   const sev = SEVERITY[r.severity];
   return (
     <div className="grid max-w-3xl gap-6">
+      {/* Report header: company logo (Setup → Company) */}
+      <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
+        {logo ? (
+          // eslint-disable-next-line @next/next/no-img-element -- signed URL
+          <img src={logo} alt={`${company?.name ?? "Company"} logo`} className="max-h-12 w-auto max-w-[60%] object-contain" />
+        ) : (
+          <span className="text-lg font-bold">{company?.name}</span>
+        )}
+        <span className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">Damage report</span>
+      </div>
       {sent ? (
         <p role="status" className="surface p-4 font-semibold">
           Report sent. The workshop can see it now.

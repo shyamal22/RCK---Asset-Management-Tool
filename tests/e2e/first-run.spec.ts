@@ -8,10 +8,22 @@ test("new company: Director is guided through setup once, then it gets out of th
   await signIn(page, d.email);
   await expect(page).toHaveURL(/\/setup\/start$/);
 
+  // Company details and key contacts are required before moving on.
+  await expect(page.getByRole("link", { name: "Next" })).toHaveAttribute("aria-disabled", "true");
+  await expect(page.getByText("Fill in the company details and key contacts, then Save")).toBeVisible();
   await page.getByLabel("Company name").fill("RCK Group");
+  await page.getByLabel("NZBN").fill("942904");
+  await page.getByLabel("Workshop manager", { exact: true }).fill("Wayne Wiremu");
+  await page.getByLabel("Workshop manager's phone").fill("021 555 0101");
+  await page.getByLabel("Finance manager", { exact: true }).fill("Fiona Finance");
+  await page.getByLabel("Finance manager's phone").fill("09 555 0102");
+  await page.getByRole("button", { name: "Save" }).click();
+  await expect(page.locator('p[role="alert"]')).toHaveText("Enter the 13-digit NZBN");
+  await page.getByLabel("NZBN").fill("9429041234567");
   await page.getByLabel("Director approval limit ($ ex GST)").fill("2000");
   await page.getByRole("button", { name: "Save" }).click();
   await expect(page.getByRole("status")).toHaveText("Saved");
+  await page.reload();
   await page.getByRole("link", { name: "Next" }).click();
 
   await expect(page.getByText("Add at least one yard and one crew")).toBeVisible();

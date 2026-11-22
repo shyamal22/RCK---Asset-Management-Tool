@@ -37,7 +37,20 @@ async function main() {
 
   const company = await findOrCreate(
     () => adminDb.select().from(companies).where(eq(companies.name, "RCK Group")),
-    () => adminDb.insert(companies).values({ name: "RCK Group", setupCompletedAt: new Date(), approvalLimitCents: 200000 }).returning(),
+    () =>
+      adminDb
+        .insert(companies)
+        .values({
+          name: "RCK Group",
+          nzbn: "9429000000000",
+          workshopManagerName: "Wayne Workshop",
+          workshopManagerPhone: "021 000 0001",
+          financeManagerName: "Olivia Office",
+          financeManagerPhone: "021 000 0002",
+          setupCompletedAt: new Date(),
+          approvalLimitCents: 200000,
+        })
+        .returning(),
   );
   const companyId = company.id;
   await syncCompanyPermissions(adminDb, companyId);

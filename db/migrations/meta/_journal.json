@@ -148,6 +148,20 @@
       "when": 1795318499541,
       "tag": "0020_breakdowns_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1795320551981,
+      "tag": "0021_company_contacts",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1795320552775,
+      "tag": "0022_company_contacts_grants",
+      "breakpoints": true
     }
   ]
 }

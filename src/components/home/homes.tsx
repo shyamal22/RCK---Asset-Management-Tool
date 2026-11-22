@@ -7,7 +7,7 @@ export type ReportCounts = { red: number; yellow: number; mine: number };
 
 function ReportDamage() {
   return (
-    <Button asChild size="lg" className="h-14 w-full bg-[var(--tangerine)] text-lg text-[var(--onyx)] hover:bg-[var(--tangerine)]/90">
+    <Button asChild variant="accent" size="xl" className="w-full">
       <Link href="/reports/new">Report damage</Link>
     </Button>
   );

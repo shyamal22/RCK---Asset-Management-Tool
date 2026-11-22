@@ -1,11 +1,14 @@
 import { can, scopeFor, type Actor } from "@/lib/permissions/check";
 
-/** Everything configurable lives behind the Setup gear (docs/10). Visibility per user type. */
+/**
+ * Everything configurable lives behind the Setup gear (docs/10). Sam (22/11/2026): only the Director
+ * sees Setup. Others reach the few setup screens they need from their own pages (Add/Edit asset from
+ * Assets, approving sign-ups from the home count); each page still checks its own permission.
+ */
 export type SetupSection = { href: string; label: string };
 
 const SECTIONS: { href: string; label: string; visible: (a: Actor) => boolean }[] = [
   { href: "/setup/company", label: "Company", visible: (a) => can(a, "settings", "edit") },
-  // docs/10 lists Workshop; docs/05 lets Office edit assets too, so the permission decides (PROGRESS Q34).
   { href: "/setup/assets", label: "Assets", visible: (a) => can(a, "assets", "create") },
   { href: "/setup/yards-crews", label: "Yards and crews", visible: (a) => can(a, "settings", "edit") },
   { href: "/setup/users", label: "Users", visible: (a) => can(a, "users", "view") || can(a, "users", "view_pending") },
@@ -14,5 +17,6 @@ const SECTIONS: { href: string; label: string; visible: (a: Actor) => boolean }[
 ];
 
 export function setupSections(actor: Actor): SetupSection[] {
+  if (actor.userType !== "director") return [];
   return SECTIONS.filter((s) => s.visible(actor)).map(({ href, label }) => ({ href, label }));
 }

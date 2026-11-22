@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { formError, makeE2ECompany, makeE2EUser, signIn } from "./support";
 
-test("Director changes a person's access, gives acting access, deactivates them", async ({ browser }) => {
+test("Director changes a person's access and deactivates them", async ({ browser }) => {
   const co = await makeE2ECompany();
   const director = await makeE2EUser(co.id, "director");
   const worker = await makeE2EUser(co.id, "crew", { name: "Wiremu Worker", crewId: co.crewId });
@@ -21,13 +21,8 @@ test("Director changes a person's access, gives acting access, deactivates them"
   await access.getByRole("button", { name: "Save" }).click();
   await expect(page.getByRole("status")).toHaveText("Saved");
 
-  const acting = page.getByRole("region", { name: "Acting access" });
-  await acting.getByRole("radio", { name: "Office" }).click();
-  await acting.getByLabel("Reason").fill("Covering accounts leave");
-  await acting.getByRole("button", { name: "Give acting access" }).click();
-  await expect(acting.getByText(/Office until .* · Covering accounts leave/)).toBeVisible();
-  await acting.getByRole("button", { name: "End now" }).click();
-  await expect(acting.getByText(/Covering accounts leave/)).toHaveCount(0);
+  // Acting access was removed from the screens (Sam, 22/11/2026).
+  await expect(page.getByRole("region", { name: "Acting access" })).toHaveCount(0);
 
   page.once("dialog", (d) => d.accept());
   await page.getByRole("button", { name: "Deactivate" }).click();

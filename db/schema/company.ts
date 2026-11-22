@@ -15,6 +15,11 @@ export const companies = pgTable("companies", {
     .unique()
     .default(sql`encode(extensions.gen_random_bytes(9), 'hex')`),
   signupEnabled: boolean("signup_enabled").notNull().default(true),
+  /** Key contacts (Sam, 22/11/2026): required in Setup → Company. */
+  workshopManagerName: text("workshop_manager_name"),
+  workshopManagerPhone: text("workshop_manager_phone"),
+  financeManagerName: text("finance_manager_name"),
+  financeManagerPhone: text("finance_manager_phone"),
   labourRateCents: integer("labour_rate_cents"),
   approvalLimitCents: integer("approval_limit_cents").notNull().default(200000),
   setupCompletedAt: timestamp("setup_completed_at", { withTimezone: true }),

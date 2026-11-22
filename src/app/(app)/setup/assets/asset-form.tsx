@@ -4,6 +4,7 @@ import { Camera } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Field, FormError } from "@/components/field";
 import { Segmented } from "@/components/segmented";
 import { ASSET_STATUSES, STATUS_LABELS, UNIT_LABELS, type AssetStatus, type TrackingUnit } from "@/lib/assets/labels";
@@ -214,7 +215,8 @@ export function AssetForm({ initial, opts }: { initial: AssetFormValues; opts: O
         <Label htmlFor="asset-notes" className="text-base">
           Notes
         </Label>
-        <textarea id="asset-notes" rows={3} value={v.notes} onChange={text("notes")} className="rounded-[0.875rem] border border-input bg-background p-3 text-lg" />
+        <Textarea
+ id="asset-notes" rows={3} value={v.notes} onChange={text("notes")} className="min-h-28 rounded-[0.875rem] p-3 text-lg" />
       </div>
       <FormError message={error} />
       <Button type="submit" size="lg" className="h-12" disabled={pending}>

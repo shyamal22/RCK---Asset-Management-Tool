@@ -11,6 +11,7 @@ import { ShuffleGrid } from "@/components/assets/shuffle-grid";
 import { TypeRail } from "@/components/assets/type-rail";
 import { BayRail } from "@/components/assets/bay-rail";
 import { Button } from "@/components/ui/button";
+import { LinkTabs } from "@/components/link-tabs";
 
 export const dynamic = "force-dynamic";
 
@@ -143,14 +144,13 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
             </>
           ) : null}
         </p>
-        <div className="flex rounded-full border border-input bg-muted p-1 text-sm font-semibold">
-          <Link href={href(f, { view: "" })} aria-current={!listView ? "page" : undefined} className={cn("rounded-full px-4 py-1.5", !listView && "bg-primary text-primary-foreground")}>
-            Wheel
-          </Link>
-          <Link href={href(f, { view: "list" })} aria-current={listView ? "page" : undefined} className={cn("rounded-full px-4 py-1.5", listView && "bg-primary text-primary-foreground")}>
-            Grid
-          </Link>
-        </div>
+        <LinkTabs
+          label="View"
+          items={[
+            { href: href(f, { view: "" }), label: "Wheel", active: !listView },
+            { href: href(f, { view: "list" }), label: "Grid", active: listView },
+          ]}
+        />
       </div>
 
       {list.length === 0 ? (

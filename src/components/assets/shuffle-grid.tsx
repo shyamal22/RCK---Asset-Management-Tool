@@ -3,8 +3,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { Shuffle, Truck } from "lucide-react";
 import { StatusDot } from "@/components/status-dot";
-import { cn } from "@/lib/utils";
 import { STATUS_LABELS, STATUS_TONE, formatReading } from "@/lib/assets/labels";
+import { Toggle } from "@/components/ui/toggle";
 import { FlagBadge } from "./flag-badge";
 import { reorder, type SortKey } from "./shuffle";
 import type { ShowItem } from "./showroom";
@@ -24,22 +24,19 @@ export function ShuffleGrid({ items }: { items: ShowItem[] }) {
     <section className="grid gap-4" aria-label="Machines">
       <div className="flex flex-wrap gap-2" role="toolbar" aria-label="Sort machines">
         {SORTS.map((s) => (
-          <button
+          <Toggle
             key={s.key}
-            type="button"
-            aria-pressed={sort === s.key}
-            onClick={() => {
+            variant="outline"
+            pressed={sort === s.key}
+            onPressedChange={() => {
               setSort(s.key);
               setOrder(reorder(items, s.key));
             }}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-semibold",
-              sort === s.key ? "border-[var(--onyx)] bg-[var(--onyx)] text-white" : "border-input bg-background",
-            )}
+            className="h-10 rounded-full px-4 text-sm font-semibold data-[state=on]:border-[var(--onyx)] data-[state=on]:bg-[var(--onyx)] data-[state=on]:text-white"
           >
-            {s.key === "shuffle" ? <Shuffle className="size-4" aria-hidden /> : null}
+            {s.key === "shuffle" ? <Shuffle aria-hidden /> : null}
             {s.label}
-          </button>
+          </Toggle>
         ))}
       </div>
       <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">

@@ -72,7 +72,7 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
 
       <div className="flex flex-wrap gap-2">
         {can(me.actor, "defects", "create") ? (
-          <Button asChild size="lg" className="h-12 bg-[var(--tangerine)] text-[var(--onyx)] hover:bg-[var(--tangerine)]/90">
+          <Button asChild size="lg" variant="accent">
             <Link href={`/reports/new?asset=${a.id}`}>Report damage</Link>
           </Button>
         ) : null}

@@ -11,7 +11,9 @@ const MAILPIT = process.env.MAILPIT_URL ?? "http://127.0.0.1:54324";
 export async function makeE2ECompany(name = `E2E Co ${Date.now()}`, opts: { setupDone?: boolean } = {}) {
   const done = opts.setupDone ?? true;
   const [c] = await sql<{ id: string; signup_code: string }[]>`
-    insert into public.companies (name, setup_completed_at) values (${name}, ${done ? sql`now()` : null}) returning id, signup_code`;
+    insert into public.companies (name, setup_completed_at, nzbn, workshop_manager_name, workshop_manager_phone, finance_manager_name, finance_manager_phone)
+    values (${name}, ${done ? sql`now()` : null}, ${done ? "9429041234567" : null}, ${done ? "Wayne Workshop" : null}, ${done ? "021 555 0101" : null},
+            ${done ? "Fiona Finance" : null}, ${done ? "09 555 0102" : null}) returning id, signup_code`;
   const [crew] = await sql<{ id: string }[]>`insert into public.crews (company_id, name) values (${c.id}, 'Green') returning id`;
   await syncPermissions(c.id);
   return { id: c.id, code: c.signup_code, name, crewId: crew.id };

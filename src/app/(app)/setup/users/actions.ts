@@ -56,33 +56,6 @@ export async function updateAccessAction(raw: unknown): Promise<Result> {
   return { ok: true };
 }
 
-const actingSchema = z.object({
-  userId: z.uuid(),
-  userType: z.enum(USER_TYPES),
-  endsOn: z.iso.date(),
-  reason: z.string().trim().min(2).max(200),
-});
-
-export async function grantActingAction(raw: unknown): Promise<Result> {
-  const v = actingSchema.parse(raw);
-  try {
-    // Ends at the end of the chosen NZ day.
-    await actAs("users", "edit", (tx) =>
-      tx.execute(sql`select public.grant_acting_access(${v.userId}, ${v.userType}::public.user_type,
-        ((${v.endsOn}::date + 1)::timestamp at time zone 'Pacific/Auckland'), ${v.reason})`),
-    );
-  } catch (e) {
-    return { ok: false, error: dbMessage(e) };
-  }
-  revalidatePath(`/setup/users/${v.userId}`);
-  return { ok: true };
-}
-
-export async function revokeActingAction(raw: unknown) {
-  const v = z.object({ id: z.uuid(), userId: z.uuid() }).parse(raw);
-  await actAs("users", "edit", (tx) => tx.execute(sql`select public.revoke_acting_access(${v.id})`));
-  revalidatePath(`/setup/users/${v.userId}`);
-}
 
 export async function setActiveAction(raw: unknown): Promise<Result> {
   const v = z.object({ userId: z.uuid(), active: z.boolean() }).parse(raw);

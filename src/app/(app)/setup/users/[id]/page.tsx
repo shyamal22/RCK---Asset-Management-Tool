@@ -2,8 +2,6 @@ import { notFound } from "next/navigation";
 import { sql } from "drizzle-orm";
 import { asUser } from "@db/client";
 import { requirePermission } from "@/lib/auth/guard";
-import { formDate } from "./util";
-import { formatDate } from "@/lib/dates";
 import type { UserType } from "@/lib/permissions/types";
 import { UserAdmin } from "./user-admin";
 
@@ -22,11 +20,7 @@ export default async function UserPage({ params }: { params: Promise<{ id: strin
     const crews = (await tx.execute(sql`select id, name from public.crews where deleted_at is null order by name`)) as unknown as {
       id: string; name: string;
     }[];
-    const acting = (await tx.execute(sql`select id, user_type, reason, ends_at from public.temp_access
-      where user_id = ${id} and revoked_at is null and ends_at > now() order by ends_at`)) as unknown as {
-      id: string; user_type: UserType; reason: string; ends_at: string;
-    }[];
-    return { user, crews, acting };
+    return { user, crews };
   });
   if (!data.user) notFound();
   return (
@@ -36,9 +30,7 @@ export default async function UserPage({ params }: { params: Promise<{ id: strin
       <UserAdmin
         user={{ id: data.user.id, userType: data.user.user_type, crewId: data.user.crew_id, lead: data.user.lead, active: data.user.status === "active" }}
         crews={data.crews}
-        acting={data.acting.map((a) => ({ id: a.id, userType: a.user_type, reason: a.reason, ends: formatDate(a.ends_at) }))}
         isSelf={me.id === data.user.id}
-        defaultEnd={formDate(7)}
       />
     </div>
   );

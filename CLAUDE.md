@@ -67,7 +67,8 @@ Full specs live in `docs/`:
     guest later) — exactly as in `docs/05-users-and-access.md`. Permissions live in one
     central permission map (user type × area × action), checked on the server AND enforced
     by RLS. Hiding a button is never the only control. Extra rights (e.g. Workshop lead)
-    are named flags; acting access has an end date.
+    are named flags. (Acting access was removed from the screens on Sam's request, 22/11/2026;
+    the temp_access table/functions stay dormant.)
 11. **Everyone has their own login.** No shared accounts. Users are deactivated, never deleted.
     Accounts are self-created from the company sign-up link, verified by a 6-digit code
     typed in the app (no magic links or confirmation emails), and stay PENDING with zero

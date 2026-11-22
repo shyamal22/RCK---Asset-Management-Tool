@@ -7,6 +7,7 @@ import { listReports } from "@/lib/breakdowns/queries";
 import { SEVERITY, ago } from "@/lib/breakdowns/labels";
 import { StatusDot } from "@/components/status-dot";
 import { Button } from "@/components/ui/button";
+import { LinkTabs } from "@/components/link-tabs";
 
 export const dynamic = "force-dynamic";
 
@@ -21,19 +22,18 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-3xl font-bold">Damage reports</h1>
         {can(me.actor, "defects", "create") ? (
-          <Button asChild size="lg" className="h-12 bg-[var(--tangerine)] text-[var(--onyx)] hover:bg-[var(--tangerine)]/90">
+          <Button asChild size="lg" variant="accent">
             <Link href="/reports/new">Report damage</Link>
           </Button>
         ) : null}
       </div>
-      <div className="flex w-fit rounded-full border border-input bg-muted p-1 text-sm font-semibold">
-        <Link href="/reports" aria-current={!closed ? "page" : undefined} className={cn("rounded-full px-4 py-1.5", !closed && "bg-primary text-primary-foreground")}>
-          Open
-        </Link>
-        <Link href="/reports?show=closed" aria-current={closed ? "page" : undefined} className={cn("rounded-full px-4 py-1.5", closed && "bg-primary text-primary-foreground")}>
-          Closed
-        </Link>
-      </div>
+      <LinkTabs
+        label="Show"
+        items={[
+          { href: "/reports", label: "Open", active: !closed },
+          { href: "/reports?show=closed", label: "Closed", active: closed },
+        ]}
+      />
       {list.length === 0 ? (
         <p className="py-10 text-center text-muted-foreground">{closed ? "No closed reports yet." : "No open damage reports."}</p>
       ) : (
