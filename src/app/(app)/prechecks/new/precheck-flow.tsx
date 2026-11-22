@@ -108,7 +108,7 @@ export function PrecheckFlow({ asset, items }: { asset: { id: string; code: stri
               value={reading}
               onChange={(e) => setReading(e.target.value)}
               placeholder={asset.reading != null ? asset.reading.toLocaleString("en-NZ") : "0"}
-              className="h-16 w-full rounded-2xl border border-input bg-card px-5 text-3xl font-bold tabular-nums outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--tangerine)]/50"
+              className="h-16 w-full rounded-2xl border border-input bg-card px-5 text-title1 font-bold tabular-nums outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--tangerine)]/50"
               autoFocus
             />
           </>
@@ -129,7 +129,7 @@ export function PrecheckFlow({ asset, items }: { asset: { id: string; code: stri
                     aria-checked={a?.value === o.value}
                     onClick={() => set(item.id, { value: o.value })}
                     className={cn(
-                      "flex h-16 items-center justify-between rounded-2xl border-2 px-5 text-xl font-bold",
+                      "flex h-16 items-center justify-between rounded-2xl border-2 px-5 text-title3 font-bold",
                       a?.value === o.value ? TONE[o.tone] : "border-input bg-card",
                     )}
                   >
@@ -148,7 +148,7 @@ export function PrecheckFlow({ asset, items }: { asset: { id: string; code: stri
                     aria-checked={a?.value === v}
                     onClick={() => set(item.id, { value: v })}
                     className={cn(
-                      "h-16 rounded-2xl border-2 text-xl font-bold",
+                      "h-16 rounded-2xl border-2 text-title3 font-bold",
                       a?.value === v ? TONE[v === item.problem_answer ? "red" : "green"] : "border-input bg-card",
                     )}
                   >
@@ -157,7 +157,7 @@ export function PrecheckFlow({ asset, items }: { asset: { id: string; code: stri
                 ))}
               </div>
             ) : (
-              <Textarea aria-label={item.question} value={a?.value ?? ""} onChange={(e) => set(item.id, { value: e.target.value })} className="min-h-28 rounded-2xl bg-card text-lg" />
+              <Textarea aria-label={item.question} value={a?.value ?? ""} onChange={(e) => set(item.id, { value: e.target.value })} className="min-h-28 rounded-2xl bg-card text-body" />
             )}
 
             {item.photo_required || flag === "red" || flag === "yellow" ? (
@@ -182,7 +182,7 @@ export function PrecheckFlow({ asset, items }: { asset: { id: string; code: stri
                   type="button"
                   onClick={() => fileInput.current?.click()}
                   className={cn(
-                    "press relative flex h-28 items-center justify-center gap-3 overflow-hidden rounded-2xl border-2 text-lg font-bold",
+                    "press relative flex h-28 items-center justify-center gap-3 overflow-hidden rounded-2xl border-2 text-body font-bold",
                     a?.photo ? "border-transparent" : "border-dashed border-input bg-card",
                   )}
                 >
@@ -200,7 +200,7 @@ export function PrecheckFlow({ asset, items }: { asset: { id: string; code: stri
             ) : null}
 
             {flag === "red" || flag === "yellow" ? (
-              <Textarea aria-label="What's wrong?" placeholder="What's wrong?" value={a?.note ?? ""} onChange={(e) => set(item.id, { note: e.target.value })} className="min-h-20 rounded-2xl bg-card text-lg" />
+              <Textarea aria-label="What's wrong?" placeholder="What's wrong?" value={a?.note ?? ""} onChange={(e) => set(item.id, { note: e.target.value })} className="min-h-20 rounded-2xl bg-card text-body" />
             ) : null}
           </>
         ) : (
@@ -225,15 +225,18 @@ export function PrecheckFlow({ asset, items }: { asset: { id: string; code: stri
       </div>
 
       <FormError message={error} />
-      {step <= n ? (
-        <Button size="xl" className="w-full" disabled={!canNext} onClick={() => go(1)}>
-          Next
-        </Button>
-      ) : (
-        <Button size="xl" variant="accent" className="w-full" disabled={pending} aria-busy={pending} onClick={send}>
-          {pending ? "Sending…" : overall === "green" ? "Send" : "Send with problems"}
-        </Button>
-      )}
+      {/* Always within thumb reach: pinned just above the tab bar while the question scrolls. */}
+      <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+5.25rem)] z-10 -mx-4 bg-gradient-to-t from-[var(--paper)] from-70% to-transparent px-4 pt-4 md:static md:mx-0 md:bg-none md:p-0">
+        {step <= n ? (
+          <Button size="xl" className="w-full" disabled={!canNext} onClick={() => go(1)}>
+            Next
+          </Button>
+        ) : (
+          <Button size="xl" variant="accent" className="w-full" disabled={pending} aria-busy={pending} onClick={send}>
+            {pending ? "Sending…" : overall === "green" ? "Send" : "Send with problems"}
+          </Button>
+        )}
+      </div>
     </div>
   );
 

@@ -113,3 +113,15 @@ Buttons have depth (raised, sink when pressed; iPhone now shows pressed states),
 Press controller: `data-pressed` set on pointerdown (instant in bars, 50 ms in the scrolling page), held ≥120 ms, cancelled on 8 px move / scroll / pointercancel; fast-in 60 ms, ease-out 240 ms release. Keys sink 2 px darker with an inset shadow, rows/cards get a tint, small controls scale more; touch-action pan-x pan-y pinch-zoom (manipulation leaves Safari presses stuck while scrolling).
 iPhone haptics: iOS 26.5 blocked code-triggered ticks, so switches/toggles/pick-one options carry an invisible native switch the finger toggles (ios-haptics technique); Android buzzes on press-down; Reduce Motion no longer silences haptics.
 Phone layout: compact header (company only), tinted page with white cards, 44 px minimum controls, Assets slim type row once a type is picked so the wheel is on screen, results above search, next/form search, loading skeletons for the four tabs (route groups, so detail/Setup pages keep real 404s).
+
+## 22/11/2026 — Pre-checks (Milestone 2), Apple sizing, less text, smoother motion
+Pre-checks: tables + RLS (0024/0025), versioned templates per machine type (starter list for plant), crew flow one question per screen (reading → Fine/Usable/Broken or Yes/No → photo where required → note on problems → review → send), idempotent on a phone-made id, flags feed the machine flag, reading + last check recorded, report with problems first, Workshop/Director dismiss with reason. Checks tab; crew home's primary action is Start pre-check; machines checked today get a tick.
+Design (research: Apple HIG, Konsta/Framework7 iOS tokens, design-skill repos): Apple text styles as Tailwind tokens (scaled ×1.1 for Carlito), large titles on tab pages, 24 px card corners, 4:3 hero / 3:2 grid photos, floating tab bar, Me as a header button (five-tab limit), tangerine never as text on white (2.6:1 contrast). 72-item text audit applied: filler subtitles, hints and minor headings removed.
+Smoothness: screen glide on every screen (templates per section), wheel draws only what changed and caches its size, glow cross-fades pre-painted layers instead of animating colours, no live blur over scrolling content, front wheel photo loads first. cn() taught the new text sizes (tailwind-merge was dropping colour classes).
+Not yet: pre-check offline queue; per-asset template override screen; QR scan; create work order from a flagged item (M3).
+
+### Questions for Sam
+- Smooth screen-to-screen transitions (a machine's photo gliding from the card into its page) need React's View Transitions, which arrive with an upgrade to Next.js 16. OK to plan that upgrade?
+- Pre-check frequency: once per machine per day (current), per shift, or per operator?
+- Should an Unusable machine block pre-checks until it's cleared?
+Found while testing: with a loading.tsx on Assets/Reports, Next 15.5 sometimes fetched a same-page filter change (type, search, Open/Closed) but never showed it. Those two tabs no longer have a loading skeleton; Home, Checks and Me keep theirs. Screen glide now sits in each section's template.tsx so detail screens glide too.

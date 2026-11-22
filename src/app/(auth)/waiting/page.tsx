@@ -15,14 +15,14 @@ export default async function WaitingPage() {
   return (
     <Screen title={rejected ? "Not approved" : "Waiting for approval"}>
       {rejected ? (
-        <p className="text-lg">Talk to your manager.</p>
+        <p className="text-body">Talk to your manager.</p>
       ) : (
-        <Button asChild size="lg" className="h-14 w-full text-lg">
+        <Button asChild size="lg" className="h-14 w-full text-body">
           <Link href="/">Check again</Link>
         </Button>
       )}
       <form action={signOutAction}>
-        <Button type="submit" variant="outline" size="lg" className="h-14 w-full text-lg">
+        <Button type="submit" variant="outline" size="lg" className="h-14 w-full text-body">
           Sign out
         </Button>
       </form>

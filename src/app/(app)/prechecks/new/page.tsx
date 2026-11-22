@@ -19,7 +19,7 @@ export default async function NewPrecheckPage({ searchParams }: { searchParams: 
       return { asset, template: asset ? await templateFor(tx, asset.id) : null };
     });
     const a = data.asset;
-    if (!a) return <p className="py-10 text-center text-lg">Machine not found</p>;
+    if (!a) return <p className="py-10 text-center text-body">Machine not found</p>;
     return (
       <div className="mx-auto grid w-full max-w-md gap-5">
         <p className="text-footnote font-bold text-muted-foreground">
@@ -31,7 +31,7 @@ export default async function NewPrecheckPage({ searchParams }: { searchParams: 
             items={data.template.items}
           />
         ) : (
-          <p className="py-10 text-center text-lg">No checks set up for {a.type_name} yet</p>
+          <p className="py-10 text-center text-body">No checks set up for {a.type_name} yet</p>
         )}
       </div>
     );

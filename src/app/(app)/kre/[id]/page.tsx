@@ -42,7 +42,7 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
   return (
     <div className="grid max-w-3xl gap-8">
       <header className="grid gap-1">
-        <h1 className="text-2xl font-bold">{client.name}</h1>
+        <h1 className="text-title2 font-bold">{client.name}</h1>
         <StatusDot tone={status.tone} label={status.label} />
       </header>
 
@@ -53,7 +53,7 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
       ) : null}
 
       <section className="grid gap-3" aria-labelledby="director-h">
-        <h2 id="director-h" className="text-xl font-bold">Director</h2>
+        <h2 id="director-h" className="text-title3 font-bold">Director</h2>
         {invite?.accepted_at || hasDirector ? (
           <p>{invite ? `${invite.name} (${invite.email}) signed up ${formatDate(invite.accepted_at ?? invite.created_at)}` : "Signed up"}</p>
         ) : invite ? (
@@ -61,7 +61,7 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
             <p>
               Invited {invite.name} ({invite.email}) · {formatDate(invite.created_at)}
             </p>
-            <p className="break-all rounded-xl border p-3 font-mono text-sm" data-testid="invite-url">
+            <p className="break-all rounded-xl border p-3 font-mono text-footnote" data-testid="invite-url">
               {joinUrl}
             </p>
             <ResendInviteButton companyId={client.id} />
@@ -78,7 +78,7 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
       </section>
 
       <section className="grid gap-3" aria-labelledby="people-h">
-        <h2 id="people-h" className="text-xl font-bold">People</h2>
+        <h2 id="people-h" className="text-title3 font-bold">People</h2>
         {people.length === 0 ? <p className="text-muted-foreground">Nobody has signed up yet.</p> : null}
         <ul className="grid gap-1">
           {people.map((p) => (
@@ -86,14 +86,14 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
               <span>
                 <span className="font-bold">{p.name}</span> <span className="text-muted-foreground">{p.email ?? p.mobile}</span>
               </span>
-              <span className="text-sm">{p.status === "active" && p.user_type ? USER_TYPE_LABELS[p.user_type] : p.status}</span>
+              <span className="text-footnote">{p.status === "active" && p.user_type ? USER_TYPE_LABELS[p.user_type] : p.status}</span>
             </li>
           ))}
         </ul>
       </section>
 
       <section className="grid gap-3" aria-labelledby="support-h">
-        <h2 id="support-h" className="text-xl font-bold">Support access</h2>
+        <h2 id="support-h" className="text-title3 font-bold">Support access</h2>
         {support ? (
           <div className="grid gap-3">
             <p>
@@ -115,7 +115,7 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
       </section>
 
       <section className="grid max-w-md gap-3" aria-labelledby="hold-h">
-        <h2 id="hold-h" className="text-xl font-bold">Account</h2>
+        <h2 id="hold-h" className="text-title3 font-bold">Account</h2>
         <SuspendControls companyId={client.id} suspended={!!client.suspended_at} />
       </section>
     </div>

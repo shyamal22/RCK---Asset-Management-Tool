@@ -21,7 +21,7 @@ export default async function VerifyDevicePage() {
     <Screen title="New device">
       <DeviceCode sendTo={p.email ?? p.mobile ?? ""} />
       <form action={signOutAction}>
-        <Button type="submit" variant="ghost" className="h-12 w-full text-base">
+        <Button type="submit" variant="ghost" className="h-12 w-full text-callout">
           Sign out
         </Button>
       </form>

@@ -26,9 +26,9 @@ export function DeviceCode({ sendTo }: { sendTo: string }) {
   if (!sent)
     return (
       <div className="grid gap-4">
-        <p className="text-lg">{`We'll send a code to ${sendTo}`}</p>
+        <p className="text-body">{`We'll send a code to ${sendTo}`}</p>
         <FormError message={error} />
-        <Button size="lg" className="h-14 text-lg" disabled={pending} onClick={send}>
+        <Button size="lg" className="h-14 text-body" disabled={pending} onClick={send}>
           Send code
         </Button>
       </div>
@@ -46,7 +46,7 @@ export function DeviceCode({ sendTo }: { sendTo: string }) {
         });
       }}
     >
-      <p className="text-lg">Code sent to {sendTo}</p>
+      <p className="text-body">Code sent to {sendTo}</p>
       <div className="auth-card">
       <Field
         id="code"
@@ -57,7 +57,7 @@ export function DeviceCode({ sendTo }: { sendTo: string }) {
         maxLength={6}
         value={token}
         onChange={(e) => setToken(e.target.value.replace(/\D/g, ""))}
-        className="text-center text-2xl tracking-[0.5em]"
+        className="text-center text-title2 tracking-[0.5em]"
         autoFocus
       />
       </div>

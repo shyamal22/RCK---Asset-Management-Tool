@@ -87,7 +87,8 @@ test("Me page shows type and signs out", async ({ page }) => {
   const co = await makeE2ECompany();
   const u = await makeE2EUser(co.id, "workshop", { name: "Wendy Workshop", lead: true });
   await signIn(page, u.email);
-  await mainNav(page).getByRole("link", { name: "Me", exact: true }).click();
+  // Phones: the round initials button in the header; desktop: the side menu.
+  await page.getByRole("link", { name: "Me", exact: true }).locator("visible=true").first().click();
   await expect(page.getByText("Workshop · Workshop lead")).toBeVisible();
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL(/\/sign-in$/);

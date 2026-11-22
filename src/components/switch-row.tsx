@@ -19,7 +19,7 @@ export function SwitchRow({
 }) {
   const id = useId();
   return (
-    <label htmlFor={id} className={cn("flex min-h-14 cursor-pointer items-center justify-between gap-4 rounded-[1rem] border border-input bg-background px-4 text-lg font-semibold", className)}>
+    <label htmlFor={id} className={cn("flex min-h-14 cursor-pointer items-center justify-between gap-4 rounded-[1rem] border border-input bg-background px-4 text-body font-semibold", className)}>
       {label}
       <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} />
     </label>

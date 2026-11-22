@@ -41,7 +41,7 @@ export function CodeEntry({
         });
       }}
     >
-      <p className="text-lg">Code sent to {sentTo}</p>
+      <p className="text-body">Code sent to {sentTo}</p>
       <div className="auth-card">
       <Field
         id="code"
@@ -53,19 +53,19 @@ export function CodeEntry({
         maxLength={6}
         value={token}
         onChange={(e) => setToken(e.target.value.replace(/\D/g, ""))}
-        className="text-center text-2xl tracking-[0.5em]"
+        className="text-center text-title2 tracking-[0.5em]"
         autoFocus
       />
       </div>
       <FormError message={error} />
-      {notice ? <p className="text-base">{notice}</p> : null}
+      {notice ? <p className="text-callout">{notice}</p> : null}
       <SubmitButton pending={pending} disabled={token.length !== 6}>
         {pending ? "Checking…" : "Confirm"}
       </SubmitButton>
       <Button
         type="button"
         variant="ghost"
-        className="h-12 text-base"
+        className="h-12 text-callout"
         disabled={pending}
         onClick={() =>
           start(async () => {
@@ -78,7 +78,7 @@ export function CodeEntry({
         Send a new code
       </Button>
       {onBack ? (
-        <Button type="button" variant="ghost" className="h-12 text-base" disabled={pending} onClick={onBack}>
+        <Button type="button" variant="ghost" className="h-12 text-callout" disabled={pending} onClick={onBack}>
           {contact.method === "email" ? "Use a different email" : "Use a different number"}
         </Button>
       ) : null}

@@ -49,7 +49,7 @@ export function LogoUpload({ url }: { url: string | null }) {
         <ImageUp aria-hidden />
         {pending ? "Uploading…" : url ? "Change logo" : "Upload logo"}
       </Button>
-      <p className="text-sm text-muted-foreground">PNG, up to 2 MB</p>
+      <p className="text-footnote text-muted-foreground">PNG, up to 2 MB</p>
       <FormError message={error} />
       <StatusNote message={msg} />
     </section>

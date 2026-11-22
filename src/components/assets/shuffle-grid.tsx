@@ -31,7 +31,7 @@ export function ShuffleGrid({ items }: { items: ShowItem[] }) {
               setSort(s.key);
               setOrder(reorder(items, s.key));
             }}
-            className="h-11 rounded-full px-4 text-sm font-semibold data-[state=on]:border-[var(--onyx)] data-[state=on]:bg-[var(--onyx)] data-[state=on]:text-white"
+            className="h-11 rounded-full px-4 text-footnote font-semibold data-[state=on]:border-[var(--onyx)] data-[state=on]:bg-[var(--onyx)] data-[state=on]:text-white"
           >
             {s.label}
           </Toggle>
@@ -41,7 +41,7 @@ export function ShuffleGrid({ items }: { items: ShowItem[] }) {
         {order.map((a) => (
           <li key={a.id}>
             <Link href={`/assets/${a.id}`} aria-label={`${a.code} ${a.name}`} className="press surface group block overflow-hidden hover:shadow-lg">
-              <span className="relative block aspect-[4/3] bg-muted">
+              <span className="relative block aspect-[3/2] bg-muted">
                 {a.photo ? (
                   // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL
                   <img src={a.photo} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
@@ -56,7 +56,7 @@ export function ShuffleGrid({ items }: { items: ShowItem[] }) {
                 <span className="truncate font-bold">
                   {a.code} <span className="font-normal">{a.name}</span>
                 </span>
-                <span className="text-sm text-muted-foreground tabular-nums">{formatReading(a.current_reading, a.tracking_unit)}</span>
+                <span className="text-footnote text-muted-foreground tabular-nums">{formatReading(a.current_reading, a.tracking_unit)}</span>
                 <StatusDot tone={STATUS_TONE[a.status]} label={STATUS_LABELS[a.status]} />
               </span>
             </Link>

@@ -5,8 +5,8 @@ export default function NotFound() {
   return (
     <main className="app-theme grid min-h-dvh place-items-center px-6 text-center text-white">
       <div className="grid gap-4">
-        <h1 className="text-3xl font-bold">Not found</h1>
-        <Link href="/" className="press inline-flex h-14 items-center justify-center rounded-full bg-white px-8 text-lg font-bold text-[var(--onyx)]">
+        <h1 className="text-title1 font-bold">Not found</h1>
+        <Link href="/" className="press inline-flex h-14 items-center justify-center rounded-full bg-white px-8 text-body font-bold text-[var(--onyx)]">
           Home
         </Link>
       </div>

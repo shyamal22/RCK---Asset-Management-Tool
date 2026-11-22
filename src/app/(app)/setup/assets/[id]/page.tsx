@@ -21,7 +21,7 @@ export default async function EditAssetPage({ params, searchParams }: { params: 
   const { a, opts } = data;
   return (
     <div className="grid max-w-md gap-8">
-      <h1 className="text-2xl font-bold">
+      <h1 className="text-title2 font-bold">
         Edit {a.code}
       </h1>
       {photo === "failed" ? <p role="alert" className="rounded-xl border border-destructive/40 p-3 text-destructive">Asset saved, but the photo didn&apos;t upload. Add it again here.</p> : null}
@@ -48,7 +48,7 @@ export default async function EditAssetPage({ params, searchParams }: { params: 
         }}
       />
       <section className="grid gap-3" aria-labelledby="unit-h">
-        <h2 id="unit-h" className="text-xl font-bold">
+        <h2 id="unit-h" className="text-title3 font-bold">
           Tracked by {UNIT_LABELS[a.tracking_unit].name.toLowerCase()}
         </h2>
         {can(me.actor, "asset_tracking_unit", "edit") ? <ChangeUnit assetId={a.id} unit={a.tracking_unit} /> : null}

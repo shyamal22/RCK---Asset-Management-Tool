@@ -20,7 +20,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   return (
     <div className="grid max-w-3xl gap-5">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-3xl font-bold">Damage reports</h1>
+        <h1 className="text-large-title">Reports</h1>
         {can(me.actor, "defects", "create") ? (
           <Button asChild size="lg" variant="accent">
             <Link href="/reports/new">Report damage</Link>
@@ -48,10 +48,10 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
                     {thumb ? <img src={thumb} alt="" loading="lazy" decoding="async" className="size-full object-cover" /> : null}
                   </div>
                   <div className="grid min-w-0 flex-1 gap-0.5">
-                    <span className="truncate text-lg font-bold">
+                    <span className="truncate text-body font-bold">
                       {r.code} <span className="font-normal">{r.title}</span>
                     </span>
-                    <span className="truncate text-sm text-muted-foreground">
+                    <span className="truncate text-footnote text-muted-foreground">
                       {r.raised_by_name ?? "Someone"} · {ago(r.created_at)}
                       {closed ? ` · ${r.status === "fixed" ? "Fixed" : "Dismissed"}` : ""}
                     </span>

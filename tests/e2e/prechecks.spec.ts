@@ -18,9 +18,12 @@ test("Workshop sets up roller checks; Crew does a pre-check one question at a ti
   await page.getByRole("link", { name: "Templates" }).click();
   await expect(page.getByRole("link", { name: /Roller/ })).toContainText("Not set up");
   await page.getByRole("link", { name: /Roller/ }).click();
+  await expect(page.getByLabel("Question 1")).toHaveValue("Tyres / tracks"); // the starter list
   const checks = page.getByRole("list", { name: "Checks" }).getByRole("listitem");
-  while ((await checks.count()) > 3) await page.getByRole("button", { name: `Remove check ${await checks.count()}` }).click();
-  await expect(page.getByLabel("Question 1")).toHaveValue("Tyres / tracks");
+  for (let n = await checks.count(); n > 3; n--) {
+    await page.getByRole("button", { name: `Remove check ${n}` }).click();
+    await expect(checks).toHaveCount(n - 1);
+  }
   await page.getByRole("button", { name: "Save" }).click();
   await expect(page.getByRole("status").filter({ hasText: /^Saved$/ })).toBeVisible();
 

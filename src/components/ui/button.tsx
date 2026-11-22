@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "cn"
+import { cn } from "@/lib/utils"
 import { Slot } from "radix-ui"
 
 const buttonVariants = cva(
@@ -24,11 +24,11 @@ const buttonVariants = cva(
       },
       size: {
         // Glove-friendly: nothing under 44 px except the explicit xs size.
-        default: "h-11 px-5 py-2 text-base has-[>svg]:px-4",
+        default: "h-11 px-5 py-2 text-headline has-[>svg]:px-4",
         xs: "h-6 gap-1 rounded-full px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
         sm: "h-10 gap-1.5 rounded-full px-4 has-[>svg]:px-3",
-        lg: "h-12 rounded-full px-6 text-base has-[>svg]:px-5",
-        xl: "h-14 rounded-full px-8 text-lg has-[>svg]:px-6 [&_svg:not([class*='size-'])]:size-5",
+        lg: "h-12 rounded-full px-6 text-headline has-[>svg]:px-5",
+        xl: "h-14 rounded-full px-8 text-headline has-[>svg]:px-6 [&_svg:not([class*='size-'])]:size-5",
         icon: "size-11",
         "icon-xs": "size-6 rounded-full [&_svg:not([class*='size-'])]:size-3",
         "icon-sm": "size-10",

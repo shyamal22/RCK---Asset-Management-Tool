@@ -18,9 +18,9 @@ export default async function SignupLinkPage() {
   const svg = await QRCode.toString(url, { type: "svg", margin: 1, width: 240 });
   return (
     <div className="grid max-w-md gap-6">
-      <h1 className="text-2xl font-bold">Sign-up link</h1>
+      <h1 className="text-title2 font-bold">Sign-up link</h1>
       <div className={enabled ? "" : "opacity-30"} aria-label="Sign-up QR code" dangerouslySetInnerHTML={{ __html: svg }} />
-      <p className="break-all rounded-xl border p-3 font-mono text-sm" data-testid="signup-url">
+      <p className="break-all rounded-xl border p-3 font-mono text-footnote" data-testid="signup-url">
         {url}
       </p>
       <SignupLinkControls enabled={enabled} />

@@ -34,7 +34,7 @@ export function UserAdmin({ user, crews, isSelf }: Props) {
       else setMsg(ok);
     });
 
-  if (isSelf) return <p className="text-lg">You can&apos;t change your own access.</p>;
+  if (isSelf) return <p className="text-body">You can&apos;t change your own access.</p>;
 
   return (
     <div className="grid gap-8">
@@ -42,7 +42,7 @@ export function UserAdmin({ user, crews, isSelf }: Props) {
         <Segmented label="User type" value={userType} onChange={setUserType} options={typeOptions} />
         <div className="grid gap-1.5">
           <Label htmlFor="crew">Crew</Label>
-          <select id="crew" className="h-12 rounded-[0.875rem] border border-input bg-background px-3 text-lg" value={crewId} onChange={(e) => setCrewId(e.target.value)}>
+          <select id="crew" className="h-12 rounded-[0.875rem] border border-input bg-background px-3 text-body" value={crewId} onChange={(e) => setCrewId(e.target.value)}>
             <option value="">No crew</option>
             {crews.map((c) => (
               <option key={c.id} value={c.id}>

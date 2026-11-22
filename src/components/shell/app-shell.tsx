@@ -29,7 +29,7 @@ function initials(name: string) {
 /** Phone tab header (Konsta/iOS large-title feel): just the company, one line, so the screen starts high. */
 function PhoneBrand({ me }: { me: ActiveUser }) {
   return (
-    <p className="flex min-w-0 items-center gap-2.5 text-2xl leading-tight font-bold text-white">
+    <p className="flex min-w-0 items-center gap-2.5 text-title2 leading-tight font-bold text-white">
       <span className="size-2.5 shrink-0 rounded-full bg-[var(--tangerine)] shadow-[0_0_10px_var(--tangerine)]" aria-hidden />
       <span className="truncate">{me.companyName || "KRE Asset Management"}</span>
     </p>
@@ -38,14 +38,11 @@ function PhoneBrand({ me }: { me: ActiveUser }) {
 
 function Brand({ me }: { me: ActiveUser }) {
   return (
-    <div className="grid gap-0.5">
-      <p className="flex items-center gap-2 text-sm text-white/75">
-        <span className="size-2 rounded-full bg-[var(--tangerine)]" aria-hidden />
-        <span className="font-bold tracking-wide text-white">KRE</span> Asset Management Tool
-      </p>
-      <p className="text-xl leading-tight font-bold text-white">{me.companyName || "KRE Asset Management"}</p>
-      <p className="text-sm text-white/70">{me.name}</p>
-    </div>
+    // Signed in: just the company (CLAUDE.md); KRE branding is for sign-in screens and emails.
+    <p className="flex min-w-0 items-center gap-2.5 text-title3 font-bold text-white">
+      <span className="size-2.5 shrink-0 rounded-full bg-[var(--tangerine)] shadow-[0_0_10px_var(--tangerine)]" aria-hidden />
+      <span className="truncate">{me.companyName || "KRE Asset Management"}</span>
+    </p>
   );
 }
 

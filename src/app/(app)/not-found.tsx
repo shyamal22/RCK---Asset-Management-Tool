@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export default function AppNotFound() {
   return (
     <div className="mx-auto grid max-w-md gap-4 py-10 text-center">
-      <h1 className="text-2xl font-bold">Not found</h1>
+      <h1 className="text-title2 font-bold">Not found</h1>
       <Button asChild size="xl">
         <Link href="/">Home</Link>
       </Button>

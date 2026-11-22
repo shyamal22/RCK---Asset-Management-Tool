@@ -44,23 +44,23 @@ export default async function StartPage({ searchParams }: { searchParams: Promis
           </li>
         ))}
       </ol>
-      {i === 1 ? <h1 className="text-2xl font-bold">{STEPS[i].label}</h1> : null}
+      {i === 1 ? <h1 className="text-title2 font-bold">{STEPS[i].label}</h1> : null}
       {i === 0 ? <CompanyPage /> : null}
       {i === 1 ? <YardsCrewsPage /> : null}
       {i === 2 ? <SignupLinkPage /> : null}
       {next ? (
-        <Button asChild size="lg" className="h-14 text-lg" aria-disabled={blocked}>
+        <Button asChild size="lg" className="h-14 text-body" aria-disabled={blocked}>
           <Link href={blocked ? `?step=${STEPS[i].key}` : `?step=${next.key}`}>Next</Link>
         </Button>
       ) : (
         <form action={finishSetupAction}>
-          <Button type="submit" size="lg" className="h-14 w-full text-lg">
+          <Button type="submit" size="lg" className="h-14 w-full text-body">
             Finish
           </Button>
         </form>
       )}
-      {i === 0 && !company_ready ? <p className="text-base">Fill in every field, then Save</p> : null}
-      {i === 1 && !ready ? <p className="text-base">Add at least one yard and one crew</p> : null}
+      {i === 0 && !company_ready ? <p className="text-callout">Fill in every field, then Save</p> : null}
+      {i === 1 && !ready ? <p className="text-callout">Add at least one yard and one crew</p> : null}
     </div>
   );
 }

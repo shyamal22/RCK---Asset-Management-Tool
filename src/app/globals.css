@@ -279,25 +279,30 @@ h1 { letter-spacing: -0.01em; }
 .orbit-stage { --card-w: 11.5rem; --card-h: calc(var(--card-w) * 4 / 3); cursor: grab; perspective: none; }
 .orbit-stage:active { cursor: grabbing; }
 @media (min-width: 768px) { .orbit-stage { --card-w: 14rem; } }
-.orbit-card { will-change: transform, opacity; transform-origin: center; }
-/* Backlight (Sam, 22/11/2026): the glow under and around the front machine is its status colour,
-   green / yellow / red (grey when parked), fading smoothly as the wheel settles on the next one. */
-@property --backlight { syntax: "<color>"; inherits: true; initial-value: #6f00ff; }
-.orbit-stage { --backlight: #9a98a8; transition: --backlight .45s ease; }
-.orbit-stage[data-backlight="green"] { --backlight: var(--status-green); }
-.orbit-stage[data-backlight="yellow"] { --backlight: var(--status-yellow); }
-.orbit-stage[data-backlight="red"] { --backlight: var(--status-red); }
+.orbit-card { transform-origin: center; }
+/* Backlight (Sam, 22/11/2026): the glow under the front machine is its status colour (green / yellow /
+   red, grey when parked). Four glows are painted once and only cross-fade with opacity, so nothing
+   repaints per frame while the wheel spins (research: animating colours/shadows/filters drops frames). */
+.orbit-stage { --glow-green: var(--status-green); --glow-yellow: var(--status-yellow); --glow-red: var(--status-red); --glow-none: #9a98a8; }
+.orbit-floor { position: absolute; left: 14%; right: 14%; bottom: .25rem; height: 6rem; pointer-events: none; }
+.orbit-floor > span { position: absolute; inset: 0; border-radius: 50%; opacity: 0; transition: opacity .3s ease-out; }
+.orbit-floor > [data-tone="green"] { background: radial-gradient(closest-side, color-mix(in srgb, var(--glow-green) 55%, transparent), transparent); }
+.orbit-floor > [data-tone="yellow"] { background: radial-gradient(closest-side, color-mix(in srgb, var(--glow-yellow) 60%, transparent), transparent); }
+.orbit-floor > [data-tone="red"] { background: radial-gradient(closest-side, color-mix(in srgb, var(--glow-red) 55%, transparent), transparent); }
+.orbit-floor > [data-tone="none"] { background: radial-gradient(closest-side, color-mix(in srgb, var(--glow-none) 45%, transparent), transparent); }
+.orbit-stage[data-backlight="green"] .orbit-floor > [data-tone="green"],
+.orbit-stage[data-backlight="yellow"] .orbit-floor > [data-tone="yellow"],
+.orbit-stage[data-backlight="red"] .orbit-floor > [data-tone="red"],
+.orbit-stage[data-backlight="none"] .orbit-floor > [data-tone="none"] { opacity: 1; }
+/* Front card: a status-coloured ring and glow (no transition: it changes once, when the wheel rests). */
+.orbit-stage { --glow: var(--glow-none); }
+.orbit-stage[data-backlight="green"] { --glow: var(--glow-green); }
+.orbit-stage[data-backlight="yellow"] { --glow: var(--glow-yellow); }
+.orbit-stage[data-backlight="red"] { --glow: var(--glow-red); }
 .orbit-card[aria-current="true"] {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--backlight) 70%, transparent),
-    0 18px 44px -10px color-mix(in srgb, var(--backlight) 80%, transparent),
-    0 0 70px -6px color-mix(in srgb, var(--backlight) 55%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--glow) 75%, transparent), 0 18px 40px -12px color-mix(in srgb, var(--glow) 85%, transparent);
 }
-.orbit-floor {
-  position: absolute; left: 16%; right: 16%; bottom: .5rem; height: 5.5rem; border-radius: 50%;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--backlight) 62%, transparent), color-mix(in srgb, var(--backlight) 18%, transparent) 60%, transparent);
-  filter: blur(6px);
-}
-@media (prefers-reduced-motion: reduce) { .orbit-stage { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .orbit-floor > span { transition: none; } }
 
 /* Curved type rail: hover spotlights one, the rest dim; selected stays lit */
 .rail-item { transform: translate(-50%, -32px) scale(1); transition: transform .22s cubic-bezier(.2,.8,.2,1), opacity .22s, filter .22s; z-index: 1; }
@@ -473,11 +478,11 @@ h1 { letter-spacing: -0.01em; }
 .rail-item[data-pressed], nav[aria-label="Main"] a[data-pressed] { opacity: 1; }
 .rail-item[data-pressed] .rail-photo { scale: .88; filter: brightness(.85); transition-duration: var(--press-in); }
 /* Wheel cards are moved by JS every frame: only filter may transition, never transform/opacity. */
-.orbit-card { transition: filter var(--press-out) var(--press-ease), box-shadow .3s; }
+.orbit-card { transition: filter var(--press-out) var(--press-ease); }
 .orbit-card[data-pressed] { opacity: inherit; filter: brightness(.82); transition-duration: var(--press-in); }
 
 /* Screens slide in softly instead of snapping (app pages; filters on the same screen don't replay it). */
-.screen-in { animation: screen-in .22s cubic-bezier(.2,.8,.2,1) both; }
+.screen-in { animation: screen-in .2s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes screen-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
   .screen-in { animation: none; }
@@ -502,8 +507,7 @@ h1 { letter-spacing: -0.01em; }
 
 /* iOS 26 tab bar: a floating frosted pill inset from the edges, above the home indicator. */
 .nav-pill {
-  background: rgb(255 255 255 / .86);
-  -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px);
+  /* Near-solid white: a live backdrop blur re-filters every frame over a scrolling list (research). */
+  background: rgb(255 255 255 / .97);
   box-shadow: 0 0 0 .5px rgb(11 11 16 / .10), 0 12px 32px -12px rgb(11 11 16 / .35);
 }
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .nav-pill { background: #fff; } }

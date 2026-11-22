@@ -12,8 +12,8 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
   if (!company) {
     return (
       <Screen title="Link not active">
-        <p className="text-lg">Ask your manager for a new sign-up link.</p>
-        <Link href="/sign-in" className="press inline-flex min-h-12 items-center justify-center text-base font-semibold">
+        <p className="text-body">Ask your manager for a new sign-up link.</p>
+        <Link href="/sign-in" className="press inline-flex min-h-12 items-center justify-center text-callout font-semibold">
           Back to sign in
         </Link>
       </Screen>

@@ -22,7 +22,7 @@ import { LinkTabs } from "@/components/link-tabs";
 export const dynamic = "force-dynamic";
 
 type Params = AssetFilters & { view?: string };
-const select = "h-12 min-w-0 rounded-[0.875rem] border border-input bg-background px-3 text-base";
+const select = "h-12 min-w-0 rounded-[0.875rem] border border-input bg-background px-3 text-callout";
 
 /** Link to this page with some filters changed (empty value removes it). */
 function href(f: Params, change: Partial<Params>) {
@@ -66,7 +66,7 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
   return (
     <div className="grid max-w-5xl grid-cols-[minmax(0,1fr)] gap-4">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-3xl font-bold">Assets</h1>
+        <h1 className="text-large-title">Assets</h1>
         {can(me.actor, "assets", "create") ? (
           <Button asChild size="lg" className="h-12">
             <Link href="/setup/assets/new">Add asset</Link>
@@ -105,7 +105,7 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
         <>
 
           <div className="flex items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground" role="status">
+            <p className="text-footnote text-muted-foreground" role="status">
               <span>
                 {list.length} {list.length === 1 ? "asset" : "assets"}
               </span>
@@ -150,14 +150,14 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
                 defaultValue={f.q}
                 placeholder="Search"
                 aria-label="Search assets"
-                className="h-12 w-full min-w-0 rounded-full border border-input bg-background px-5 text-lg"
+                className="h-12 w-full min-w-0 rounded-full border border-input bg-background px-5 text-body"
               />
               <Button type="submit" size="lg" className="h-12 px-6">
                 Search
               </Button>
             </div>
             <details className="group" open={moreFilters || undefined}>
-              <summary className="flex min-h-11 w-fit cursor-pointer list-none items-center gap-2 rounded-full px-1 text-base font-semibold text-[var(--indigo)]">
+              <summary className="flex min-h-11 w-fit cursor-pointer list-none items-center gap-2 rounded-full px-1 text-callout font-semibold text-[var(--indigo)]">
                 <SlidersHorizontal className="size-4" aria-hidden /> Filter
               </summary>
               <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">

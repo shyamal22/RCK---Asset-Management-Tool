@@ -39,7 +39,7 @@ export function TemplateEditor({ typeId, initial }: { typeId: string; initial: D
         {items.map((it, i) => (
           <li key={it.key} className="surface grid gap-3 p-4" aria-label={`Check ${i + 1}`}>
             <div className="flex items-center gap-2">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--indigo)] text-sm font-bold text-white">{i + 1}</span>
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--indigo)] text-footnote font-bold text-white">{i + 1}</span>
               <input
                 aria-label={`Question ${i + 1}`}
                 value={it.question}

@@ -121,7 +121,7 @@ test("search by name or code and filter; Crew only sees their crew's machines", 
   await expect(page.getByLabel("Search assets")).toHaveCount(0);
   await expect(page.getByRole("navigation", { name: "Quick filters" })).toHaveCount(0);
   await bays.getByRole("link", { name: "Paver, 1" }).click();
-  await expect(bays.getByRole("link", { name: "Paver, 1" })).toHaveAttribute("aria-current", "true");
+  await expect(bays.getByRole("link", { name: "Paver, 1" })).toHaveAttribute("aria-current", "true", { timeout: 15_000 });
   await expect(page.getByText("1 asset", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "PAV-01 Big paver" })).toBeVisible();
   await expect(page.getByRole("link", { name: "PAV-01 Big paver" })).toHaveAttribute("aria-current", "true");

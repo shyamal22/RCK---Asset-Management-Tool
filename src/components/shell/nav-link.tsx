@@ -20,7 +20,7 @@ export function NavLink({ href, label, icon, variant }: { href: string; label: s
       className={cn(
         variant === "bottom"
           ? "group relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 text-caption font-bold transition-colors"
-          : "press relative flex h-12 items-center gap-3 rounded-full px-4 text-base",
+          : "press relative flex h-12 items-center gap-3 rounded-full px-4 text-callout",
         variant === "bottom" && (active ? "font-bold text-[var(--indigo)]" : "text-muted-foreground"),
         variant === "side" && (active ? "bg-white font-bold text-[var(--indigo)]" : "text-white/80 hover:bg-white/10 hover:text-white"),
       )}

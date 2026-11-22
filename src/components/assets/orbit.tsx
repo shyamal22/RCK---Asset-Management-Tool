@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Truck } from "lucide-react";
 import { StatusDot } from "@/components/status-dot";
 import { Button } from "@/components/ui/button";
@@ -28,22 +28,29 @@ export function Orbit({ items, typeChosen = false }: { items: ShowItem[]; typeCh
   const aim = useRef(0); // where the wheel is heading; quick repeated taps build on it
   const focusRef = useRef(0);
   const [focus, setFocus] = useState(0);
+  // Ring size, measured on resize only (reading layout inside the per-frame draw forces a reflow).
+  const ring = useRef({ rx: 150, ry: 70 });
+  // Last value written per card, so each frame only touches what changed (smooth on 60 Hz iPhones).
+  const written = useRef<{ z: string; vis: string; pe: string; wc: string; tab: number }[]>([]);
 
   const draw = useCallback(() => {
-    const el = stage.current;
-    if (!el) return;
-    // Wide, shallow ellipse: neighbours fan out to the sides, the back of the ring lifts up.
-    const rx = Math.min(el.clientWidth * 0.42, 420);
-    const ry = el.clientWidth < 600 ? 70 : 90;
+    const { rx, ry } = ring.current;
     cards.current.forEach((card, i) => {
       if (!card) return;
       const p = pose(relativeAngle(i, pos.current, n), rx, ry);
       card.style.transform = p.matrix;
-      card.style.zIndex = String(p.z);
       card.style.opacity = String(p.opacity);
-      card.style.visibility = p.hidden ? "hidden" : "visible";
-      card.style.pointerEvents = p.front > 0.45 ? "auto" : "none";
-      card.tabIndex = i === focusRef.current ? 0 : -1;
+      const w = (written.current[i] ??= { z: "", vis: "", pe: "", wc: "", tab: NaN });
+      const z = String(p.z);
+      const vis = p.hidden ? "hidden" : "visible";
+      const pe = p.front > 0.45 ? "auto" : "none";
+      const wc = p.hidden ? "auto" : "transform, opacity"; // GPU layers only for cards that can be seen
+      const tab = i === focusRef.current ? 0 : -1;
+      if (w.z !== z) card.style.zIndex = w.z = z;
+      if (w.vis !== vis) card.style.visibility = w.vis = vis;
+      if (w.pe !== pe) card.style.pointerEvents = w.pe = pe;
+      if (w.wc !== wc) card.style.willChange = w.wc = wc;
+      if (w.tab !== tab) card.tabIndex = w.tab = tab;
     });
     focusRef.current = nearest(pos.current, n);
     // Re-rendering the details panel mid-spin makes the wheel stutter on phones: only sync once it rests.
@@ -97,11 +104,20 @@ export function Orbit({ items, typeChosen = false }: { items: ShowItem[]; typeCh
     draw();
   }, [items, draw]);
 
-  useEffect(() => {
-    const onResize = () => draw();
-    window.addEventListener("resize", onResize);
+  useLayoutEffect(() => {
+    const el = stage.current;
+    if (!el) return;
+    const measure = () => {
+      const w = el.clientWidth;
+      // Wide, shallow ellipse: neighbours fan out to the sides, the back of the ring lifts up.
+      ring.current = { rx: Math.min(w * 0.42, 420), ry: w < 600 ? 70 : 90 };
+      draw();
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
     return () => {
-      window.removeEventListener("resize", onResize);
+      ro.disconnect();
       cancelAnimationFrame(raf.current);
     };
   }, [draw]);
@@ -141,7 +157,7 @@ export function Orbit({ items, typeChosen = false }: { items: ShowItem[]; typeCh
             if (!d.moved) return;
             d.samples.push({ x: e.clientX, t: e.timeStamp });
             if (d.samples.length > 6) d.samples.shift();
-            const rx = Math.min(el.clientWidth * 0.42, 420);
+            const rx = ring.current.rx;
             let next = d.start - dx / rx / step;
             if (n > WRAP_MAX) next = Math.max(-0.4, Math.min(n - 0.6, next));
             pos.current = next;
@@ -155,7 +171,7 @@ export function Orbit({ items, typeChosen = false }: { items: ShowItem[]; typeCh
               const recent = d.samples.filter((s) => e.timeStamp - s.t < 100);
               const first = recent[0] ?? d.samples[0];
               const v = recent.length > 1 ? (e.clientX - first.x) / Math.max(16, e.timeStamp - first.t) : 0; // px per ms
-              const rx = Math.min(stage.current.clientWidth * 0.42, 420);
+              const rx = ring.current.rx;
               // Slow drags (under 0.4 px/ms) land where the finger left them; a flick adds up to two machines.
               const fling = Math.abs(v) < 0.4 ? 0 : Math.max(-2, Math.min(2, -(v * 240) / rx / step));
               let landing = Math.round(pos.current + fling);
@@ -179,7 +195,11 @@ export function Orbit({ items, typeChosen = false }: { items: ShowItem[]; typeCh
             }
           }}
         >
-          <div className="orbit-floor" aria-hidden />
+          <div className="orbit-floor" aria-hidden>
+            {["green", "yellow", "red", "none"].map((t) => (
+              <span key={t} data-tone={t} />
+            ))}
+          </div>
           {items.map((it, i) => (
             <Link
               key={it.id}
@@ -201,7 +221,16 @@ export function Orbit({ items, typeChosen = false }: { items: ShowItem[]; typeCh
             >
               {it.photo ? (
                 // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL
-                <img src={it.photo} alt="" className="pointer-events-none size-full object-cover" draggable={false} />
+                <img
+                  src={it.photo}
+                  alt=""
+                  // The front machine and its neighbours load first; the rest when needed.
+                  loading={i <= 1 || i === n - 1 ? "eager" : "lazy"}
+                  fetchPriority={i === 0 ? "high" : "low"}
+                  decoding="async"
+                  className="pointer-events-none size-full object-cover"
+                  draggable={false}
+                />
               ) : (
                 <span className="flex size-full items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
                   <Truck className="size-14 text-white/80" aria-hidden />
@@ -209,8 +238,8 @@ export function Orbit({ items, typeChosen = false }: { items: ShowItem[]; typeCh
               )}
               {it.flag ? <FlagBadge {...it.flag} className="absolute top-3 right-3 shadow" /> : null}
               <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-3 pt-10 pb-3 text-left text-white">
-                <span className="block text-xl leading-none font-bold">{it.code}</span>
-                <span className="block truncate text-sm opacity-90">{it.name}</span>
+                <span className="block text-title3 leading-none font-bold">{it.code}</span>
+                <span className="block truncate text-footnote opacity-90">{it.name}</span>
               </span>
             </Link>
           ))}
@@ -233,10 +262,10 @@ export function Orbit({ items, typeChosen = false }: { items: ShowItem[]; typeCh
         <p className="sr-only">
           {focus + 1} of {n}
         </p>
-        <h2 className="text-3xl leading-tight font-bold">
+        <h2 className="text-title1 leading-tight font-bold">
           {a.code} <span className="font-normal">{a.name}</span>
         </h2>
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-base">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-callout">
           <StatusDot tone={STATUS_TONE[a.status]} label={STATUS_LABELS[a.status]} />
           {a.flag ? <FlagBadge {...a.flag} /> : null}
           <span className="font-bold tabular-nums">{formatReading(a.current_reading, a.tracking_unit)}</span>

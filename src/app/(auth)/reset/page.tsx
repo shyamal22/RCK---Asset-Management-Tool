@@ -6,7 +6,7 @@ export default function ResetPage() {
   return (
     <Screen title="Reset password">
       <ResetForm />
-      <Link href="/sign-in" className="press inline-flex min-h-12 items-center justify-center text-base font-semibold">
+      <Link href="/sign-in" className="press inline-flex min-h-12 items-center justify-center text-callout font-semibold">
         Back to sign in
       </Link>
     </Screen>

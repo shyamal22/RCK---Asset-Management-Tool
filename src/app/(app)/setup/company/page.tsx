@@ -31,7 +31,7 @@ export default async function CompanyPage() {
   )) as unknown as Omit<ActiveSupport, "endsLabel">[]).map((r) => ({ ...r, endsLabel: formatDateTime(r.ends_at) }));
   return (
     <div className="grid max-w-md gap-4">
-      <h1 className="text-2xl font-bold">Company</h1>
+      <h1 className="text-title2 font-bold">Company</h1>
       <SupportAccess rows={support} />
       <LogoUpload url={logo} />
       <CompanyForm

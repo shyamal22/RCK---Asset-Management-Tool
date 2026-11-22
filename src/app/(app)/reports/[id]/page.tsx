@@ -40,10 +40,10 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
           // eslint-disable-next-line @next/next/no-img-element -- signed URL
           <img src={logo} alt={`${company?.name ?? "Company"} logo`} className="max-h-12 w-auto max-w-[60%] object-contain" />
         ) : (
-          <span className="text-lg font-bold">{company?.name}</span>
+          <span className="text-body font-bold">{company?.name}</span>
         )}
         {/* Printed / PDF header only: on screen the page is obviously a damage report. */}
-        <span className="hidden text-sm font-semibold tracking-wide text-muted-foreground uppercase print:inline">Damage report</span>
+        <span className="hidden text-footnote font-semibold tracking-wide text-muted-foreground uppercase print:inline">Damage report</span>
       </div>
       {sent ? (
         <p role="status" className="surface p-4 font-semibold">
@@ -51,14 +51,14 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
         </p>
       ) : null}
       <header className="grid gap-2">
-        <Link href={`/assets/${r.asset_id}`} className="w-fit text-base font-semibold text-[var(--indigo)]">
+        <Link href={`/assets/${r.asset_id}`} className="w-fit text-callout font-semibold text-[var(--indigo)]">
           {r.code} {r.asset_name}
         </Link>
-        <h1 className="text-3xl font-bold">{r.title}</h1>
+        <h1 className="text-title1 font-bold">{r.title}</h1>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
           <StatusDot tone={r.status === "open" ? sev.tone : null} label={sev.label} />
-          {r.status !== "open" ? <span className="rounded-full border border-border bg-card px-3 py-0.5 text-sm font-semibold">{REPORT_STATUS[r.status]}</span> : null}
-          <span className="text-sm text-muted-foreground">
+          {r.status !== "open" ? <span className="rounded-full border border-border bg-card px-3 py-0.5 text-footnote font-semibold">{REPORT_STATUS[r.status]}</span> : null}
+          <span className="text-footnote text-muted-foreground">
             {r.raised_by_name ?? "Someone"} ·{" "}
             <time dateTime={new Date(r.created_at).toISOString()} title={formatDateTime(r.created_at)}>
               {ago(r.created_at)}
@@ -70,8 +70,8 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
       <PhotoViewer photos={r.photo_paths.filter((p) => urls[p]).map((p, i) => ({ src: urls[p], alt: `Damage photo ${i + 1}` }))} />
 
       <section aria-label="Details" className="grid gap-2">
-        <p className="whitespace-pre-wrap text-lg">{r.details}</p>
-        <dl className="grid grid-cols-[9rem_1fr] gap-x-4 gap-y-1 text-base">
+        <p className="whitespace-pre-wrap text-body">{r.details}</p>
+        <dl className="grid grid-cols-[9rem_1fr] gap-x-4 gap-y-1 text-callout">
           {r.reading ? (
             <>
               <dt className="text-muted-foreground">Reading</dt>
@@ -93,9 +93,9 @@ export default async function ReportPage({ params, searchParams }: { params: Pro
 
       {r.status !== "open" ? (
         <section className="surface grid gap-1 p-4">
-          <h2 className="text-lg font-bold">{r.status === "fixed" ? "Fixed" : "Dismissed"}</h2>
+          <h2 className="text-body font-bold">{r.status === "fixed" ? "Fixed" : "Dismissed"}</h2>
           <p>{r.closed_note}</p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-footnote text-muted-foreground">
             {r.closed_by_name ?? ""} {r.closed_at ? `· ${formatDateTime(r.closed_at)}` : ""}
           </p>
         </section>

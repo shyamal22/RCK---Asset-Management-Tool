@@ -94,10 +94,10 @@ export function StartSupportForm({ companyId }: { companyId: string }) {
     >
       <Field id="support-reason" label="Reason for access" value={reason} onChange={(e) => setReason(e.target.value)} />
       <div className="grid gap-1.5">
-        <Label htmlFor="support-length" className="text-base">
+        <Label htmlFor="support-length" className="text-callout">
           How long
         </Label>
-        <select id="support-length" className="h-12 rounded-[0.875rem] border border-input bg-background px-3 text-lg" value={hours} onChange={(e) => setHours(Number(e.target.value))}>
+        <select id="support-length" className="h-12 rounded-[0.875rem] border border-input bg-background px-3 text-body" value={hours} onChange={(e) => setHours(Number(e.target.value))}>
           {LENGTHS.map((l) => (
             <option key={l.hours} value={l.hours}>
               {l.label}

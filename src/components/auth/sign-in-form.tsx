@@ -50,7 +50,7 @@ export function SignInForm({ notice }: { notice?: string }) {
         <PasswordField id="password" label="Password" placeholder="Password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
       </div>
       <FormError message={error} />
-      <Link href="/reset" className="py-1 text-center text-base">
+      <Link href="/reset" className="py-1 text-center text-callout">
         Forgot password?
       </Link>
       <SubmitButton pending={pending} disabled={false}>

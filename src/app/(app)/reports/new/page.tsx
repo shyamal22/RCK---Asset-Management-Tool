@@ -21,19 +21,19 @@ export default async function NewReportPage({ searchParams }: { searchParams: Pr
     const photo = a.photo_path ? (await photoUrls([a.photo_path]))[a.photo_path] : undefined;
     return (
       <div className="grid max-w-md gap-5">
-        <h1 className="text-3xl font-bold">Report damage</h1>
+        <h1 className="text-title1 font-bold">Report damage</h1>
         <div className="surface flex items-center gap-3 p-2 pr-4">
           <div className="size-14 shrink-0 overflow-hidden rounded-xl bg-muted">
             {/* eslint-disable-next-line @next/next/no-img-element -- signed URL */}
             {photo ? <img src={photo} alt="" className="size-full object-cover" /> : null}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-lg font-bold">
+            <p className="truncate text-body font-bold">
               {a.code} <span className="font-normal">{a.name}</span>
             </p>
-            <p className="text-sm text-muted-foreground">{a.type_name}</p>
+            <p className="text-footnote text-muted-foreground">{a.type_name}</p>
           </div>
-          <Link href="/reports/new" className="text-sm font-semibold text-[var(--indigo)]">
+          <Link href="/reports/new" className="text-footnote font-semibold text-[var(--indigo)]">
             Change
           </Link>
         </div>
@@ -44,9 +44,9 @@ export default async function NewReportPage({ searchParams }: { searchParams: Pr
   const photos = await photoUrls(data.list.map((x) => x.photo_path));
   return (
     <div className="grid max-w-md gap-4">
-      <h1 className="text-3xl font-bold">Report damage</h1>
+      <h1 className="text-title1 font-bold">Report damage</h1>
       <Form key={q ?? ""} action="/reports/new" className="grid grid-cols-[minmax(0,1fr)_auto] gap-2" role="search">
-        <input name="q" type="search" defaultValue={q} placeholder="Search" aria-label="Search machines" className="h-12 w-full min-w-0 rounded-full border border-input bg-background px-5 text-lg" />
+        <input name="q" type="search" defaultValue={q} placeholder="Search" aria-label="Search machines" className="h-12 w-full min-w-0 rounded-full border border-input bg-background px-5 text-body" />
         <Button type="submit" size="lg" className="h-12 px-6">Search</Button>
       </Form>
       <ul className="grid gap-2">

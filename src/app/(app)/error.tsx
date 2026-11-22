@@ -10,7 +10,7 @@ export default function AppError({ reset }: { error: Error & { digest?: string }
   const router = useRouter();
   return (
     <div className="mx-auto grid max-w-md gap-4 py-10 text-center">
-      <h1 className="text-2xl font-bold">That didn&apos;t load</h1>
+      <h1 className="text-title2 font-bold">That didn&apos;t load</h1>
       <Button
         size="xl"
         onClick={() =>

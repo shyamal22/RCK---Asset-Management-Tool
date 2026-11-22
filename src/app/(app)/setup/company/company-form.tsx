@@ -40,7 +40,7 @@ export function CompanyForm({ initial, onSaved, submitLabel = "Save" }: { initia
       <Field id="company-name" label="Company name" required value={v.name} onChange={set("name")} />
       <Field id="nzbn" label="NZBN" required inputMode="numeric" maxLength={13} placeholder="13 digits" value={v.nzbn} onChange={set("nzbn")} />
       <fieldset className="grid gap-3">
-        <legend className="mb-1 text-lg font-bold">Key contacts</legend>
+        <legend className="mb-1 text-body font-bold">Key contacts</legend>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field id="workshop-manager" label="Workshop manager" required autoComplete="off" value={v.workshopManagerName} onChange={set("workshopManagerName")} />
           <Field id="workshop-manager-phone" label="Workshop manager's phone" required type="tel" inputMode="tel" value={v.workshopManagerPhone} onChange={set("workshopManagerPhone")} />

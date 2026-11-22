@@ -46,15 +46,15 @@ Work top to bottom. Tick each box when done (see CLAUDE.md "Done means").
 - [ ] Seed ~40 realistic assets
 
 ## Milestone 2 — Pre-checks and breakdown reports (docs/07-checks-and-faults.md)
-- [ ] Tables: precheck_templates (asset type or asset, versioned), precheck_items, prechecks, precheck_answers, breakdown_reports, flags
-- [ ] Template builder (Workshop + Director): question, answer type (Fine/Usable/Broken, Yes/No with problem answer, free text), photo required toggle, help note; reorder items; per-type with per-asset override; versioning
-- [ ] Crew flow: scan QR → enter reading → answer items → photos → submit; auto user/time/GPS
+- [x] Tables: precheck_templates (asset type or asset, versioned), precheck_items, prechecks, precheck_answers, breakdown_reports, flags — flags are open yellow/red answers + open reports (asset_flags())
+- [x] Template builder (Workshop + Director): question, answer type (Fine/Usable/Broken, Yes/No with problem answer, free text), photo required toggle, help note; reorder items; per-type with per-asset override; versioning — per-asset override is in the database (save_precheck_template p_asset); its screen comes later
+- [x] Crew flow: scan QR → enter reading → answer items → photos → submit; auto user/time/GPS — machine picker for now; QR scanning comes with the QR labels task
 - [ ] Offline support: queue submissions and photos, sync when back online
-- [ ] Flags: Usable → yellow, Broken/problem answer → red; pre-check overall flag = worst item; NO automatic work orders
-- [ ] Pre-check report view (red/yellow first) with per-item actions: create WO (pre-filled, linked), dismiss with reason, leave open
+- [x] Flags: Usable → yellow, Broken/problem answer → red; pre-check overall flag = worst item; NO automatic work orders
+- [ ] Pre-check report view (red/yellow first) with per-item actions: create WO (pre-filled, linked), dismiss with reason, leave open — report, dismiss and leave open done; create WO waits for Milestone 3
 - [x] Breakdown report (any user type): asset, title, details, 1+ photos, Still usable (yellow) / Unusable (red); notifications; Unusable sets asset status — built early at Sam's request (22/11/2026); notifications come with M2b
-- [ ] Asset overall flag (green/yellow/red) from open items; clears when dismissed or WO signed off
-- [ ] Store last pre-check date and user per asset; pre-check history per asset
+- [x] Asset overall flag (green/yellow/red) from open items; clears when dismissed or WO signed off (WO part with M3)
+- [ ] Store last pre-check date and user per asset; pre-check history per asset — last date/user stored; per-asset history list next
 - [ ] Asset status Parked / not in use (excluded from missed-check rules)
 - [ ] Pre-check week view (Director + Workshop): assets × last 7 days, colour per day, days since last check, filters (docs/09)
 - [ ] Missed pre-check rule: alert when active asset passes 7 days; weekly Monday report (email + PDF)

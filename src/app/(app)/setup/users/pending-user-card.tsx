@@ -27,9 +27,9 @@ export function PendingUserCard({
   return (
     <section className="grid gap-3 rounded-lg border p-4" aria-label={user.name}>
       <div>
-        <h2 className="text-xl font-bold">{user.name}</h2>
-        <p className="text-base">{user.contact}</p>
-        <p className="text-sm text-muted-foreground">{user.signedUp}</p>
+        <h2 className="text-title3 font-bold">{user.name}</h2>
+        <p className="text-callout">{user.contact}</p>
+        <p className="text-footnote text-muted-foreground">{user.signedUp}</p>
       </div>
       {canApprove ? (
         <>
@@ -44,7 +44,7 @@ export function PendingUserCard({
               <Label htmlFor={`crew-${user.id}`}>Crew</Label>
               <select
                 id={`crew-${user.id}`}
-                className="h-12 rounded-[0.875rem] border border-input bg-background px-3 text-lg"
+                className="h-12 rounded-[0.875rem] border border-input bg-background px-3 text-body"
                 value={crewId}
                 onChange={(e) => setCrewId(e.target.value)}
               >

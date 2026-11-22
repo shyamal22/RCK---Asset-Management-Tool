@@ -31,7 +31,7 @@ export function PhoneHeader({ brand, initials, companyName, done, hasSetup }: { 
   return (
     <header data-press-instant className="sticky top-0 z-40 flex select-none items-center justify-between gap-3 bg-[var(--onyx)] px-3 pt-[calc(env(safe-area-inset-top)+0.5rem)] pb-3 text-white md:hidden">
       <BackButton hasSetup={hasSetup} className="text-white" />
-      <p className="truncate text-sm font-semibold text-white/70">{companyName}</p>
+      <p className="truncate text-footnote font-semibold text-white/70">{companyName}</p>
       {done}
     </header>
   );

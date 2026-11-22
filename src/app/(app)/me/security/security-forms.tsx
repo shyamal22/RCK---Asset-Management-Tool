@@ -37,7 +37,7 @@ export function SecurityForms() {
           maxLength={6}
           value={pin}
           onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-          className="text-center text-2xl tracking-[0.5em]"
+          className="text-center text-title2 tracking-[0.5em]"
         />
         <Button type="submit" size="lg" className="h-12" disabled={pending || pin.length < 4}>
           Save PIN
@@ -66,7 +66,7 @@ export function SecurityForms() {
       >
         Add Face ID / fingerprint
       </Button>
-      {msg ? <p className="text-base">{msg}</p> : null}
+      {msg ? <p className="text-callout">{msg}</p> : null}
       <FormError message={error} />
     </div>
   );

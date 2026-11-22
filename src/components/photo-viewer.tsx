@@ -108,7 +108,7 @@ export function PhotoViewer({ photos, label = "Photos" }: { photos: Photo[]; lab
         {/* The full-size image only loads once the viewer is open (not in the background on page load). */}
         {open ? (
           failed === p.src ? (
-            <p className="flex size-full flex-col items-center justify-center gap-3 text-lg">
+            <p className="flex size-full flex-col items-center justify-center gap-3 text-body">
               <ImageOff className="size-8 opacity-70" aria-hidden />
               Couldn&apos;t load this photo
             </p>
@@ -140,7 +140,7 @@ export function PhotoViewer({ photos, label = "Photos" }: { photos: Photo[]; lab
         </button>
         {n > 1 ? (
           <>
-            <p className="absolute inset-x-0 text-center text-sm font-semibold tabular-nums" style={{ top: "calc(env(safe-area-inset-top) + 1.6rem)" }}>
+            <p className="absolute inset-x-0 text-center text-footnote font-semibold tabular-nums" style={{ top: "calc(env(safe-area-inset-top) + 1.6rem)" }}>
               {i + 1} of {n}
             </p>
             <button

@@ -3,6 +3,8 @@
  * pages can't be prefetched without a loading boundary). Only the tab pages use it (their loading.tsx
  * sits in a route group next to the page): a loading boundary starts streaming before the page runs,
  * after which notFound() can no longer send a 404, and detail/Setup screens rely on real 404s.
+ * Not on Assets or Reports: their filters/Open-Closed are same-page search-param changes, and with a
+ * loading boundary there Next 15.5 sometimes received the new page but never showed it (found 22/11/2026).
  */
 export function ScreenSkeleton() {
   return (

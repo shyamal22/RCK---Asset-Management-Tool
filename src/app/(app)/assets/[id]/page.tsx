@@ -33,6 +33,8 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
   const { a, readings, flag, reports } = data;
   const photo = a.photo_path ? (await photoUrls([a.photo_path]))[a.photo_path] : undefined;
   const canEdit = can(me.actor, "assets", "edit");
+  // Pre-checks are done by the machine's own crew (Crew / Supervisor); one primary action per screen.
+  const canCheck = can(me.actor, "prechecks", "create") && !!me.crewId && me.crewId === a.crew_id;
   const details: [string, string | null][] = [
     ["Type", a.type_name],
     ["Make", a.make],
@@ -46,35 +48,43 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
   ];
   return (
     <div className="grid max-w-3xl gap-6">
-      <header className="flex items-start gap-4">
-        <div className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-card sm:size-32">
+      <header className="grid gap-4 md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] md:items-start">
+        {/* Hero photo at 4:3 (what the iPhone camera takes), so it's never cropped awkwardly. */}
+        <div className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[var(--radius-card)] border border-border bg-card">
           {photo ? (
             // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL
-            <img src={photo} alt={`${a.code} ${a.name}`} className="size-full object-cover" />
+            <img src={photo} alt={`${a.code} ${a.name}`} decoding="async" fetchPriority="high" className="size-full object-cover" />
           ) : (
-            <Truck className="size-10 text-muted-foreground" aria-hidden />
+            <span className="flex size-full items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
+              <Truck className="size-14 text-white/80" aria-hidden />
+            </span>
           )}
         </div>
         <div className="grid min-w-0 gap-1">
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-title1">
             {a.code} <span className="font-normal">{a.name}</span>
           </h1>
           <div className="flex flex-wrap items-center gap-2">
             <StatusDot tone={STATUS_TONE[a.status]} label={STATUS_LABELS[a.status]} />
             {flag ? <FlagBadge {...flag} /> : null}
           </div>
-          <p className="text-lg">
+          <p className="text-body">
             <span className="font-bold tabular-nums" data-testid="current-reading">
               {formatReading(a.current_reading, a.tracking_unit)}
             </span>
-            {a.current_reading_at ? <span className="text-sm text-muted-foreground tabular-nums"> · {formatDate(a.current_reading_at)}</span> : null}
+            {a.current_reading_at ? <span className="text-footnote text-muted-foreground tabular-nums"> · {formatDate(a.current_reading_at)}</span> : null}
           </p>
         </div>
       </header>
 
       <div className="flex flex-wrap gap-2">
-        {can(me.actor, "defects", "create") ? (
+        {canCheck ? (
           <Button asChild size="lg" variant="accent">
+            <Link href={`/prechecks/new?asset=${a.id}`}>Pre-check</Link>
+          </Button>
+        ) : null}
+        {can(me.actor, "defects", "create") ? (
+          <Button asChild size="lg" variant={canCheck ? "outline" : "accent"}>
             <Link href={`/reports/new?asset=${a.id}`}>Report damage</Link>
           </Button>
         ) : null}
@@ -87,14 +97,14 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
 
       {reports.length ? (
         <section aria-labelledby="open-reports-h" className="grid gap-2">
-          <h2 id="open-reports-h" className="text-xl font-bold">Reports</h2>
+          <h2 id="open-reports-h" className="text-title3 font-bold">Reports</h2>
           <ul className="grid gap-2">
             {reports.map((r) => (
               <li key={r.id}>
                 <Link href={`/reports/${r.id}`} className="press surface flex min-h-14 items-center justify-between gap-3 p-3">
                   <span className="min-w-0">
                     <span className="block truncate font-bold">{r.title}</span>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-footnote text-muted-foreground">
                       {r.raised_by_name ?? "Someone"} · {ago(r.created_at)}
                     </span>
                   </span>
@@ -121,7 +131,7 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
       </section>
 
       <section aria-labelledby="readings-h" className="grid gap-3">
-        <h2 id="readings-h" className="text-xl font-bold">{UNIT_LABELS[a.tracking_unit].name}</h2>
+        <h2 id="readings-h" className="text-title3 font-bold">{UNIT_LABELS[a.tracking_unit].name}</h2>
         {canEdit ? (
           <div className="max-w-sm">
             <ReadingForm assetId={a.id} unitName={UNIT_LABELS[a.tracking_unit].name} />
@@ -135,7 +145,7 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
                   {formatReading(r.reading, r.unit)}
                   {r.lower_than_previous ? <span className="ml-2 font-normal text-status-red">Lower than previous</span> : null}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-footnote text-muted-foreground">
                   {formatDateTime(r.read_at)}
                   {r.entered_by ? ` · ${r.entered_by}` : ""}
                 </span>

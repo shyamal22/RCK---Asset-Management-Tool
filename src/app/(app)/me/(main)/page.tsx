@@ -9,17 +9,17 @@ export default async function MePage() {
   const acting = me.baseUserType !== me.userType;
   return (
     <div className="grid max-w-sm gap-4">
-      <h1 className="text-2xl font-bold">{me.name}</h1>
-      <p className="text-lg">
+      <h1 className="text-large-title">{me.name}</h1>
+      <p className="text-body">
         {USER_TYPE_LABELS[me.userType]}
         {acting ? " (acting)" : ""}
         {me.flags.includes("workshop_lead") ? " · Workshop lead" : ""}
       </p>
-      <Button asChild variant="outline" size="lg" className="h-14 text-lg">
+      <Button asChild variant="outline" size="lg" className="h-14 text-body">
         <Link href="/me/security">PIN and Face ID</Link>
       </Button>
       <form action={signOutAction}>
-        <Button type="submit" variant="outline" size="lg" className="h-14 w-full text-lg">
+        <Button type="submit" variant="outline" size="lg" className="h-14 w-full text-body">
           Sign out
         </Button>
       </form>

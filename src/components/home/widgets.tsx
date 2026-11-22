@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ChevronRight, Truck, Wrench, TriangleAlert, CircleCheck, Gauge } from "lucide-react";
+import { ChevronRight, Truck, Wrench, TriangleAlert, CircleCheck, Gauge, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { checkedToday } from "@/lib/prechecks/today";
 import { StatusDot } from "@/components/status-dot";
 import { FlagBadge } from "@/components/assets/flag-badge";
 import { STATUS_LABELS, STATUS_TONE, formatReading, type AssetStatus } from "@/lib/assets/labels";
@@ -14,7 +15,7 @@ export function Greeting() {
   const today = new Intl.DateTimeFormat("en-NZ", { timeZone: "Pacific/Auckland", weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date());
   return (
     <header>
-      <h1 className="text-2xl font-bold md:text-3xl">
+      <h1 className="text-title1">
         <span className="sr-only">Home, </span>
         {today}
       </h1>
@@ -26,7 +27,7 @@ export function Greeting() {
 export function Panel({ title, href, children, className }: { title: string; href?: string; children: React.ReactNode; className?: string }) {
   return (
     <section aria-label={title} className={cn("surface grid content-start gap-3 p-4 md:p-5", className)}>
-      <h2 className="text-lg font-bold">
+      <h2 className="text-body font-bold">
         {href ? (
           <Link href={href} aria-label={`See all ${title}`} className="press -my-2 inline-flex min-h-11 items-center gap-1 rounded-full">
             {title}
@@ -57,7 +58,7 @@ export function FleetTiles({ s }: { s: FleetSummary }) {
     <div className="grid grid-cols-3 gap-2 md:gap-3" role="list" aria-label="Fleet at a glance">
       {TILES.map((t) => (
         <Link key={t.key} role="listitem" href={t.href} data-tone={t.tone} className="press status-tile grid gap-2 rounded-[1.25rem] border p-3 md:p-4">
-          <span className="flex items-center gap-1.5 text-sm font-semibold md:gap-2">
+          <span className="flex items-center gap-1.5 text-footnote font-semibold md:gap-2">
             <span className="status-tile-icon flex size-6 shrink-0 items-center justify-center rounded-full text-white">
               <t.icon className="size-3.5" aria-hidden />
             </span>
@@ -95,7 +96,7 @@ export function AttentionStrip({ rows, photos, empty = "All good" }: { rows: Att
               {a.flag ? <FlagBadge flag={a.flag} n={a.open_reports} className="absolute top-2 left-2 shadow" /> : null}
             </span>
             <span className="grid gap-0.5 p-2.5">
-              <span className="truncate text-sm font-bold">
+              <span className="truncate text-footnote font-bold">
                 {a.code} <span className="font-normal">{a.name}</span>
               </span>
               <StatusDot tone={STATUS_TONE[a.status]} label={STATUS_LABELS[a.status]} />
@@ -114,8 +115,17 @@ export function MachineStrip({ items, photos }: { items: AssetRow[]; photos: Rec
     <ul className="bay-rail -mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 md:-mx-5 md:px-5">
       {items.map((a) => (
         <li key={a.id} className="w-36 shrink-0 snap-start">
-          <Link href={`/assets/${a.id}`} aria-label={`${a.code} ${a.name}`} className="press block overflow-hidden rounded-2xl border border-border bg-card">
+          <Link
+            href={`/assets/${a.id}`}
+            aria-label={`${a.code} ${a.name}${checkedToday(a.last_precheck_at) ? ", checked today" : ""}`}
+            className="press block overflow-hidden rounded-[var(--radius-inner)] border border-border bg-card"
+          >
             <span className="relative block aspect-square bg-muted">
+              {checkedToday(a.last_precheck_at) ? (
+                <span className="absolute top-2 right-2 z-[1] flex size-7 items-center justify-center rounded-full bg-status-green text-white shadow" aria-hidden>
+                  <Check className="size-4" strokeWidth={3} />
+                </span>
+              ) : null}
               {a.photo_path && photos[a.photo_path] ? (
                 // eslint-disable-next-line @next/next/no-img-element -- signed URL
                 <img src={photos[a.photo_path]} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
@@ -126,8 +136,8 @@ export function MachineStrip({ items, photos }: { items: AssetRow[]; photos: Rec
               )}
             </span>
             <span className="grid gap-0.5 p-2.5">
-              <span className="truncate text-sm font-bold">{a.code}</span>
-              <span className="text-xs text-muted-foreground tabular-nums">{formatReading(a.current_reading, a.tracking_unit)}</span>
+              <span className="truncate text-footnote font-bold">{a.code}</span>
+              <span className="text-caption text-muted-foreground tabular-nums">{formatReading(a.current_reading, a.tracking_unit)}</span>
               <StatusDot tone={STATUS_TONE[a.status]} label={STATUS_LABELS[a.status]} />
             </span>
           </Link>
@@ -160,7 +170,7 @@ export function ReportFeed({ reports, photos, empty = "No open damage reports." 
                 <span className="truncate font-bold">
                   {r.code} <span className="font-normal">{r.title}</span>
                 </span>
-                <span className="truncate text-sm text-muted-foreground">
+                <span className="truncate text-footnote text-muted-foreground">
                   {r.raised_by_name ?? "Someone"} · {ago(r.created_at)}
                 </span>
               </span>
@@ -193,7 +203,7 @@ export function ReadingAlerts({ rows }: { rows: ReadingAlert[] }) {
               <span className="truncate font-bold">
                 {r.code} <span className="font-normal">{r.name}</span>
               </span>
-              <span className="truncate text-sm text-muted-foreground">
+              <span className="truncate text-footnote text-muted-foreground">
                 {formatReading(r.reading, r.unit)} <span aria-hidden>↓</span>
                 <span className="sr-only">lower</span> · {ago(r.read_at)}
               </span>
@@ -224,7 +234,7 @@ export function FleetByType({ rows }: { rows: TypeRow[] }) {
   const totals = BAR.map((b) => types.reduce((n, t) => n + count(t, b.key), 0));
   return (
     <div className="grid gap-4">
-      <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm" aria-label="Legend">
+      <ul className="flex flex-wrap gap-x-4 gap-y-1 text-footnote" aria-label="Legend">
         {BAR.map((b, i) => (
           <li key={b.label} className="flex items-center gap-1.5">
             <span className={cn("size-2.5 rounded-full", b.cls)} aria-hidden />
@@ -236,7 +246,7 @@ export function FleetByType({ rows }: { rows: TypeRow[] }) {
         {types.map((t) => {
           const total = BAR.reduce((n, b) => n + count(t, b.key), 0);
           return (
-            <div key={t} className="grid grid-cols-[7.5rem_minmax(0,1fr)_2rem] items-center gap-3 text-sm">
+            <div key={t} className="grid grid-cols-[7.5rem_minmax(0,1fr)_2rem] items-center gap-3 text-footnote">
               <span className="truncate text-muted-foreground">{t}</span>
               <span className="flex h-3.5 gap-0.5">
                 {BAR.map((b) => {

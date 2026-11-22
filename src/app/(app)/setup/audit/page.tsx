@@ -35,17 +35,17 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
 
   return (
     <div className="grid gap-4">
-      <h1 className="text-2xl font-bold">Audit log</h1>
+      <h1 className="text-title2 font-bold">Audit log</h1>
       <form className="flex flex-wrap items-end gap-2" method="get">
-        <label className="grid text-sm">
+        <label className="grid text-footnote">
           From
           <input type="date" name="from" defaultValue={f.from} className={select} />
         </label>
-        <label className="grid text-sm">
+        <label className="grid text-footnote">
           To
           <input type="date" name="to" defaultValue={f.to} className={select} />
         </label>
-        <label className="grid text-sm">
+        <label className="grid text-footnote">
           Person
           <select name="user" defaultValue={f.user ?? ""} className={select}>
             <option value="">Everyone</option>
@@ -56,7 +56,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
             ))}
           </select>
         </label>
-        <label className="grid text-sm">
+        <label className="grid text-footnote">
           Action
           <select name="action" defaultValue={f.action ?? ""} className={select}>
             <option value="">All</option>
@@ -65,7 +65,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
             ))}
           </select>
         </label>
-        <label className="grid text-sm">
+        <label className="grid text-footnote">
           Record
           <select name="entity" defaultValue={f.entity ?? ""} className={select}>
             <option value="">All</option>
@@ -91,7 +91,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
           const changes = diff(r.before, r.after);
           return (
             <li key={r.id} className="grid gap-1 p-3">
-              <div className="flex flex-wrap gap-x-3 text-base">
+              <div className="flex flex-wrap gap-x-3 text-callout">
                 <span className="tabular-nums">{formatDateTime(r.at)}</span>
                 <span className="font-bold">{r.actor ?? "System"}</span>
                 <span>{r.action.replace(/_/g, " ")}</span>
@@ -100,8 +100,8 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
               </div>
               {changes.length ? (
                 <details>
-                  <summary className="cursor-pointer text-sm">{changes.length} change{changes.length > 1 ? "s" : ""}</summary>
-                  <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 text-sm">
+                  <summary className="cursor-pointer text-footnote">{changes.length} change{changes.length > 1 ? "s" : ""}</summary>
+                  <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 text-footnote">
                     {changes.map((c) => (
                       <div key={c.field} className="contents">
                         <dt className="font-bold">{c.field}</dt>

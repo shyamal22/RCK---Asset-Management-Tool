@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
  */
 export function LinkTabs({ items, label }: { items: { href: string; label: string; active: boolean }[]; label: string }) {
   return (
-    <nav aria-label={label} className="inline-flex h-12 w-fit items-center gap-1 rounded-full bg-muted p-1 text-base font-semibold text-muted-foreground shadow-[inset_0_2px_5px_rgb(11_11_16/.09)]">
+    <nav aria-label={label} className="inline-flex h-12 w-fit items-center gap-1 rounded-full bg-muted p-1 text-callout font-semibold text-muted-foreground shadow-[inset_0_2px_5px_rgb(11_11_16/.09)]">
       {items.map((t) => (
         <Link
           key={t.href}

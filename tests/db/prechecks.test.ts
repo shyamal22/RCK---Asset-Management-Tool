@@ -71,6 +71,7 @@ describe("doing a pre-check", () => {
     const t = (await run<{ t: string }>(p.crewGreen, sql`select public.precheck_template_for(${roller}::uuid) as t`))[0].t;
     const [tyres, leaks] = await itemsOf(t);
     await expectDbError(submit(p.crewYellow, crypto.randomUUID(), roller, []), /Not permitted/);
+    await expectDbError(submit(p.crewGreen, crypto.randomUUID(), truck, []), /Not permitted/);
     await expectDbError(submit(p.crewGreen, crypto.randomUUID(), roller, [{ item: tyres.id, answer: "fine", photo: photo() }]), /Answer every check/);
     await expectDbError(submit(p.crewGreen, crypto.randomUUID(), roller, [{ item: tyres.id, answer: "fine" }, { item: leaks.id, answer: "no" }]), /Add a photo/);
     await expectDbError(submit(p.crewGreen, crypto.randomUUID(), roller, [{ item: tyres.id, answer: "great", photo: photo() }, { item: leaks.id, answer: "no" }]), /Answer: Tyres/);

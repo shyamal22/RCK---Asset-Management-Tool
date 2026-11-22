@@ -100,7 +100,7 @@ export function ReportForm({ asset }: { asset: Asset }) {
             <button
               type="button"
               onClick={() => input.current?.click()}
-              className="flex aspect-square flex-col items-center justify-center gap-1 rounded-[1.25rem] border-2 border-dashed border-input text-sm font-semibold text-[var(--indigo)]"
+              className="flex aspect-square flex-col items-center justify-center gap-1 rounded-[1.25rem] border-2 border-dashed border-input text-footnote font-semibold text-[var(--indigo)]"
             >
               <Camera className="size-7" aria-hidden />
               {photos.length ? "Add more" : "Add photo"}
@@ -111,7 +111,7 @@ export function ReportForm({ asset }: { asset: Asset }) {
 
       <Field id="report-title" label="What's wrong?" value={title} onChange={(e) => setTitle(e.target.value)} />
       <div className="grid gap-1.5">
-        <Label htmlFor="report-details" className="text-base">
+        <Label htmlFor="report-details" className="text-callout">
           Details
         </Label>
         <Textarea
@@ -119,12 +119,12 @@ export function ReportForm({ asset }: { asset: Asset }) {
           rows={4}
           value={details}
           onChange={(e) => setDetails(e.target.value)}
-          className="min-h-28 rounded-[0.875rem] p-3 text-lg"
+          className="min-h-28 rounded-[0.875rem] p-3 text-body"
         />
       </div>
 
       <div className="grid gap-2">
-        <span className="text-base font-medium">Can it still be used?</span>
+        <span className="text-callout font-medium">Can it still be used?</span>
         <div role="radiogroup" aria-label="Can it still be used?" className="grid grid-cols-2 gap-2">
           {(
             [
@@ -139,7 +139,7 @@ export function ReportForm({ asset }: { asset: Asset }) {
               aria-checked={severity === v}
               onClick={() => setSeverity(v)}
               className={cn(
-                "flex h-16 items-center justify-center gap-3 rounded-[1.25rem] border-2 text-lg font-bold transition-colors",
+                "flex h-16 items-center justify-center gap-3 rounded-[1.25rem] border-2 text-body font-bold transition-colors",
                 severity === v ? (v === "unusable" ? "border-status-red bg-status-red/10" : "border-status-yellow bg-status-yellow/10") : "border-input",
               )}
             >
@@ -148,7 +148,7 @@ export function ReportForm({ asset }: { asset: Asset }) {
             </button>
           ))}
         </div>
-        {severity === "unusable" ? <p className="text-sm text-muted-foreground">{asset.code} will be marked Unusable.</p> : null}
+        {severity === "unusable" ? <p className="text-footnote text-muted-foreground">{asset.code} will be marked Unusable.</p> : null}
       </div>
 
       <Field

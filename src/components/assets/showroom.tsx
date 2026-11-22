@@ -115,8 +115,8 @@ export function Showroom({ items }: { items: ShowItem[] }) {
               </span>
               {it.flag ? <FlagBadge {...it.flag} className="absolute top-3.5 right-3 shadow" /> : null}
               <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-4 pt-10 pb-4 text-left text-white">
-                <span className="block text-2xl leading-none font-bold">{it.code}</span>
-                <span className="block truncate text-base opacity-90">{it.name}</span>
+                <span className="block text-title2 leading-none font-bold">{it.code}</span>
+                <span className="block truncate text-callout opacity-90">{it.name}</span>
               </span>
             </Link>
           ))}
@@ -150,13 +150,13 @@ export function Showroom({ items }: { items: ShowItem[] }) {
       </div>
 
       <div className="showroom-detail mx-auto grid w-full max-w-md gap-3 text-center" aria-live="polite" key={a.id}>
-        <p className="text-sm tabular-nums text-muted-foreground">
+        <p className="text-footnote tabular-nums text-muted-foreground">
           {focus + 1} of {items.length}
         </p>
-        <h2 className="text-3xl leading-tight font-bold">
+        <h2 className="text-title1 leading-tight font-bold">
           {a.code} <span className="font-normal">{a.name}</span>
         </h2>
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-base">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-callout">
           <StatusDot tone={STATUS_TONE[a.status]} label={STATUS_LABELS[a.status]} />
           {a.flag ? <FlagBadge {...a.flag} /> : null}
           <span className="font-bold tabular-nums">{formatReading(a.current_reading, a.tracking_unit)}</span>

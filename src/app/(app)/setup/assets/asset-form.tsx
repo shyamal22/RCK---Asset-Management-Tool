@@ -42,10 +42,10 @@ type Opts = { types: TypeOption[]; sites: Option[]; crews: Option[]; owners: Opt
 function Select({ id, label, value, onChange, options, empty }: { id: string; label: string; value: string; onChange: (v: string) => void; options: Option[]; empty: string }) {
   return (
     <div className="grid gap-1.5">
-      <Label htmlFor={id} className="text-base">
+      <Label htmlFor={id} className="text-callout">
         {label}
       </Label>
-      <select id={id} value={value} onChange={(e) => onChange(e.target.value)} className="h-12 rounded-[0.875rem] border border-input bg-background px-3 text-lg">
+      <select id={id} value={value} onChange={(e) => onChange(e.target.value)} className="h-12 rounded-[0.875rem] border border-input bg-background px-3 text-body">
         <option value="">{empty}</option>
         {options.map((o) => (
           <option key={o.id} value={o.id}>
@@ -95,10 +95,10 @@ function PhotoPicker({ file, onFile }: { file: File | null; onFile: (f: File | n
             <span className="flex size-14 items-center justify-center rounded-full bg-accent text-[var(--indigo)]">
               <Camera className="size-7" aria-hidden />
             </span>
-            <span className="text-base font-semibold text-foreground">Add photo</span>
+            <span className="text-callout font-semibold text-foreground">Add photo</span>
           </span>
         )}
-        {preview ? <span className="absolute right-3 bottom-3 rounded-full bg-black/60 px-3 py-1 text-sm text-white">Change photo</span> : null}
+        {preview ? <span className="absolute right-3 bottom-3 rounded-full bg-black/60 px-3 py-1 text-footnote text-white">Change photo</span> : null}
       </button>
     </div>
   );
@@ -164,7 +164,7 @@ export function AssetForm({ initial, opts }: { initial: AssetFormValues; opts: O
       {editing ? null : (
         <>
           <div className="grid gap-1.5">
-            <span className="text-base font-medium">Track servicing by</span>
+            <span className="text-callout font-medium">Track servicing by</span>
             <Segmented
               label="Track servicing by"
               value={v.trackingUnit as TrackingUnit}
@@ -177,7 +177,7 @@ export function AssetForm({ initial, opts }: { initial: AssetFormValues; opts: O
                 { value: "km", label: UNIT_LABELS.km.name },
               ]}
             />
-            {suggestedUnit ? <p className="text-sm text-muted-foreground">{suggestedUnit}</p> : null}
+            {suggestedUnit ? <p className="text-footnote text-muted-foreground">{suggestedUnit}</p> : null}
           </div>
           <Field
             id="asset-reading"
@@ -191,10 +191,10 @@ export function AssetForm({ initial, opts }: { initial: AssetFormValues; opts: O
 
       {editing ? (
         <div className="grid gap-1.5">
-          <Label htmlFor="asset-status" className="text-base">
+          <Label htmlFor="asset-status" className="text-callout">
             Status
           </Label>
-          <select id="asset-status" value={v.status} onChange={(e) => set("status")(e.target.value as AssetStatus)} className="h-12 rounded-[0.875rem] border border-input bg-background px-3 text-lg">
+          <select id="asset-status" value={v.status} onChange={(e) => set("status")(e.target.value as AssetStatus)} className="h-12 rounded-[0.875rem] border border-input bg-background px-3 text-body">
             {ASSET_STATUSES.map((s) => (
               <option key={s} value={s}>
                 {STATUS_LABELS[s]}
@@ -212,11 +212,11 @@ export function AssetForm({ initial, opts }: { initial: AssetFormValues; opts: O
         <Field id="asset-vin" label="VIN / serial" value={v.vinSerial} onChange={text("vinSerial")} />
       </div>
       <div className="grid gap-1.5">
-        <Label htmlFor="asset-notes" className="text-base">
+        <Label htmlFor="asset-notes" className="text-callout">
           Notes
         </Label>
         <Textarea
- id="asset-notes" rows={3} value={v.notes} onChange={text("notes")} className="min-h-28 rounded-[0.875rem] p-3 text-lg" />
+ id="asset-notes" rows={3} value={v.notes} onChange={text("notes")} className="min-h-28 rounded-[0.875rem] p-3 text-body" />
       </div>
       <FormError message={error} />
       <Button type="submit" size="lg" className="h-12" disabled={pending}>

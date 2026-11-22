@@ -12,7 +12,7 @@ export default async function SetupAssetsPage({ searchParams }: { searchParams: 
   const list = await runAs(me, (tx) => listAssets(tx, {}));
   return (
     <div className="grid max-w-3xl gap-4">
-      <h1 className="text-2xl font-bold">Assets</h1>
+      <h1 className="text-title2 font-bold">Assets</h1>
       {archived ? <p role="status">Asset archived</p> : null}
       <Button asChild size="lg" className="h-12 w-fit">
         <Link href="/setup/assets/new">Add asset</Link>
@@ -24,7 +24,7 @@ export default async function SetupAssetsPage({ searchParams }: { searchParams: 
               <span className="truncate">
                 <span className="font-bold">{a.code}</span> {a.name}
               </span>
-              <span className="shrink-0 text-sm text-muted-foreground">
+              <span className="shrink-0 text-footnote text-muted-foreground">
                 {a.type_name} · {STATUS_LABELS[a.status]}
               </span>
             </Link>

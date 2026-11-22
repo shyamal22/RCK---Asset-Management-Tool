@@ -12,10 +12,10 @@ export default function RootError({ reset }: { error: Error & { digest?: string 
   return (
     <main className="app-theme grid min-h-dvh place-items-center px-6 text-center text-white">
       <div className="grid gap-4">
-        <h1 className="text-3xl font-bold">That didn&apos;t load</h1>
+        <h1 className="text-title1 font-bold">That didn&apos;t load</h1>
         <button
           type="button"
-          className="press h-14 rounded-full bg-white px-8 text-lg font-bold text-[var(--onyx)]"
+          className="press h-14 rounded-full bg-white px-8 text-body font-bold text-[var(--onyx)]"
           onClick={() =>
             startTransition(() => {
               router.refresh();
@@ -25,7 +25,7 @@ export default function RootError({ reset }: { error: Error & { digest?: string 
         >
           Try again
         </button>
-        <Link href="/" className="py-2 text-base font-semibold text-white/80">
+        <Link href="/" className="py-2 text-callout font-semibold text-white/80">
           Home
         </Link>
       </div>

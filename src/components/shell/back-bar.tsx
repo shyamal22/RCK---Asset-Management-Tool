@@ -33,7 +33,7 @@ export function BackButton({ hasSetup, className }: { hasSetup: boolean; classNa
     <button
       type="button"
       onClick={() => (screens.backReaches(parent, path) ? router.back() : router.push(parent))}
-      className={cn("press inline-flex min-h-11 items-center gap-0.5 rounded-full pr-3 text-base font-semibold", className)}
+      className={cn("press inline-flex min-h-11 items-center gap-0.5 rounded-full pr-3 text-callout font-semibold", className)}
     >
       <ChevronLeft className="size-6" aria-hidden />
       Back

@@ -14,12 +14,12 @@ export default async function SecurityPage() {
   const shared = canShare ? await sharedDevice() : null;
   return (
     <div className="grid max-w-sm gap-6">
-      <h1 className="text-2xl font-bold">PIN and Face ID</h1>
+      <h1 className="text-title2 font-bold">PIN and Face ID</h1>
       <SecurityForms />
       {keys.length ? (
         <ul className="grid gap-2" aria-label="Passkeys">
           {keys.map((k) => (
-            <li key={k.id} className="rounded-xl border p-3 text-base">
+            <li key={k.id} className="rounded-xl border p-3 text-callout">
               {k.label?.split(" ")[0] ?? "Device"} · {formatDate(k.createdAt)}
             </li>
           ))}

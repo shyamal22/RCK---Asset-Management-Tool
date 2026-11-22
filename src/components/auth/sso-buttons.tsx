@@ -21,12 +21,12 @@ export function SsoButtons({ signupCode }: { signupCode?: string }) {
   return (
     <div className="grid gap-3">
       {microsoft ? (
-        <Button type="button" variant="outline" size="lg" className="h-14 text-lg" onClick={() => go("azure")}>
+        <Button type="button" variant="outline" size="lg" className="h-14 text-body" onClick={() => go("azure")}>
           Continue with Microsoft
         </Button>
       ) : null}
       {google ? (
-        <Button type="button" variant="outline" size="lg" className="h-14 text-lg" onClick={() => go("google")}>
+        <Button type="button" variant="outline" size="lg" className="h-14 text-body" onClick={() => go("google")}>
           Continue with Google
         </Button>
       ) : null}

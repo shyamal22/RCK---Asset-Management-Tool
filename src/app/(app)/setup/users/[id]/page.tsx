@@ -25,8 +25,8 @@ export default async function UserPage({ params }: { params: Promise<{ id: strin
   if (!data.user) notFound();
   return (
     <div className="grid max-w-xl gap-4">
-      <h1 className="text-2xl font-bold">{data.user.name}</h1>
-      <p className="text-base">{data.user.email ?? data.user.mobile}</p>
+      <h1 className="text-title2 font-bold">{data.user.name}</h1>
+      <p className="text-callout">{data.user.email ?? data.user.mobile}</p>
       <UserAdmin
         user={{ id: data.user.id, userType: data.user.user_type, crewId: data.user.crew_id, lead: data.user.lead, active: data.user.status === "active" }}
         crews={data.crews}

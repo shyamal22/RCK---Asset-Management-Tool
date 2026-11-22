@@ -9,7 +9,7 @@ export default async function NewAssetPage() {
   const opts = await runAs(me, (tx) => assetOptions(tx));
   return (
     <div className="grid max-w-md gap-4">
-      <h1 className="text-2xl font-bold">Add asset</h1>
+      <h1 className="text-title2 font-bold">Add asset</h1>
       <AssetForm initial={EMPTY_ASSET} opts={opts} />
     </div>
   );

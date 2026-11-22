@@ -22,10 +22,10 @@ export function AssetCard({ a, photo, href, flag }: { a: AssetRow; photo?: strin
         )}
       </div>
       <div className="grid min-w-0 flex-1 gap-0.5">
-        <span className="truncate text-lg font-bold">
+        <span className="truncate text-body font-bold">
           {a.code} <span className="font-normal">{a.name}</span>
         </span>
-        <span className="truncate text-sm text-muted-foreground">
+        <span className="truncate text-footnote text-muted-foreground">
           {a.type_name} · {formatReading(a.current_reading, a.tracking_unit)}
           {a.crew_name ? ` · ${a.crew_name}` : ""}
         </span>

@@ -37,7 +37,7 @@ export function DismissItem({ id, precheckId }: { id: string; precheckId: string
         placeholder="Reason"
         value={reason}
         onChange={(e) => setReason(e.target.value)}
-        className="h-12 rounded-xl border border-input bg-card px-4 text-lg"
+        className="h-12 rounded-xl border border-input bg-card px-4 text-body"
         autoFocus
       />
       <FormError message={error} />

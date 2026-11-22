@@ -11,7 +11,7 @@ export function SupportAccess({ rows }: { rows: ActiveSupport[] }) {
   if (!rows.length) return null;
   return (
     <section className="grid gap-3 rounded-xl border p-4" aria-labelledby="support-h">
-      <h2 id="support-h" className="text-lg font-bold">
+      <h2 id="support-h" className="text-body font-bold">
         KRE support access
       </h2>
       {rows.map((r) => (

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { UserPlus } from "lucide-react";
+import { UserPlus, ClipboardCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ReportRow } from "@/lib/breakdowns/queries";
 import type { AssetRow } from "@/lib/assets/queries";
@@ -19,11 +19,19 @@ export type HomeData = {
   photos: Record<string, string>;
 };
 
-function ReportDamage() {
+/** The crew's two jobs: the daily pre-start is the one primary (tangerine) action; damage is secondary. */
+function CrewActions() {
   return (
-    <Button asChild variant="accent" size="xl" className="w-full md:w-fit">
-      <Link href="/reports/new">Report damage</Link>
-    </Button>
+    <div className="grid gap-3 md:flex">
+      <Button asChild variant="accent" size="xl" className="w-full md:w-fit">
+        <Link href="/prechecks/new">
+          <ClipboardCheck aria-hidden /> Start pre-check
+        </Link>
+      </Button>
+      <Button asChild variant="outline" size="xl" className="w-full md:w-fit">
+        <Link href="/reports/new">Report damage</Link>
+      </Button>
+    </div>
   );
 }
 
@@ -35,7 +43,7 @@ function Pending({ n }: { n: number }) {
           <span className="flex size-10 items-center justify-center rounded-full bg-accent text-[var(--indigo)]">
             <UserPlus className="size-5" aria-hidden />
           </span>
-          <span className="text-lg">
+          <span className="text-body">
             <span className="font-bold tabular-nums">{n}</span> to approve
           </span>
         </Link>
@@ -51,7 +59,7 @@ export function CrewHome({ d }: { d: HomeData }) {
   return (
     <div className="grid gap-5">
       <Greeting />
-      <ReportDamage />
+      <CrewActions />
       <Panel title="My machines" href="/assets?type=all">
         <MachineStrip items={d.machines} photos={d.photos} />
       </Panel>
@@ -66,7 +74,7 @@ export function SupervisorHome({ d }: { d: HomeData }) {
   return (
     <div className="grid gap-5">
       <Greeting />
-      <ReportDamage />
+      <CrewActions />
       <Panel title="Needs attention" href="/assets?view=list">
         <AttentionStrip rows={d.attention} photos={d.photos} />
       </Panel>

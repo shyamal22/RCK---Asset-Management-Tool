@@ -24,7 +24,7 @@ export function OpenInAppHint() {
   return (
     <aside aria-label="Open the app" className="open-in-app-hint">
       <Smartphone className="mt-0.5 size-5 shrink-0 text-[var(--tangerine)]" aria-hidden />
-      <p className="flex-1 text-sm leading-snug">For full screen, open KRE Assets from your home screen. Not there? Safari → Share → Add to Home Screen.</p>
+      <p className="flex-1 text-footnote leading-snug">For full screen, open KRE Assets from your home screen. Not there? Safari → Share → Add to Home Screen.</p>
       <button
         type="button"
         aria-label="Hide this tip"

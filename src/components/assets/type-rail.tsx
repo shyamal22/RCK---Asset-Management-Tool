@@ -59,7 +59,7 @@ export function TypeRail({ items, compact = false }: { items: RailItem[]; compac
                 </span>
               )}
             </span>
-            <span className="text-xs leading-tight font-bold">{it.label}</span>
+            <span className="text-caption leading-tight font-bold">{it.label}</span>
             <span className="-mt-1 text-[0.7rem] text-muted-foreground tabular-nums">{it.n}</span>
           </Link>
         ))}
@@ -94,7 +94,7 @@ function CompactRail({ items }: { items: RailItem[] }) {
               </span>
             )}
           </span>
-          <span className="w-full truncate text-sm leading-tight font-bold">{it.label}</span>
+          <span className="w-full truncate text-footnote leading-tight font-bold">{it.label}</span>
         </Link>
       ))}
     </BayRail>

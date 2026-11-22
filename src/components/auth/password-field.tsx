@@ -35,7 +35,7 @@ export function PasswordField({
   const s = meter ? passwordStrength(current) : null;
   return (
     <div className="grid gap-1.5">
-      <Label htmlFor={id} className="text-base">
+      <Label htmlFor={id} className="text-callout">
         {label}
       </Label>
       <div className="relative">
@@ -45,7 +45,7 @@ export function PasswordField({
           data-pulse
           aria-invalid={!!error || (s ? !!current && !s.ok : false)}
           aria-describedby={meter ? `${id}-strength` : undefined}
-          className={cn("h-12 pr-14 text-lg", show && "pw-revealed", className)}
+          className={cn("h-12 pr-14 text-body", show && "pw-revealed", className)}
           onChange={(e) => {
             setCurrent(e.target.value);
             onChange?.(e);
@@ -70,7 +70,7 @@ export function PasswordField({
             ))}
           </div>
           {current ? (
-            <p className="flex justify-between gap-3 text-sm">
+            <p className="flex justify-between gap-3 text-footnote">
               <span className={s.ok ? "text-muted-foreground" : "text-destructive"}>{s.hint ?? ""}</span>
               {s.ok ? <span className={cn("font-bold", s.score >= 3 && "text-[var(--indigo)]")}>{s.label}</span> : null}
             </p>
@@ -80,7 +80,7 @@ export function PasswordField({
       {onSuggest ? (
         <button
           type="button"
-          className="pw-suggest flex w-fit items-center gap-2 rounded-full px-1 py-2 text-base text-[var(--indigo)] hover:underline"
+          className="pw-suggest flex w-fit items-center gap-2 rounded-full px-1 py-2 text-callout text-[var(--indigo)] hover:underline"
           onClick={() => {
             const pw = suggestPassword();
             setCurrent(pw);
@@ -92,7 +92,7 @@ export function PasswordField({
           Suggest one
         </button>
       ) : null}
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {error ? <p className="text-footnote text-destructive">{error}</p> : null}
     </div>
   );
 }

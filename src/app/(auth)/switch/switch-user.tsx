@@ -17,11 +17,11 @@ export function SwitchUser({ people }: { people: { id: string; name: string }[] 
     return (
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {people.map((p) => (
-          <Button key={p.id} variant="outline" className="h-24 text-xl" onClick={() => setWho(p)}>
+          <Button key={p.id} variant="outline" className="h-24 text-title3" onClick={() => setWho(p)}>
             {p.name}
           </Button>
         ))}
-        {people.length === 0 ? <p className="text-lg">No one has set a PIN yet</p> : null}
+        {people.length === 0 ? <p className="text-body">No one has set a PIN yet</p> : null}
       </div>
     );
 
@@ -38,7 +38,7 @@ export function SwitchUser({ people }: { people: { id: string; name: string }[] 
         });
       }}
     >
-      <h2 className="text-2xl font-bold">{who.name}</h2>
+      <h2 className="text-title2 font-bold">{who.name}</h2>
       <Field
         id="pin"
         label="PIN"
@@ -48,10 +48,10 @@ export function SwitchUser({ people }: { people: { id: string; name: string }[] 
         autoFocus
         value={pin}
         onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-        className="text-center text-3xl tracking-[0.5em]"
+        className="text-center text-title1 tracking-[0.5em]"
       />
       <FormError message={error} />
-      <Button type="submit" size="lg" className="h-14 text-lg" disabled={pending || pin.length < 4}>
+      <Button type="submit" size="lg" className="h-14 text-body" disabled={pending || pin.length < 4}>
         Go
       </Button>
       <Button type="button" variant="ghost" className="h-12" onClick={() => (setWho(null), setPin(""), setError(null))}>

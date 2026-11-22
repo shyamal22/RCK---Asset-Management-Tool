@@ -24,7 +24,7 @@ export function ListEditor({ title, kind, items }: { title: string; kind: Kind; 
 
   return (
     <section className="grid gap-3" aria-label={title}>
-      <h2 className="text-xl font-bold">{title}</h2>
+      <h2 className="text-title3 font-bold">{title}</h2>
       <ul className="divide-y surface">
         {items.map((i) => (
           <li key={i.id} className="flex min-h-14 items-center gap-2 px-3">
@@ -36,14 +36,14 @@ export function ListEditor({ title, kind, items }: { title: string; kind: Kind; 
                   run(() => renameItemAction({ kind, id: i.id, name: editing.name }), () => setEditing(null));
                 }}
               >
-                <Input aria-label={`New name for ${i.name}`} className="h-11 flex-1 text-lg" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} autoFocus />
+                <Input aria-label={`New name for ${i.name}`} className="h-11 flex-1 text-body" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} autoFocus />
                 <Button type="submit" className="h-11" disabled={pending}>
                   Save
                 </Button>
               </form>
             ) : (
               <>
-                <span className="flex-1 text-lg">{i.name}</span>
+                <span className="flex-1 text-body">{i.name}</span>
                 <Button variant="ghost" size="icon" className="size-11" aria-label={`Rename ${i.name}`} onClick={() => setEditing(i)}>
                   <Pencil />
                 </Button>
@@ -69,7 +69,7 @@ export function ListEditor({ title, kind, items }: { title: string; kind: Kind; 
           run(() => addItemAction({ kind, name }), () => setName(""));
         }}
       >
-        <Input aria-label={`New ${title.toLowerCase().replace(/s$/, "")}`} className="h-12 flex-1 text-lg" value={name} onChange={(e) => setName(e.target.value)} />
+        <Input aria-label={`New ${title.toLowerCase().replace(/s$/, "")}`} className="h-12 flex-1 text-body" value={name} onChange={(e) => setName(e.target.value)} />
         <Button type="submit" className="h-12" disabled={pending || name.trim().length < 2}>
           Add
         </Button>

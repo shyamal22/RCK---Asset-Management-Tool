@@ -27,7 +27,7 @@ export function UnlockForm({ hasPin, hasPasskey }: { hasPin: boolean; hasPasskey
       {hasPasskey ? (
         <Button
           size="lg"
-          className="h-16 text-lg"
+          className="h-16 text-body"
           disabled={pending}
           onClick={() =>
             start(async () => {
@@ -62,7 +62,7 @@ export function UnlockForm({ hasPin, hasPasskey }: { hasPin: boolean; hasPasskey
             maxLength={6}
             value={pin}
             onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-            className="text-center text-3xl tracking-[0.5em]"
+            className="text-center text-title1 tracking-[0.5em]"
             autoFocus={!hasPasskey}
           />
           </div>
