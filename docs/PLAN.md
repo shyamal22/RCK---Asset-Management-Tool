@@ -23,13 +23,13 @@ Work top to bottom. Tick each box when done (see CLAUDE.md "Done means").
 
 ## Milestone 0b — KRE platform (multi-client)
 - [x] Rebrand to KRE Asset Management Tool (title, emails, SMS, passkey name); client company name in header
-- [ ] Platform admins table (KRE staff, outside any company); RLS: platform admin sees companies + users list only, no domain data
-- [ ] Turn off self-service company creation: only a KRE admin can create a company
-- [ ] KRE admin area (/kre): list client companies (name, users, status), create company, invite first Director by email (code-based, branded)
-- [ ] Invited Director lands in the existing first-run setup for their company
-- [ ] Support access: KRE admin requests read-only access to one company with reason + end time (max 7 days); RLS honours it; shown + logged in that company's audit log; ends automatically or by Director
-- [ ] Suspend / reactivate a client company (users signed out, data kept)
-- [ ] Move RCK seed to "first client" and add a KRE admin seed user; tests prove a KRE admin can't read assets/costs without support access
+- [x] Platform admins table (KRE staff, as users of the KRE Consulting platform company); RLS: platform admin sees companies + users list only, no domain data
+- [x] Turn off self-service company creation: only a KRE admin can create a company
+- [x] KRE admin area (/kre): list client companies (name, users, status), create company, invite first Director by email (code-based, branded)
+- [x] Invited Director lands in the existing first-run setup for their company
+- [x] Support access: KRE admin requests read-only access to one company with reason + end time (max 7 days); RLS honours it; shown + logged in that company's audit log; ends automatically or by Director
+- [x] Suspend / reactivate a client company (users signed out, data kept)
+- [x] Move RCK seed to "first client" and add a KRE admin seed user; tests prove a KRE admin can't read assets/costs without support access
 
 ## Milestone 1 — Asset register
 - [ ] Tables: asset_types (company-editable list), assets, compliance_items, meter_readings — per docs/06-asset-setup.md

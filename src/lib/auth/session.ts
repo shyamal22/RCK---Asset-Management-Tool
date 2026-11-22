@@ -25,6 +25,9 @@ export type Profile = {
   crewId: string | null;
   flags: UserFlag[];
   secondStepNeeded: boolean;
+  /** KRE admin (platform level): manages client companies. */
+  isPlatformAdmin: boolean;
+  companySuspended: boolean;
 };
 
 export async function requestMeta() {
@@ -54,7 +57,9 @@ export const getProfile = cache(async (): Promise<Profile | null> => {
              app.current_user_type() as user_type,
              app.current_user_type_raw() as raw_user_type,
              (select c.name from public.companies c where c.id = u.company_id) as company_name,
-             app.has_flag('workshop_lead') as workshop_lead
+             app.has_flag('workshop_lead') as workshop_lead,
+             public.kre_is_admin() as platform_admin,
+             public.my_company_suspended() as suspended
       from public.users u where u.id = auth.uid()`),
   );
   const r = (rows as unknown as Record<string, unknown>[])[0];
@@ -76,6 +81,8 @@ export const getProfile = cache(async (): Promise<Profile | null> => {
     crewId: (r.crew_id as string | null) ?? null,
     flags: r.workshop_lead ? ["workshop_lead"] : [],
     secondStepNeeded: needsSecondStep(rawUserType) && userType === null,
+    isPlatformAdmin: !!r.platform_admin,
+    companySuspended: !!r.suspended,
   };
 });
 
@@ -87,6 +94,7 @@ export async function requireActive(): Promise<ActiveUser> {
   if (!p) redirect("/sign-in");
   if (p.status === "pending" || p.status === "rejected") redirect("/waiting");
   if (p.status !== "active") redirect("/sign-in?state=inactive");
+  if (p.companySuspended) redirect("/sign-in?state=suspended");
   if (p.secondStepNeeded) redirect("/verify-device");
   if (!p.userType) redirect("/sign-in?state=inactive");
   const device = await currentDevice(p.id);

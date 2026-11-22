@@ -16,7 +16,8 @@ test("sign up from company link, verify by code, wait for approval, then get in"
   await expect(page.getByText(`Code sent to ${email}`)).toBeVisible();
   const code = await latestCode(email, started);
   const mail = await emailBody(email);
-  expect(mail.HTML).toContain(`${co.name} Workshop`);
+  expect(mail.HTML).toContain("KRE Asset Management Tool");
+  expect(mail.HTML).toContain(co.name);
   expect(mail.HTML).not.toMatch(/supabase/i);
   expect(mail.HTML).not.toMatch(/href=/i); // no links to click
 

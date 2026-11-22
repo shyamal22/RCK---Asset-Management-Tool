@@ -8,7 +8,7 @@ import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { adminDb, closeDb } from "./client";
-import { companies, sites, userFlags, users } from "./schema";
+import { companies, platformAdmins, sites, userFlags, users } from "./schema";
 import { syncCompanyPermissions } from "./permissions";
 import type { UserType } from "../src/lib/permissions/types";
 
@@ -23,6 +23,9 @@ export const SEED_USERS: { name: string; email: string; type: UserType; crew?: "
   { name: "Steve Supervisor", email: "supervisor@rck.test", type: "supervisor", crew: "Green" },
   { name: "Mere Crew", email: "crew@rck.test", type: "crew", crew: "Green" },
 ];
+
+/** KRE Consulting: the platform company. Its KRE admin manages client companies at /kre. */
+export const SEED_KRE_ADMIN = { name: "Kiri KRE Admin", email: "admin@kre.test" };
 
 async function findOrCreate<T extends { id: string }>(find: () => Promise<T[]>, create: () => Promise<T[]>) {
   const [hit] = await find();
@@ -94,7 +97,31 @@ async function main() {
     }
   }
 
-  console.log(`Seeded RCK Group (${companyId})`);
+  // Platform company + one KRE admin (a Director of KRE Consulting with the platform admin flag).
+  const kre = await findOrCreate(
+    () => adminDb.select().from(companies).where(eq(companies.isPlatform, true)),
+    () => adminDb.insert(companies).values({ name: "KRE Consulting", isPlatform: true, setupCompletedAt: new Date() }).returning(),
+  );
+  await syncCompanyPermissions(adminDb, kre.id);
+  const foundKre = (await adminDb.execute(sql`select id from auth.users where email = ${SEED_KRE_ADMIN.email}`)) as unknown as { id: string }[];
+  let kreId = foundKre[0]?.id;
+  if (!kreId) {
+    const { data, error } = await admin.auth.admin.createUser({
+      email: SEED_KRE_ADMIN.email,
+      email_confirm: true,
+      ...(LOCAL ? { password: SEED_PASSWORD } : {}),
+    });
+    if (error) throw error;
+    kreId = data.user.id;
+  }
+  await adminDb
+    .insert(users)
+    .values({ id: kreId, companyId: kre.id, name: SEED_KRE_ADMIN.name, email: SEED_KRE_ADMIN.email, status: "active", userType: "director", approvedAt: new Date() })
+    .onConflictDoNothing();
+  const [pa] = await adminDb.select().from(platformAdmins).where(and(eq(platformAdmins.userId, kreId), isNull(platformAdmins.revokedAt)));
+  if (!pa) await adminDb.insert(platformAdmins).values({ companyId: kre.id, userId: kreId });
+
+  console.log(`Seeded RCK Group (${companyId}) and KRE Consulting (${kre.id}); KRE admin: ${SEED_KRE_ADMIN.email}`);
   console.table(SEED_USERS.map((u) => ({ name: u.name, email: u.email, type: u.type, crew: u.crew ?? "", lead: u.lead ? "yes" : "" })));
   if (LOCAL) console.log(`Password for all: ${SEED_PASSWORD}  ·  Director/Office codes: http://127.0.0.1:54324`);
   await closeDb();

@@ -9,6 +9,9 @@ const publicSchema = z.object({
 const serverSchema = publicSchema.extend({
   SUPABASE_SECRET_KEY: z.string().min(1),
   DATABASE_URL: z.string().startsWith("postgres"),
+  /** Optional: without it, invite emails aren't sent (the link is still shown to copy). */
+  RESEND_API_KEY: z.string().optional(),
+  EMAIL_FROM: z.string().default("Login Team <noreply@kreconsulting.co.nz>"),
 });
 
 export type PublicEnv = z.infer<typeof publicSchema>;

@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const me = await requireActive();
+  if (me.isPlatformAdmin) redirect("/kre");
   if (can(me.actor, "settings", "edit")) {
     const [{ done }] = (await asUser({ id: me.id, sessionId: me.sessionId }, (tx) =>
       tx.execute(sql`select setup_completed_at is not null as done from public.companies where id = app.current_company_id()`),

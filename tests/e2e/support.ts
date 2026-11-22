@@ -92,3 +92,15 @@ export async function signIn(page: Page, email: string, password = PASSWORD) {
 
 /** Our form error box (Next adds its own empty role=alert route announcer). */
 export const formError = (page: Page) => page.locator('p[role="alert"]');
+
+/** A KRE admin: Director of the platform company (KRE Consulting, created by the seed) with the platform flag. */
+export async function makeE2EPlatformAdmin(name = "Kiri Admin") {
+  let [kre] = await sql<{ id: string }[]>`select id from public.companies where is_platform`;
+  if (!kre) {
+    [kre] = await sql<{ id: string }[]>`insert into public.companies (name, is_platform, setup_completed_at) values ('KRE Consulting', true, now()) returning id`;
+    await syncPermissions(kre.id);
+  }
+  const u = await makeE2EUser(kre.id, "director", { name });
+  await sql`insert into public.platform_admins (company_id, user_id) values (${kre.id}, ${u.id})`;
+  return u;
+}

@@ -269,6 +269,26 @@ begin
   return v_id;
 end $$;
 
+create or replace function public.kre_invite_details(p_company uuid)
+returns table (id uuid, name text, email text, created_at timestamptz, accepted_at timestamptz)
+language plpgsql stable security definer set search_path = '' as $$
+begin
+  perform app.require_platform_admin();
+  return query select d.id, d.name, d.email, d.created_at, d.accepted_at from public.director_invites d
+    where d.company_id = app.client_company(p_company) and d.revoked_at is null order by d.created_at desc limit 1;
+end $$;
+
+-- My active support access to a client (KRE admin side).
+create or replace function public.kre_my_support(p_company uuid)
+returns table (id uuid, reason text, starts_at timestamptz, ends_at timestamptz)
+language plpgsql stable security definer set search_path = '' as $$
+begin
+  perform app.require_platform_admin();
+  return query select s.id, s.reason, s.starts_at, s.ends_at from public.support_access s
+    where s.company_id = p_company and s.admin_user_id = auth.uid() and s.ended_at is null and now() < s.ends_at
+    order by s.ends_at desc limit 1;
+end $$;
+
 -- Ended by the KRE admin who holds it, or by the client's Director (settings.edit).
 create or replace function public.end_support_access(p_id uuid) returns void
 language plpgsql security definer set search_path = '' as $$
@@ -305,10 +325,10 @@ $$;
 revoke all on function app.is_platform_admin(), app.has_support(uuid), app.require_platform_admin(), app.client_company(uuid) from public, anon;
 grant execute on function app.is_platform_admin(), app.has_support(uuid), app.require_platform_admin(), app.client_company(uuid) to authenticated, service_role;
 revoke all on function public.audit_actor_name(uuid, uuid), public.kre_is_admin(), public.kre_companies(), public.kre_company_users(uuid),
-  public.kre_signup_code(uuid), public.kre_invite_director(uuid, text, text), public.kre_create_company(text, text, text),
+  public.kre_signup_code(uuid), public.kre_invite_details(uuid), public.kre_my_support(uuid), public.kre_invite_director(uuid, text, text), public.kre_create_company(text, text, text),
   public.kre_set_suspended(uuid, boolean, text), public.kre_start_support(uuid, text, integer), public.end_support_access(uuid),
   public.company_support_access(), public.my_company_suspended() from public, anon;
 grant execute on function public.audit_actor_name(uuid, uuid), public.kre_is_admin(), public.kre_companies(), public.kre_company_users(uuid),
-  public.kre_signup_code(uuid), public.kre_invite_director(uuid, text, text), public.kre_create_company(text, text, text),
+  public.kre_signup_code(uuid), public.kre_invite_details(uuid), public.kre_my_support(uuid), public.kre_invite_director(uuid, text, text), public.kre_create_company(text, text, text),
   public.kre_set_suspended(uuid, boolean, text), public.kre_start_support(uuid, text, integer), public.end_support_access(uuid),
   public.company_support_access(), public.my_company_suspended() to authenticated;

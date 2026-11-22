@@ -9,7 +9,9 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
       ? "Your account isn't active. Talk to your manager."
       : state === "no-account"
         ? "No account yet. Use your company's sign-up link first."
-        : undefined;
+        : state === "suspended"
+          ? "Your company's account is on hold. Talk to your manager."
+          : undefined;
   return (
     <Screen title="Sign in">
       <SsoButtons />

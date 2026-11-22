@@ -35,7 +35,7 @@ export async function queryAudit(tx: Tx, f: Filters, limit = PAGE_SIZE, offset =
   if (f.action) where.push(sql`a.action = ${f.action}`);
   if (f.entity) where.push(sql`a.entity = ${f.entity}`);
   return (await tx.execute(sql`
-    select a.id, a.at, u.name as actor, a.action, a.entity, a.entity_id, a.device, a.before, a.after
+    select a.id, a.at, coalesce(u.name, public.audit_actor_name(a.actor_user_id, a.company_id)) as actor, a.action, a.entity, a.entity_id, a.device, a.before, a.after
     from public.audit_log a left join public.users u on u.id = a.actor_user_id
     where ${sql.join(where, sql` and `)}
     order by a.at desc, a.id desc limit ${limit} offset ${offset}`)) as unknown as AuditRow[];

@@ -30,3 +30,16 @@ export async function saveCompanyAction(raw: unknown): Promise<{ ok: true } | { 
   revalidatePath("/setup/company");
   return { ok: true };
 }
+
+/** Director ends a KRE admin's support access to their company (audited by the DB function). */
+export async function endSupportAccessAction(raw: unknown): Promise<{ ok: true } | { ok: false; error: string }> {
+  const p = z.object({ id: z.uuid() }).safeParse(raw);
+  if (!p.success) return { ok: false, error: "Unknown support access" };
+  try {
+    await actAs("settings", "edit", (tx) => tx.execute(sql`select public.end_support_access(${p.data.id})`));
+  } catch {
+    return { ok: false, error: "Couldn't end it. Refresh and try again." };
+  }
+  revalidatePath("/setup/company");
+  return { ok: true };
+}
