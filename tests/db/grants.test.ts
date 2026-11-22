@@ -8,9 +8,13 @@ import { adminDb } from "@db/client";
  * grants (broken in production) or with too many (too open) fails here, not in front of a user.
  */
 const EXPECTED: Record<string, string[]> = {
+  asset_types: ["INSERT", "SELECT", "UPDATE"],
+  assets: ["SELECT"], // insert/update are column-level (tracking unit + readings only via functions)
   audit_log: ["SELECT"],
   companies: ["UPDATE"],
+  compliance_items: ["INSERT", "SELECT", "UPDATE"],
   crews: ["INSERT", "SELECT", "UPDATE"],
+  meter_readings: ["SELECT"],
   owner_entities: ["INSERT", "SELECT", "UPDATE"],
   sites: ["INSERT", "SELECT", "UPDATE"],
   temp_access: ["INSERT", "SELECT", "UPDATE"],

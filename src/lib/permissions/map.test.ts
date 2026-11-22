@@ -18,6 +18,7 @@ const EXPECTED: Record<Area, Record<UserType, string[]>> = {
     supervisor: ["view:all"],
     crew: ["view:crew"],
   },
+  asset_tracking_unit: { director: ["edit:all"], office: [], workshop: ["edit:all+lead"], supervisor: [], crew: [] },
   asset_commercial: { director: ["view:all", "edit:all"], office: ["view:all"], workshop: [], supervisor: [], crew: [] },
   docs_workshop: {
     director: ["view:all"],

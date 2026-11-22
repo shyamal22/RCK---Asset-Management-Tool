@@ -10,6 +10,7 @@ export const AREAS = {
   dashboard: ["view", "export"],
   workshop_budget: ["view"],
   assets: ["view", "create", "edit", "delete"],
+  asset_tracking_unit: ["edit"],
   asset_commercial: ["view", "edit"],
   docs_workshop: ["view", "create", "edit", "delete"],
   docs_operator: ["view", "create", "edit", "delete"],
@@ -61,6 +62,14 @@ export const PERMISSION_MAP: Record<Area, Record<UserType, Cell>> = {
     workshop: all("view", "create", "edit"),
     supervisor: all("view"),
     crew: crew("view"),
+  },
+  // docs/06: changing Hours ↔ Kilometres later is Director or Workshop lead only (reason required, audited).
+  asset_tracking_unit: {
+    director: all("edit"),
+    office: [],
+    workshop: lead(all("edit")),
+    supervisor: [],
+    crew: [],
   },
   // "Asset value, lease, cost history": Full · View · — · — · —
   asset_commercial: {

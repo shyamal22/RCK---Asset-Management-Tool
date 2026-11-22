@@ -32,7 +32,7 @@ Work top to bottom. Tick each box when done (see CLAUDE.md "Done means").
 - [x] Move RCK seed to "first client" and add a KRE admin seed user; tests prove a KRE admin can't read assets/costs without support access
 
 ## Milestone 1 — Asset register
-- [ ] Tables: asset_types (company-editable list), assets, compliance_items, meter_readings — per docs/06-asset-setup.md
+- [x] Tables: asset_types (company-editable list), assets, compliance_items, meter_readings — per docs/06-asset-setup.md
 - [ ] Asset fixed details: name, code (unique per company, uppercase), type, make, model, year — all required
 - [ ] Tracking unit segmented switch (Hours | Kilometres), type suggests default, user confirms; unit change restricted, reasoned, audited
 - [ ] Meter readings with source and entered-by; flag readings lower than the last
