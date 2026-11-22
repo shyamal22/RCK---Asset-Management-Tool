@@ -25,7 +25,7 @@ test("shared workshop tablet: switch between mechanics by PIN, idle returns to l
   await expect(formError(page)).toContainText("Wrong PIN");
   await page.getByLabel("PIN").fill("4826");
   await page.getByRole("button", { name: "Go" }).click();
-  await expect(page.getByRole("heading", { name: "Mike Mechanic" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Kia ora, Mike" })).toBeVisible();
 
   await page.goto("/switch");
   await page.getByRole("button", { name: "Nina Mechanic" }).click();
@@ -33,7 +33,7 @@ test("shared workshop tablet: switch between mechanics by PIN, idle returns to l
   await page.getByRole("button", { name: "Go" }).click();
   // The PIN step also shows the person's name; wait for Home itself before locking.
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole("region", { name: "Job board" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Damage reports" })).toBeVisible();
   await page.waitForLoadState("networkidle");
 
   await sql`update public.trusted_devices set unlocked_until = now() - interval '1 minute' where user_id = ${m2.id}`;

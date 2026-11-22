@@ -85,3 +85,8 @@ Each has a default that will be used unless you say otherwise.
 35. **Closing damage reports before work orders exist** — spec closes a report by dismissing it or by signing off its work order (M3). *Default until M3: Workshop/Director can also "Mark fixed" with what was done; when work orders land, "Create work order" is added and Mark fixed stays for quick fixes.*
 36. **Who sees the flag vs the report** — Crew only see their own reports (docs/05), but every machine card shows its yellow/red flag and open count to anyone who can see the machine. *Default: as built.*
 37. **Acting access (answered 22/11/2026)** — not needed: removed from Setup → Users. Changing someone's user type covers it. The database part stays dormant (no UI), so it can come back without a rebuild.
+
+## 22/11/2026 — Home dashboards per user type
+Crew: Report damage button, my machines strip, my reports. Supervisor: needs attention, crew machines, open reports.
+Workshop: fleet tiles, damage reports, readings to check, needs attention. Office: fleet tiles, approvals, reports.
+Director: headline numbers, fleet by type (stacked status bars + table for screen readers), latest reports, needs attention. E2E home checks now use "Kia ora, <first name>" and the new section names.

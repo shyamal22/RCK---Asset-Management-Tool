@@ -17,21 +17,21 @@ test("Director needs a code on a new device, but not again on the same device", 
   await page.getByRole("button", { name: "Send code" }).click();
   await page.getByLabel("6-digit code").fill(await latestCode(d.email, t0));
   await page.getByRole("button", { name: "Confirm" }).click();
-  await expect(page.getByRole("heading", { name: "Dana Director" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Kia ora, Dana" })).toBeVisible();
 
   await page.context().clearCookies({ name: /^sb-/ });
   await page.goto("/sign-in");
   await page.getByLabel("Email").fill(d.email);
   await page.getByLabel("Password").fill(PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: "Dana Director" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Kia ora, Dana" })).toBeVisible();
 });
 
 test("Crew needs no second step", async ({ page }) => {
   const co = await makeE2ECompany();
   const c = await makeE2EUser(co.id, "crew", { name: "Cam Crew", crewId: co.crewId });
   await signIn(page, c.email);
-  await expect(page.getByRole("heading", { name: "Cam Crew" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Kia ora, Cam" })).toBeVisible();
 });
 
 test("locks out after 5 wrong passwords", async ({ page }) => {
@@ -70,7 +70,7 @@ test("phone locks; PIN unlocks; 5 wrong PINs signs out", async ({ page }) => {
   await page.getByRole("button", { name: "Unlock" }).click();
   // The unlock screen's heading is also the person's name, so wait for Home itself.
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole("region", { name: "Today's pre-start" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "My machines" })).toBeVisible();
   await page.waitForLoadState("networkidle"); // let the home render finish touching the unlock window
 
   await lock();
@@ -109,7 +109,7 @@ test("Face ID / fingerprint (passkey) unlocks the app", async ({ page, browserNa
   await page.goto("/");
   await expect(page).toHaveURL(/\/unlock$/);
   await page.getByRole("button", { name: "Unlock with Face ID / fingerprint" }).click();
-  await expect(page.getByRole("heading", { name: "Fran Finger" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Kia ora, Fran" })).toBeVisible();
 });
 
 test("password reset by code", async ({ page }) => {
@@ -123,8 +123,8 @@ test("password reset by code", async ({ page }) => {
   await page.getByRole("button", { name: "Confirm" }).click();
   await page.getByLabel("New password").fill("New-Password-77");
   await page.getByRole("button", { name: "Save password" }).click();
-  await expect(page.getByRole("heading", { name: "Rangi Reset" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Kia ora, Rangi" })).toBeVisible();
   await page.context().clearCookies();
   await signIn(page, c.email, "New-Password-77");
-  await expect(page.getByRole("heading", { name: "Rangi Reset" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Kia ora, Rangi" })).toBeVisible();
 });

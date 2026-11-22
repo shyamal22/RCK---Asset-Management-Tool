@@ -4,6 +4,7 @@ import { formError, makeE2ECompany, makeE2EUser, signIn, sql } from "./support";
 const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==", "base64");
 
 test("Crew reports damage with photos; machine goes red; Workshop marks it fixed", async ({ page, browser }) => {
+  test.setTimeout(60_000); // three sign-ins in one story
   const co = await makeE2ECompany();
   const [yellow] = await sql<{ id: string }[]>`insert into public.crews (company_id, name) values (${co.id}, 'Yellow') returning id`;
   const [type] = await sql<{ id: string }[]>`select id from public.asset_types where company_id = ${co.id} and name = 'Paver'`;
@@ -12,7 +13,9 @@ test("Crew reports damage with photos; machine goes red; Workshop marks it fixed
   const crew = await makeE2EUser(co.id, "crew", { name: "Rangi Crew", crewId: co.crewId });
 
   await signIn(page, crew.email);
+  await expect(page.getByRole("region", { name: "My machines" }).getByRole("link", { name: /PAV-01/ })).toBeVisible();
   await page.getByRole("link", { name: "Report damage" }).click();
+  await page.waitForURL("**/reports/new");
   await page.getByRole("link", { name: "PAV-01 Big paver" }).click();
   await expect(page.getByRole("heading", { name: "Report damage" })).toBeVisible();
 

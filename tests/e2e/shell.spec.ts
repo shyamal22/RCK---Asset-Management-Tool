@@ -9,11 +9,11 @@ async function noSideScroll(page: Page) {
 }
 
 const HOMES = {
-  crew: ["Today's pre-start", "My faults"],
-  supervisor: ["Crew machines", "Today's pre-starts", "Open faults"],
-  workshop: ["Job board", "My jobs", "Services due this week", "Low stock"],
-  office: ["Bills to match", "POs awaiting approval", "Compliance expiring in 30 days", "Users"],
-  director: ["Spend vs budget", "Critical defects", "Overdue services", "Downtime", "Cost per asset"],
+  crew: ["My machines", "My reports"],
+  supervisor: ["Needs attention", "Crew machines", "Open reports"],
+  workshop: ["Damage reports", "Readings to check", "Needs attention"],
+  office: ["Waiting for approval", "Damage reports"],
+  director: ["Fleet by type", "Latest damage reports", "Needs attention"],
 } as const;
 
 for (const [type, sections] of Object.entries(HOMES)) {

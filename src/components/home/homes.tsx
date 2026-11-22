@@ -1,130 +1,137 @@
-import type { ActiveUser } from "@/lib/auth/session";
 import Link from "next/link";
+import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Count, Empty, Section } from "./section";
+import type { ReportRow } from "@/lib/breakdowns/queries";
+import type { AssetRow } from "@/lib/assets/queries";
+import type { AttentionRow, FleetSummary, ReadingAlert, TypeRow } from "@/lib/home/queries";
+import { AttentionStrip, FleetByType, FleetTiles, Greeting, MachineStrip, Panel, ReadingAlerts, ReportFeed } from "./widgets";
 
-export type ReportCounts = { red: number; yellow: number; mine: number };
+/** Everything a home screen might show; each user type picks what matters to them (docs/05). */
+export type HomeData = {
+  name: string;
+  pending: number;
+  fleet: FleetSummary;
+  attention: AttentionRow[];
+  reports: ReportRow[];
+  machines: AssetRow[];
+  readings: ReadingAlert[];
+  byType: TypeRow[];
+  photos: Record<string, string>;
+};
 
 function ReportDamage() {
   return (
-    <Button asChild variant="accent" size="xl" className="w-full">
+    <Button asChild variant="accent" size="xl" className="w-full md:w-fit">
       <Link href="/reports/new">Report damage</Link>
     </Button>
   );
 }
 
-function OpenReports({ r }: { r: ReportCounts }) {
-  return r.red + r.yellow ? (
-    <>
-      <Count n={r.red} href="/reports" label="Unusable" />
-      <Count n={r.yellow} href="/reports" label="Still usable" />
-    </>
-  ) : (
-    <Empty>None open</Empty>
+function Pending({ n }: { n: number }) {
+  return (
+    <Panel title="Waiting for approval" href="/setup/users">
+      {n ? (
+        <Link href="/setup/users" className="flex items-center gap-3 rounded-xl p-1.5 hover:bg-accent">
+          <span className="flex size-10 items-center justify-center rounded-full bg-accent text-[var(--indigo)]">
+            <UserPlus className="size-5" aria-hidden />
+          </span>
+          <span className="text-lg">
+            <span className="font-bold tabular-nums">{n}</span> {n === 1 ? "person has" : "people have"} signed up
+          </span>
+        </Link>
+      ) : (
+        <p className="text-muted-foreground">Nobody waiting.</p>
+      )}
+    </Panel>
   );
 }
 
-/** One home per user type (docs/05). Sections fill in as each milestone lands. */
-export function CrewHome({ reports }: { reports: ReportCounts }) {
+export function CrewHome({ d }: { d: HomeData }) {
+  const mine = d.reports;
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-5">
+      <Greeting name={d.name} line={mine.length ? `You have ${mine.length} open ${mine.length === 1 ? "report" : "reports"}.` : undefined} />
       <ReportDamage />
-      <Section title="Today's pre-start">
-        <Empty>No machines yet</Empty>
-      </Section>
-      <Section title="My faults">
-        {reports.mine ? <Count n={reports.mine} href="/reports" label="Open reports" /> : <Empty>None</Empty>}
-      </Section>
+      <Panel title="My machines" href="/assets">
+        <MachineStrip items={d.machines} photos={d.photos} />
+      </Panel>
+      <Panel title="My reports" href="/reports">
+        <ReportFeed reports={mine} photos={d.photos} empty="No open reports from you." />
+      </Panel>
     </div>
   );
 }
 
-export function SupervisorHome({ reports }: { reports: ReportCounts }) {
+export function SupervisorHome({ d }: { d: HomeData }) {
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-5">
+      <Greeting name={d.name} />
       <ReportDamage />
-      <Section title="Crew machines">
-        <Empty>No machines yet</Empty>
-      </Section>
-      <Section title="Today's pre-starts">
-        <Empty>No machines yet</Empty>
-      </Section>
-      <Section title="Open faults">
-        <OpenReports r={reports} />
-      </Section>
+      <Panel title="Needs attention" href="/assets?view=list">
+        <AttentionStrip rows={d.attention} photos={d.photos} empty="All your crew's machines are good to go." />
+      </Panel>
+      <Panel title="Crew machines" href="/assets">
+        <MachineStrip items={d.machines} photos={d.photos} />
+      </Panel>
+      <Panel title="Open reports" href="/reports">
+        <ReportFeed reports={d.reports} photos={d.photos} />
+      </Panel>
     </div>
   );
 }
 
-export function WorkshopHome({ reports }: { reports: ReportCounts }) {
+export function WorkshopHome({ d }: { d: HomeData }) {
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <Section title="Damage reports" href="/reports">
-        <OpenReports r={reports} />
-      </Section>
-      <Section title="Job board">
-        <Empty>No jobs</Empty>
-      </Section>
-      <Section title="My jobs">
-        <Empty>No jobs</Empty>
-      </Section>
-      <Section title="Services due this week">
-        <Empty>None</Empty>
-      </Section>
-      <Section title="Low stock">
-        <Empty>None</Empty>
-      </Section>
+    <div className="grid gap-5">
+      <Greeting name={d.name} line={d.fleet.red ? `${d.fleet.red} machine${d.fleet.red === 1 ? " is" : "s are"} flagged red.` : undefined} />
+      <FleetTiles s={d.fleet} />
+      <div className="grid gap-5 lg:grid-cols-2">
+        <Panel title="Damage reports" href="/reports">
+          <ReportFeed reports={d.reports} photos={d.photos} />
+        </Panel>
+        <Panel title="Readings to check">
+          <ReadingAlerts rows={d.readings} />
+        </Panel>
+      </div>
+      <Panel title="Needs attention" href="/assets?view=list">
+        <AttentionStrip rows={d.attention} photos={d.photos} />
+      </Panel>
     </div>
   );
 }
 
-export function OfficeHome({ pending, reports }: { pending: number; reports: ReportCounts }) {
+export function OfficeHome({ d }: { d: HomeData }) {
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <Section title="Damage reports" href="/reports">
-        <OpenReports r={reports} />
-      </Section>
-      <Section title="Bills to match">
-        <Empty>None</Empty>
-      </Section>
-      <Section title="POs awaiting approval">
-        <Empty>None</Empty>
-      </Section>
-      <Section title="Compliance expiring in 30 days">
-        <Empty>None</Empty>
-      </Section>
-      <Section title="Users">
-        <Count n={pending} href="/setup/users" label="Waiting for approval" />
-      </Section>
+    <div className="grid gap-5">
+      <Greeting name={d.name} />
+      <FleetTiles s={d.fleet} />
+      <div className="grid gap-5 lg:grid-cols-2">
+        <Pending n={d.pending} />
+        <Panel title="Damage reports" href="/reports">
+          <ReportFeed reports={d.reports} photos={d.photos} />
+        </Panel>
+      </div>
     </div>
   );
 }
 
-export function DirectorHome({ pending, reports }: { pending: number; reports: ReportCounts }) {
+export function DirectorHome({ d }: { d: HomeData }) {
   return (
-    <div className="grid gap-4 lg:grid-cols-3">
-      {pending > 0 ? (
-        <Section title="Users">
-          <Count n={pending} href="/setup/users" label="Waiting for approval" />
-        </Section>
-      ) : null}
-      <Section title="Spend vs budget">
-        <Empty>No costs yet</Empty>
-      </Section>
-      <Section title="Critical defects" href="/reports">
-        {reports.red ? <Count n={reports.red} href="/reports" label="Machines unusable (open reports)" /> : <Empty>None</Empty>}
-      </Section>
-      <Section title="Overdue services">
-        <Empty>None</Empty>
-      </Section>
-      <Section title="Downtime">
-        <Empty>None</Empty>
-      </Section>
-      <Section title="Cost per asset">
-        <Empty>No costs yet</Empty>
-      </Section>
+    <div className="grid gap-5">
+      <Greeting name={d.name} line={`${d.fleet.total} machines · ${d.fleet.working} working`} />
+      {d.pending ? <Pending n={d.pending} /> : null}
+      <FleetTiles s={d.fleet} />
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <Panel title="Fleet by type" href="/assets">
+          <FleetByType rows={d.byType} />
+        </Panel>
+        <Panel title="Latest damage reports" href="/reports">
+          <ReportFeed reports={d.reports} photos={d.photos} />
+        </Panel>
+      </div>
+      <Panel title="Needs attention" href="/assets?view=list">
+        <AttentionStrip rows={d.attention} photos={d.photos} />
+      </Panel>
     </div>
   );
 }
-
-export type HomeProps = { me: ActiveUser; pending: number };

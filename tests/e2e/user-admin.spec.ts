@@ -8,7 +8,7 @@ test("Director changes a person's access and deactivates them", async ({ browser
 
   const workerPage = await browser.newPage();
   await signIn(workerPage, worker.email);
-  await expect(workerPage.getByRole("heading", { name: "Wiremu Worker" })).toBeVisible();
+  await expect(workerPage.getByRole("heading", { name: "Kia ora, Wiremu" })).toBeVisible();
 
   const page = await browser.newPage();
   await signIn(page, director.email);
