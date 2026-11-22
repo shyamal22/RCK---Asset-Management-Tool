@@ -38,7 +38,9 @@ Full specs live in `docs/`:
 
 ## Tech stack (do not change without asking)
 - Next.js (App Router) + TypeScript (strict)
-- Tailwind CSS + shadcn/ui; font: Carlito/Calibri-style sans; clean, flat, no gradients
+- Tailwind CSS + shadcn/ui; font: Carlito/Calibri-style sans. Look (Sam, 22/11/2026): onyx → electric indigo
+  gradient shell, white rounded sheets/panels, pill buttons, tangerine only as the pop (active, focus, alerts).
+  Status colours green/yellow/red stay for status only.
 - PostgreSQL via Supabase (auth, storage for photos/docs, Row Level Security)
 - Drizzle ORM + SQL migrations in `db/migrations`
 - Zod for validation; React Hook Form for forms

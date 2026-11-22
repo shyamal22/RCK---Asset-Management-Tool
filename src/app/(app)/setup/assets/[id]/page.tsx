@@ -9,9 +9,10 @@ import { ArchiveAsset, ChangeUnit } from "./controls";
 
 export const dynamic = "force-dynamic";
 
-export default async function EditAssetPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditAssetPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ photo?: string }> }) {
   const me = await requirePermission("assets", "edit");
   const { id } = await params;
+  const { photo } = await searchParams;
   const data = await runAs(me, async (tx) => {
     const a = await getAsset(tx, id);
     return a ? { a, opts: await assetOptions(tx) } : null;
@@ -23,6 +24,7 @@ export default async function EditAssetPage({ params }: { params: Promise<{ id: 
       <h1 className="text-2xl font-bold">
         Edit {a.code}
       </h1>
+      {photo === "failed" ? <p role="alert" className="rounded-xl border border-destructive/40 p-3 text-destructive">Asset saved, but the photo didn&apos;t upload. Add it again here.</p> : null}
       <PhotoUpload assetId={a.id} hasPhoto={!!a.photo_path} />
       <AssetForm
         opts={opts}

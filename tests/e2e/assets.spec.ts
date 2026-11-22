@@ -15,8 +15,14 @@ test("Workshop adds a roller, records readings, edits it and adds a photo", asyn
   await page.getByRole("link", { name: "Add asset" }).click();
   await expect(page.getByRole("heading", { name: "Add asset" })).toBeVisible();
 
+  // A photo is required for new machines.
   await page.getByLabel("Type").selectOption({ label: "Roller" });
   await expect(page.getByLabel("Code")).toHaveValue("ROL-01");
+  await page.getByLabel("Name").fill("Roller 1");
+  await page.getByRole("button", { name: "Add asset" }).click();
+  await expect(page.locator('p[role="alert"]')).toHaveText("Add a photo of the machine");
+  await page.getByLabel("Asset photo").setInputFiles({ name: "roller.png", mimeType: "image/png", buffer: PNG });
+  await expect(page.getByRole("img", { name: "Photo of the new asset" })).toBeVisible();
   await expect(page.getByRole("radio", { name: "Hours" })).toHaveAttribute("aria-checked", "true");
   await expect(page.getByText("Suggested for Roller.", { exact: false })).toBeVisible();
   await page.getByLabel("Name").fill("Roller 1");
@@ -30,6 +36,7 @@ test("Workshop adds a roller, records readings, edits it and adds a photo", asyn
   await expect(page.getByRole("heading", { name: "ROL-01 Roller 1" })).toBeVisible();
   await expect(page.getByTestId("current-reading")).toHaveText("1,200 hr");
   await expect(page.getByText("Available")).toBeVisible();
+  await expect(page.getByRole("img", { name: "ROL-01 Roller 1" })).toBeVisible();
 
   await page.getByLabel("New reading (hours)").fill("1210.5");
   await page.getByRole("button", { name: "Save reading" }).click();
@@ -47,6 +54,7 @@ test("Workshop adds a roller, records readings, edits it and adds a photo", asyn
   await page.getByLabel("Type").selectOption({ label: "Roller" });
   await expect(page.getByLabel("Code")).toHaveValue("ROL-02");
   await page.getByLabel("Code").fill("rol-01");
+  await page.getByLabel("Asset photo").setInputFiles({ name: "copy.png", mimeType: "image/png", buffer: PNG });
   await page.getByLabel("Name").fill("Copy");
   await page.getByLabel("Make").fill("Hamm");
   await page.getByLabel("Model").fill("HD12");

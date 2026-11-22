@@ -18,18 +18,53 @@ const invalid = (e: z.ZodError): { ok: false; error: string; field?: string } =>
   field: e.issues[0]?.path[0]?.toString(),
 });
 
-export async function createAssetAction(raw: unknown): Promise<Result<{ id: string }>> {
+const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const photoProblem = (file: FormDataEntryValue | null) =>
+  !(file instanceof File) || file.size === 0
+    ? "Add a photo of the machine"
+    : !PHOTO_TYPES.includes(file.type)
+      ? "Use a JPG, PNG or WebP photo"
+      : file.size > 8 * 1024 * 1024
+        ? "That photo is too big"
+        : null;
+
+/** Stores a photo privately and points the asset at it (RLS: the caller must be able to edit the asset). */
+async function storePhoto(tx: Parameters<Parameters<typeof actAs>[2]>[0], companyId: string, assetId: string, file: File) {
+  const path = `${companyId}/${assetId}/${randomUUID()}.${file.type.split("/")[1].replace("jpeg", "jpg")}`;
+  const storage = supabaseAdmin().storage.from(PHOTO_BUCKET);
+  const up = await storage.upload(path, file, { contentType: file.type });
+  if (up.error) return false;
+  const rows = (await tx.execute(sql`update public.assets set photo_path = ${path} where id = ${assetId} returning id`)) as unknown as unknown[];
+  if (!rows.length) {
+    await storage.remove([path]);
+    return false;
+  }
+  return true;
+}
+
+/** New asset: details + a photo, in one go (the photo is required so type browsing shows real machines). */
+export async function createAssetAction(form: FormData): Promise<Result<{ id: string; photoSaved: boolean }>> {
+  let raw: unknown;
+  try {
+    raw = JSON.parse(String(form.get("data") ?? "{}"));
+  } catch {
+    return { ok: false, error: "Check the details" };
+  }
   const p = createAssetSchema.safeParse(raw);
   if (!p.success) return invalid(p.error);
+  const photo = form.get("photo");
+  const bad = photoProblem(photo);
+  if (bad) return { ok: false, error: bad, field: "photo" };
   const d = p.data;
   try {
-    const [{ id }] = (await actAs("assets", "create", (tx) =>
-      tx.execute(sql`select public.create_asset(${d.code}, ${d.name}, ${d.assetTypeId}, ${d.make}, ${d.model}, ${d.year},
+    return await actAs("assets", "create", async (tx, me) => {
+      const [{ id }] = (await tx.execute(sql`select public.create_asset(${d.code}, ${d.name}, ${d.assetTypeId}, ${d.make}, ${d.model}, ${d.year},
         ${d.trackingUnit}, ${d.reading ?? null}, ${d.siteId ?? null}, ${d.crewId ?? null}, ${d.ownerEntityId ?? null},
-        ${d.rego ?? null}, ${d.vinSerial ?? null}, ${d.notes ?? null}) as id`),
-    )) as unknown as { id: string }[];
-    revalidatePath("/assets");
-    return { ok: true, id };
+        ${d.rego ?? null}, ${d.vinSerial ?? null}, ${d.notes ?? null}) as id`)) as unknown as { id: string }[];
+      const photoSaved = await storePhoto(tx, me.companyId, id, photo as File);
+      revalidatePath("/assets");
+      return { ok: true as const, id, photoSaved };
+    });
   } catch (e) {
     return { ok: false, error: dbMessage(e, "Couldn't add the asset. Check the details.") };
   }
@@ -68,9 +103,9 @@ export async function nextCodeAction(typeId: string): Promise<string | null> {
 export async function uploadPhotoAction(form: FormData): Promise<Result> {
   const assetId = String(form.get("assetId") ?? "");
   const file = form.get("photo");
-  if (!z.uuid().safeParse(assetId).success || !(file instanceof File)) return { ok: false, error: "Choose a photo" };
-  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) return { ok: false, error: "Use a JPG, PNG or WebP photo" };
-  if (file.size > 8 * 1024 * 1024) return { ok: false, error: "That photo is too big" };
+  if (!z.uuid().safeParse(assetId).success) return { ok: false, error: "Choose a photo" };
+  const bad = photoProblem(file);
+  if (bad) return { ok: false, error: bad };
   return actAs("assets", "edit", async (tx, me) => {
     // RLS check first: can this person edit this asset?
     const [a] = (await tx.execute(sql`select id, photo_path from public.assets where id = ${assetId} and deleted_at is null`)) as unknown as {
@@ -78,16 +113,8 @@ export async function uploadPhotoAction(form: FormData): Promise<Result> {
       photo_path: string | null;
     }[];
     if (!a) return { ok: false, error: "Not permitted" } as const;
-    const path = `${me.companyId}/${assetId}/${randomUUID()}.${file.type.split("/")[1].replace("jpeg", "jpg")}`;
-    const storage = supabaseAdmin().storage.from(PHOTO_BUCKET);
-    const up = await storage.upload(path, file, { contentType: file.type });
-    if (up.error) return { ok: false, error: "Upload failed. Try again." } as const;
-    const rows = (await tx.execute(sql`update public.assets set photo_path = ${path} where id = ${assetId} returning id`)) as unknown as unknown[];
-    if (!rows.length) {
-      await storage.remove([path]);
-      return { ok: false, error: "Not permitted" } as const;
-    }
-    if (a.photo_path) await storage.remove([a.photo_path]);
+    if (!(await storePhoto(tx, me.companyId, assetId, file as File))) return { ok: false, error: "Upload failed. Try again." } as const;
+    if (a.photo_path) await supabaseAdmin().storage.from(PHOTO_BUCKET).remove([a.photo_path]);
     revalidatePath(`/assets/${assetId}`);
     revalidatePath(`/setup/assets/${assetId}`);
     return { ok: true } as const;

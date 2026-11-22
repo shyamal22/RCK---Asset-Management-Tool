@@ -43,7 +43,7 @@ export function PendingUserCard({
               <Label htmlFor={`crew-${user.id}`}>Crew</Label>
               <select
                 id={`crew-${user.id}`}
-                className="h-12 rounded-md border bg-background px-3 text-lg"
+                className="h-12 rounded-[0.875rem] border border-input bg-background px-3 text-lg"
                 value={crewId}
                 onChange={(e) => setCrewId(e.target.value)}
               >

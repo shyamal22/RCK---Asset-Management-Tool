@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
-const select = "h-12 min-w-0 rounded-md border bg-background px-2 text-base";
+const select = "h-12 min-w-0 rounded-[0.875rem] border border-input bg-background px-2 text-base";
 
 export default async function AssetsPage({ searchParams }: { searchParams: Promise<AssetFilters> }) {
   const me = await requirePermission("assets", "view");
@@ -33,7 +33,7 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
           defaultValue={f.q}
           placeholder="Search name, code or rego"
           aria-label="Search assets"
-          className="h-12 rounded-md border bg-background px-3 text-lg"
+          className="h-12 rounded-[0.875rem] border border-input bg-background px-3 text-lg"
         />
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <select name="type" defaultValue={f.type ?? ""} aria-label="Type" className={select}>

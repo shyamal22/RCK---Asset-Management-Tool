@@ -17,7 +17,7 @@ export default async function SetupAssetsPage({ searchParams }: { searchParams: 
       <Button asChild size="lg" className="h-12 w-fit">
         <Link href="/setup/assets/new">Add asset</Link>
       </Button>
-      <ul className="divide-y rounded-lg border bg-card">
+      <ul className="divide-y surface">
         {list.map((a) => (
           <li key={a.id}>
             <Link href={`/setup/assets/${a.id}`} className="flex min-h-14 items-center justify-between gap-3 px-4">

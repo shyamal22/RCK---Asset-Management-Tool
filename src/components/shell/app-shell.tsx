@@ -15,16 +15,30 @@ export function navItems(me: ActiveUser): Item[] {
   return items;
 }
 
-/** Phone: bottom nav. Desktop: side nav. Same items. */
+function Brand({ me }: { me: ActiveUser }) {
+  return (
+    <div className="grid gap-0.5">
+      <p className="flex items-center gap-2 text-sm text-white/75">
+        <span className="size-2 rounded-full bg-[var(--tangerine)]" aria-hidden />
+        <span className="font-bold tracking-wide text-white">KRE</span> Asset Management Tool
+      </p>
+      <p className="text-xl leading-tight font-bold text-white">{me.companyName || "KRE Asset Management"}</p>
+      <p className="text-sm text-white/70">{me.name}</p>
+    </div>
+  );
+}
+
+/**
+ * Same family as the sign-in screens: onyx → indigo gradient behind everything.
+ * Phone: header on the gradient, content on a white sheet with big rounded top corners, white bottom nav.
+ * Desktop: nav on the gradient, content in a rounded white panel.
+ */
 export function AppShell({ me, shared, children }: { me: ActiveUser; shared: boolean; children: React.ReactNode }) {
   const items = navItems(me);
   return (
-    <div className="min-h-dvh md:grid md:grid-cols-[14rem_1fr]">
-      <aside className="hidden border-r bg-card md:flex md:flex-col md:gap-1 md:p-3">
-        <div className="mb-4 px-3 pt-2">
-          <div className="text-lg font-bold leading-tight">{me.companyName || "KRE Asset Management"}</div>
-          <div className="text-sm text-muted-foreground">{me.name}</div>
-        </div>
+    <div className="app-theme md:grid md:grid-cols-[15rem_1fr]">
+      <aside className="hidden md:flex md:flex-col md:gap-8 md:p-6">
+        <Brand me={me} />
         <nav aria-label="Main" className="grid gap-1">
           {items.map((i) => (
             <NavLink key={i.href} {...i} variant="side" />
@@ -32,15 +46,15 @@ export function AppShell({ me, shared, children }: { me: ActiveUser; shared: boo
         </nav>
         {shared ? <DoneButton className="mt-auto" /> : null}
       </aside>
-      <div className="flex min-h-dvh flex-col">
-        <header className="flex h-14 items-center justify-between border-b bg-card px-4 md:hidden">
-          <span className="font-bold">{me.companyName || "KRE Asset Management"}</span>
+      <div className="flex min-h-dvh flex-col md:p-3 md:pl-0">
+        <header className="flex items-end justify-between gap-3 px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-8 md:hidden">
+          <Brand me={me} />
           {shared ? <DoneButton /> : null}
         </header>
-        <main className="flex-1 p-4 pb-24 md:p-8 md:pb-8">{children}</main>
+        <main className="flex-1 rounded-t-[2.5rem] bg-background px-5 pt-8 pb-28 md:rounded-[2rem] md:px-10 md:pt-10 md:pb-10">{children}</main>
         <nav
           aria-label="Main"
-          className="fixed inset-x-0 bottom-0 flex border-t bg-card pb-[env(safe-area-inset-bottom)] md:hidden"
+          className="fixed inset-x-0 bottom-0 flex border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
         >
           {items.map((i) => (
             <NavLink key={i.href} {...i} variant="bottom" />

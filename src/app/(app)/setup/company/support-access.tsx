@@ -10,7 +10,7 @@ export function SupportAccess({ rows }: { rows: ActiveSupport[] }) {
   const [pending, start] = useTransition();
   if (!rows.length) return null;
   return (
-    <section className="grid gap-3 rounded-md border p-4" aria-labelledby="support-h">
+    <section className="grid gap-3 rounded-xl border p-4" aria-labelledby="support-h">
       <h2 id="support-h" className="text-lg font-bold">
         KRE support access
       </h2>

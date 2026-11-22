@@ -44,7 +44,7 @@ export function UserAdmin({ user, crews, acting, isSelf, defaultEnd }: Props) {
         <Segmented label="User type" value={userType} onChange={setUserType} options={typeOptions} />
         <div className="grid gap-1.5">
           <Label htmlFor="crew">Crew</Label>
-          <select id="crew" className="h-12 rounded-md border bg-background px-3 text-lg" value={crewId} onChange={(e) => setCrewId(e.target.value)}>
+          <select id="crew" className="h-12 rounded-[0.875rem] border border-input bg-background px-3 text-lg" value={crewId} onChange={(e) => setCrewId(e.target.value)}>
             <option value="">No crew</option>
             {crews.map((c) => (
               <option key={c.id} value={c.id}>
@@ -72,7 +72,7 @@ export function UserAdmin({ user, crews, acting, isSelf, defaultEnd }: Props) {
       <section className="grid gap-3" aria-label="Acting access">
         <h2 className="text-xl font-bold">Acting access</h2>
         {acting.map((a) => (
-          <div key={a.id} className="flex items-center justify-between gap-3 rounded-md border p-3">
+          <div key={a.id} className="flex items-center justify-between gap-3 rounded-xl border p-3">
             <span>
               {USER_TYPE_LABELS[a.userType]} until {a.ends} · {a.reason}
             </span>

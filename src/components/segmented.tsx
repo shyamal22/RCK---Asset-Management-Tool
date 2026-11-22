@@ -17,7 +17,7 @@ export function Segmented<T extends string>({
       role="radiogroup"
       aria-label={label}
       className={cn(
-        "grid gap-1 rounded-md border p-1",
+        "grid gap-1 rounded-full border border-input bg-muted p-1",
         options.length > 3 ? "grid-cols-3 sm:auto-cols-fr sm:grid-flow-col sm:grid-cols-none" : "auto-cols-fr grid-flow-col",
       )}
     >
@@ -29,8 +29,8 @@ export function Segmented<T extends string>({
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
           className={cn(
-            "h-11 min-w-0 truncate rounded px-1 text-base font-bold",
-            value === o.value ? "bg-primary text-primary-foreground" : "text-foreground",
+            "h-11 min-w-0 truncate rounded-full px-1 text-base font-bold transition-colors",
+            value === o.value ? "bg-primary text-primary-foreground shadow-[0_6px_16px_-8px_var(--indigo)]" : "text-foreground",
           )}
         >
           {o.label}

@@ -31,7 +31,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
   const more = rows.length > PAGE_SIZE;
   const qs = (extra: Record<string, string | number | undefined>) =>
     new URLSearchParams(Object.entries({ ...f, ...extra }).filter(([, v]) => v !== undefined && v !== "") as [string, string][]).toString();
-  const select = "h-11 rounded-md border bg-background px-2";
+  const select = "h-11 rounded-[0.875rem] border border-input bg-background px-2";
 
   return (
     <div className="grid gap-4">

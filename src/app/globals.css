@@ -53,34 +53,40 @@
 }
 
 :root {
-  /* Three-colour palette (docs/10, brand colours TBC): ink, paper, steel. */
-  --ink: #1f2933;
-  --paper: #f6f6f3;
-  --steel: #2f5d8a;
+  /* KRE palette (Sam, 22/11/2026): onyx black + electric indigo, tangerine as the pop. */
+  --onyx: #0b0b10;
+  --indigo: #6f00ff;
+  --indigo-deep: #2a0a6e;
+  --tangerine: #ff7a1a;
+  --brand-gradient: linear-gradient(150deg, var(--onyx) 0%, var(--indigo-deep) 55%, var(--indigo) 115%);
+  /* Older names kept as aliases so nothing breaks. */
+  --ink: var(--onyx);
+  --paper: #f6f5fb;
+  --steel: var(--indigo);
   /* Status colours: ONLY for asset/flag status. */
   --status-green: #1e8e3e;
   --status-yellow: #e0a800;
   --status-red: #c62828;
 
-  --radius: 0.5rem;
-  --background: var(--paper);
-  --foreground: var(--ink);
+  --radius: 0.875rem;
+  --background: #ffffff;
+  --foreground: var(--onyx);
   --card: #ffffff;
-  --card-foreground: var(--ink);
+  --card-foreground: var(--onyx);
   --popover: #ffffff;
-  --popover-foreground: var(--ink);
-  --primary: var(--ink);
+  --popover-foreground: var(--onyx);
+  --primary: var(--indigo);
   --primary-foreground: #ffffff;
   --secondary: #ffffff;
-  --secondary-foreground: var(--ink);
-  --muted: #ecece8;
-  --muted-foreground: #5b6670;
-  --accent: #e8eef4;
-  --accent-foreground: var(--steel);
-  --destructive: #b42318;
-  --border: #d9d9d4;
-  --input: #c9c9c3;
-  --ring: var(--steel);
+  --secondary-foreground: var(--onyx);
+  --muted: #f3f2f7;
+  --muted-foreground: #66657a;
+  --accent: #f3efff;
+  --accent-foreground: var(--indigo);
+  --destructive: #c2410c;
+  --border: #ecebf2;
+  --input: #dddbe8;
+  --ring: var(--tangerine);
   --chart-1: var(--steel);
   --chart-2: var(--ink);
   --chart-3: #8aa5c0;
@@ -90,7 +96,7 @@
   --sidebar-foreground: var(--ink);
   --sidebar-primary: var(--ink);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e8eef4;
+  --sidebar-accent: #f3efff;
   --sidebar-accent-foreground: var(--steel);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--steel);
@@ -109,10 +115,6 @@
    header, white sheet with big rounded top corners, grouped input card, centred pill button.
    Tangerine is the pop: brand dot, card glow, focus, wrong-details pulse. ── */
 .auth-theme {
-  --onyx: #0b0b10;
-  --indigo: #6f00ff;
-  --indigo-deep: #2a0a6e;
-  --tangerine: #ff7a1a;
   --auth-grey: #8b8a99;
   --background: #ffffff;
   --foreground: var(--onyx);
@@ -130,7 +132,7 @@
   --ring: var(--tangerine);
   min-height: 100dvh;
   color: var(--onyx);
-  background: linear-gradient(150deg, var(--onyx) 0%, var(--indigo-deep) 55%, var(--indigo) 115%);
+  background: var(--brand-gradient);
 }
 .auth-hero { color: #fff; }
 .auth-hero a { color: #fff; }
@@ -189,3 +191,15 @@
 }
 .auth-card .pw-meter, .auth-card .pw-suggest, .auth-card .text-destructive { padding: 0 1.1rem .7rem; }
 .auth-card .pw-suggest { padding-top: .2rem; }
+
+
+/* ── App-wide look (same family as the sign-in screens) ── */
+.app-theme { background: var(--brand-gradient); min-height: 100dvh; }
+.surface {
+  border-radius: 1.25rem;
+  background: var(--card);
+  border: 1px solid #efedf6;
+  box-shadow: 0 14px 30px -22px color-mix(in srgb, var(--indigo) 45%, transparent);
+}
+select:not([data-slot]), textarea:not([data-slot]) { border-radius: 0.875rem; }
+h1 { letter-spacing: -0.01em; }

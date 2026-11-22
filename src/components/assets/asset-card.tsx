@@ -9,7 +9,7 @@ export function AssetCard({ a, photo }: { a: AssetRow; photo?: string }) {
   return (
     <Link
       href={`/assets/${a.id}`}
-      className="flex min-h-20 items-center gap-3 rounded-lg border bg-card p-2 pr-4 hover:bg-accent"
+      className="flex min-h-20 items-center gap-3 surface p-2 pr-4 hover:bg-accent"
       aria-label={`${a.code} ${a.name}`}
     >
       <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted">

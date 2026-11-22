@@ -95,7 +95,7 @@ export function StartSupportForm({ companyId }: { companyId: string }) {
         <Label htmlFor="support-length" className="text-base">
           How long
         </Label>
-        <select id="support-length" className="h-12 rounded-md border bg-background px-3 text-lg" value={hours} onChange={(e) => setHours(Number(e.target.value))}>
+        <select id="support-length" className="h-12 rounded-[0.875rem] border border-input bg-background px-3 text-lg" value={hours} onChange={(e) => setHours(Number(e.target.value))}>
           {LENGTHS.map((l) => (
             <option key={l.hours} value={l.hours}>
               {l.label}

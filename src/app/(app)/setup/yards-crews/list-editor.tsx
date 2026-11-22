@@ -24,7 +24,7 @@ export function ListEditor({ title, kind, items }: { title: string; kind: Kind; 
   return (
     <section className="grid gap-3" aria-label={title}>
       <h2 className="text-xl font-bold">{title}</h2>
-      <ul className="divide-y rounded-lg border bg-card">
+      <ul className="divide-y surface">
         {items.map((i) => (
           <li key={i.id} className="flex min-h-14 items-center gap-2 px-3">
             {editing?.id === i.id ? (

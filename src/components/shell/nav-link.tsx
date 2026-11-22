@@ -17,13 +17,14 @@ export function NavLink({ href, label, icon, variant }: { href: string; label: s
       aria-current={active ? "page" : undefined}
       className={cn(
         variant === "bottom"
-          ? "flex min-h-16 flex-1 flex-col items-center justify-center gap-0.5 text-sm"
-          : "flex h-12 items-center gap-3 rounded-md px-3 text-base",
-        active ? "font-bold text-steel" : "text-ink",
-        variant === "side" && active && "bg-accent",
+          ? "relative flex min-h-16 flex-1 flex-col items-center justify-center gap-0.5 text-sm"
+          : "flex h-12 items-center gap-3 rounded-full px-4 text-base transition-colors",
+        variant === "bottom" && (active ? "font-bold text-[var(--indigo)]" : "text-muted-foreground"),
+        variant === "side" && (active ? "bg-white font-bold text-[var(--indigo)]" : "text-white/80 hover:bg-white/10 hover:text-white"),
       )}
     >
-      <Icon className={variant === "bottom" ? "size-7" : "size-5"} aria-hidden />
+      {active && variant === "bottom" ? <span className="absolute top-1.5 size-1.5 rounded-full bg-[var(--tangerine)]" aria-hidden /> : null}
+      <Icon className={variant === "bottom" ? "size-6" : "size-5"} aria-hidden />
       {label}
     </Link>
   );

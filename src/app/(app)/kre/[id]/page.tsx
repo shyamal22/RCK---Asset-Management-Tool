@@ -47,7 +47,7 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
       </header>
 
       {invited ? (
-        <p role="status" className="rounded-md border p-3">
+        <p role="status" className="rounded-xl border p-3">
           {invited === "email" ? "Client created. The Director has been emailed an invite." : "Client created. Email isn't set up, so send the Director the link below."}
         </p>
       ) : null}
@@ -61,14 +61,14 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
             <p>
               Invited {invite.name} ({invite.email}) on {formatDate(invite.created_at)}. They sign up with that email at:
             </p>
-            <p className="break-all rounded-md border p-3 font-mono text-sm" data-testid="invite-url">
+            <p className="break-all rounded-xl border p-3 font-mono text-sm" data-testid="invite-url">
               {joinUrl}
             </p>
             <ResendInviteButton companyId={client.id} />
           </div>
         ) : null}
         {!hasDirector ? (
-          <details className="rounded-md border p-3">
+          <details className="rounded-xl border p-3">
             <summary className="cursor-pointer font-bold">{invite ? "Invite someone else" : "Invite a Director"}</summary>
             <div className="mt-3 max-w-md">
               <InviteDirectorForm companyId={client.id} />
@@ -100,7 +100,7 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
               Read-only until {formatDateTime(support.ends_at)}. Reason: {support.reason}
             </p>
             <EndSupportButton companyId={client.id} supportId={support.id} />
-            <div className="grid gap-2 rounded-md border p-3">
+            <div className="grid gap-2 rounded-xl border p-3">
               <p className="font-bold">Yards</p>
               <p>{yards.map((y) => y.name).join(", ") || "None"}</p>
               <p className="font-bold">Crews</p>

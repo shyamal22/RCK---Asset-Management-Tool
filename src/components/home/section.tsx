@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function Section({ title, children, href }: { title: string; children: React.ReactNode; href?: string }) {
   return (
-    <section className="grid gap-2 rounded-lg border bg-card p-4" aria-label={title}>
+    <section className="grid gap-2 surface p-4" aria-label={title}>
       <h2 className="text-lg font-bold">{href ? <Link href={href}>{title}</Link> : title}</h2>
       {children}
     </section>
