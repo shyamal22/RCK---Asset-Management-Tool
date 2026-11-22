@@ -1,8 +1,10 @@
 "use client";
+import { useMachineFeedback } from "@/components/auth/machine-state";
+import { SubmitButton } from "@/components/auth/submit-button";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Field, FormError } from "@/components/field";
+import { PasswordField } from "./password-field";
 import { CodeEntry } from "./code-entry";
 import { resendCodeAction, setNewPasswordAction } from "@/app/(auth)/actions";
 import { contactSchema } from "@/lib/auth/schemas";
@@ -14,6 +16,7 @@ export function ResetForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  useMachineFeedback(pending, error);
   const contact = { method: "email" as const, email: email.trim().toLowerCase() };
 
   if (step === "code") return <CodeEntry contact={contact} purpose="recovery" onVerified={() => setStep("password")} />;
@@ -31,11 +34,11 @@ export function ResetForm() {
           });
         }}
       >
-        <Field id="new-password" label="New password" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <PasswordField id="new-password" label="New password" autoComplete="new-password" meter onSuggest={setPassword} value={password} onChange={(e) => setPassword(e.target.value)} />
         <FormError message={error} />
-        <Button type="submit" size="lg" className="h-14 text-lg" disabled={pending}>
+        <SubmitButton pending={pending} disabled={false}>
           Save password
-        </Button>
+        </SubmitButton>
       </form>
     );
 
@@ -56,9 +59,9 @@ export function ResetForm() {
     >
       <Field id="email" label="Email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
       <FormError message={error} />
-      <Button type="submit" size="lg" className="h-14 text-lg" disabled={pending}>
+      <SubmitButton pending={pending} disabled={false}>
         Send code
-      </Button>
+      </SubmitButton>
     </form>
   );
 }

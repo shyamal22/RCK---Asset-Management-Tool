@@ -68,7 +68,9 @@ test("phone locks; PIN unlocks; 5 wrong PINs signs out", async ({ page }) => {
   await expect(formError(page)).toContainText("4 tries left");
   await page.getByLabel("PIN").fill("4826");
   await page.getByRole("button", { name: "Unlock" }).click();
-  await expect(page.getByRole("heading", { name: "Pita PIN" })).toBeVisible();
+  // The unlock screen's heading is also the person's name, so wait for Home itself.
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("region", { name: "Today's pre-start" })).toBeVisible();
   await page.waitForLoadState("networkidle"); // let the home render finish touching the unlock window
 
   await lock();

@@ -1,4 +1,6 @@
 "use client";
+import { useMachineFeedback } from "@/components/auth/machine-state";
+import { SubmitButton } from "@/components/auth/submit-button";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { startAuthentication } from "@simplewebauthn/browser";
@@ -11,6 +13,7 @@ export function UnlockForm({ hasPin, hasPasskey }: { hasPin: boolean; hasPasskey
   const [pin, setPin] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  useMachineFeedback(pending, error);
 
   const done = (r: { ok: boolean; error?: string }) => {
     if (r.ok) return router.replace("/");
@@ -60,9 +63,9 @@ export function UnlockForm({ hasPin, hasPasskey }: { hasPin: boolean; hasPasskey
             className="text-center text-3xl tracking-[0.5em]"
             autoFocus={!hasPasskey}
           />
-          <Button type="submit" size="lg" className="h-14 text-lg" disabled={pending || pin.length < 4}>
+          <SubmitButton pending={pending} disabled={pin.length < 4}>
             Unlock
-          </Button>
+          </SubmitButton>
         </form>
       ) : null}
       <FormError message={error} />

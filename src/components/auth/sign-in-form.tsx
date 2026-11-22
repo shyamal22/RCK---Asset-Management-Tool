@@ -1,9 +1,11 @@
 "use client";
+import { useMachineFeedback } from "@/components/auth/machine-state";
+import { SubmitButton } from "@/components/auth/submit-button";
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Field, FormError } from "@/components/field";
+import { FormError } from "@/components/field";
+import { PasswordField } from "./password-field";
 import { ContactInput, toContact, type ContactValue } from "./contact-input";
 import { CodeEntry } from "./code-entry";
 import { resendCodeAction, signInAction } from "@/app/(auth)/actions";
@@ -16,6 +18,7 @@ export function SignInForm({ notice }: { notice?: string }) {
   const [error, setError] = useState<string | null>(notice ?? null);
   const [verify, setVerify] = useState<ReturnType<typeof toContact> | null>(null);
   const [pending, start] = useTransition();
+  const setMachine = useMachineFeedback(pending, error);
 
   if (verify) return <CodeEntry contact={verify} purpose="signup" onVerified={() => router.replace("/")} />;
 
@@ -29,7 +32,10 @@ export function SignInForm({ notice }: { notice?: string }) {
         if (!c.success) return setError(c.error.issues[0]?.message ?? "Check your details");
         start(async () => {
           const r = await signInAction({ contact: c.data, password });
-          if (r.ok) return router.replace("/");
+          if (r.ok) {
+            setMachine("ok");
+            return router.replace("/");
+          }
           if (r.error === "unverified") {
             await resendCodeAction({ contact: c.data, purpose: "signup" });
             return setVerify(c.data);
@@ -39,11 +45,11 @@ export function SignInForm({ notice }: { notice?: string }) {
       }}
     >
       <ContactInput value={contact} onChange={setContact} />
-      <Field id="password" label="Password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <PasswordField id="password" label="Password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
       <FormError message={error} />
-      <Button type="submit" size="lg" className="h-14 text-lg" disabled={pending}>
-        Sign in
-      </Button>
+      <SubmitButton pending={pending} disabled={false}>
+        {pending ? "Signing in…" : "Sign in"}
+      </SubmitButton>
       <Link href="/reset" className="py-3 text-center text-base underline">
         Forgot password
       </Link>

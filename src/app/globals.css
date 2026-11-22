@@ -105,3 +105,135 @@
     @apply bg-background text-foreground;
   }
 }
+/* ── Sign-in screens: onyx + electric indigo, tangerine as the pop (beacon, focus, errors) ── */
+.auth-theme {
+  --onyx: #0a0a0f;
+  --onyx-2: #14141c;
+  --onyx-3: #1d1d29;
+  --indigo: #6f00ff;
+  --indigo-soft: #b49bff;
+  --tangerine: #ff7a1a;
+  --auth-text: #f3f2f8;
+  --auth-muted: #a7a4ba;
+
+  --background: var(--onyx);
+  --foreground: var(--auth-text);
+  --card: var(--onyx-2);
+  --card-foreground: var(--auth-text);
+  --popover: var(--onyx-2);
+  --popover-foreground: var(--auth-text);
+  --primary: var(--indigo);
+  --primary-foreground: #ffffff;
+  --secondary: var(--onyx-3);
+  --secondary-foreground: var(--auth-text);
+  --muted: var(--onyx-3);
+  --muted-foreground: var(--auth-muted);
+  --accent: var(--onyx-3);
+  --accent-foreground: var(--auth-text);
+  --destructive: var(--tangerine);
+  --border: #2b2a3b;
+  --input: #34334a;
+  --ring: var(--tangerine);
+  color-scheme: dark;
+  background: var(--onyx);
+  color: var(--auth-text);
+}
+.auth-theme [data-slot="input"] {
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: var(--onyx-3);
+  border-color: var(--input);
+  font-size: 1.125rem;
+  padding-inline: 1rem;
+}
+.auth-theme [data-slot="input"]:focus-visible { border-color: var(--tangerine); box-shadow: 0 0 0 3px color-mix(in srgb, var(--tangerine) 35%, transparent); }
+.auth-theme [data-slot="button"] { border-radius: 999px; }
+.auth-theme [data-slot="button"][data-variant="default"], .auth-theme button[type="submit"]:not([data-variant]) {
+  box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--indigo) 80%, transparent);
+}
+.auth-theme a { color: var(--indigo-soft); }
+.auth-theme [role="radiogroup"] { border-radius: 999px; background: var(--onyx-3); border-color: var(--input); }
+.auth-theme [role="radiogroup"] [role="radio"] { border-radius: 999px; }
+
+/* Hero */
+.machine { position: relative; width: min(100%, 22rem); aspect-ratio: 1; margin-inline: auto; }
+.machine-svg { width: 100%; height: 100%; overflow: visible; }
+.machine-glow { animation: mh-breathe 4s ease-in-out infinite; transform-origin: center; }
+.machine-tick { stroke: #3a3852; stroke-width: 3; stroke-linecap: round; transition: stroke .3s; }
+.machine-tick-red { stroke: color-mix(in srgb, var(--tangerine) 55%, #3a3852); }
+.machine-track { fill: none; stroke: #23222f; stroke-width: 10; stroke-linecap: round; }
+.machine-level {
+  fill: none; stroke: var(--indigo); stroke-width: 10; stroke-linecap: round;
+  stroke-dashoffset: calc(var(--len) * 0.68);
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--indigo) 90%, transparent));
+  transition: stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1), stroke .2s;
+}
+.machine-ground { stroke: #3a3852; stroke-width: 3; stroke-dasharray: 14 10; stroke-linecap: round; }
+.machine-panel { fill: #2d2b44; stroke: #4a4670; stroke-width: 2; }
+.machine-panel-dim { fill: #24223a; }
+.machine-cab { fill: none; stroke: var(--indigo-soft); stroke-width: 4; stroke-linejoin: round; }
+.machine-glass { fill: color-mix(in srgb, var(--indigo) 30%, transparent); }
+.machine-wheel { fill: #1b1a28; stroke: var(--indigo-soft); stroke-width: 4; }
+.machine-wheel-inner { fill: none; stroke: #4a4670; stroke-width: 2; }
+.machine-spoke { stroke: #4a4670; stroke-width: 2.5; }
+.machine-arm { stroke: #4a4670; stroke-width: 6; stroke-linecap: round; fill: none; }
+.machine-hub { fill: var(--indigo-soft); }
+.machine-beacon { fill: var(--tangerine); }
+.machine-beacon-halo { animation: mh-blink 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.machine-body { transform-box: view-box; }
+
+/* waiting: drive, rev, flash */
+.machine[data-state="busy"] .machine-drum { animation: mh-spin .9s linear infinite; }
+.machine[data-state="busy"] .machine-ground { animation: mh-road .5s linear infinite; }
+.machine[data-state="busy"] .machine-level { animation: mh-rev 1.6s ease-in-out infinite; }
+.machine[data-state="busy"] .machine-beacon-halo { animation-duration: .5s; }
+.machine[data-state="busy"] .machine-tick { animation: mh-tick 1.6s ease-in-out infinite; animation-delay: calc(var(--i) * 40ms); }
+.machine[data-state="busy"] .machine-body { animation: mh-idle-shake .18s linear infinite; }
+/* wrong details: needle drops, beacon strobes tangerine, machine jolts */
+.machine[data-state="error"] .machine-level { stroke: var(--tangerine); stroke-dashoffset: calc(var(--len) * 0.95);
+  filter: drop-shadow(0 0 10px var(--tangerine)); }
+.machine[data-state="error"] .machine-tick-red { stroke: var(--tangerine); }
+.machine[data-state="error"] .machine-beacon-halo { animation: mh-strobe .18s steps(2) 6; }
+.machine[data-state="error"] .machine-body { animation: mh-jolt .45s ease-out 1; }
+/* through: full gauge */
+.machine[data-state="ok"] .machine-level { stroke-dashoffset: 0; }
+.machine[data-state="ok"] .machine-tick { stroke: var(--indigo-soft); }
+
+/* Form sheet: shake + tangerine pulse on the password/code box */
+.auth-sheet[data-state="error"] .auth-form { animation: mh-shake .45s cubic-bezier(.36,.07,.19,.97) 1; }
+.auth-sheet[data-state="error"] input[type="password"],
+.auth-sheet[data-state="error"] input[data-pulse],
+.auth-sheet[data-state="error"] input[autocomplete="one-time-code"] {
+  border-color: var(--tangerine); animation: mh-pulse .7s ease-out 2;
+}
+
+@keyframes mh-breathe { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }
+@keyframes mh-blink { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+@keyframes mh-strobe { 0% { opacity: 1; } 100% { opacity: .1; } }
+@keyframes mh-spin { to { transform: rotate(360deg); } }
+@keyframes mh-road { to { stroke-dashoffset: -24; } }
+@keyframes mh-rev { 0%, 100% { stroke-dashoffset: calc(var(--len) * 0.75); } 50% { stroke-dashoffset: calc(var(--len) * 0.12); } }
+@keyframes mh-tick { 0%, 100% { stroke: #3a3852; } 50% { stroke: var(--indigo-soft); } }
+@keyframes mh-idle-shake { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(.6px); } }
+@keyframes mh-jolt { 0% { transform: translateX(0); } 25% { transform: translateX(-6px) rotate(-1deg); } 60% { transform: translateX(4px); } 100% { transform: translateX(0); } }
+@keyframes mh-shake { 10%, 90% { transform: translateX(-2px); } 20%, 80% { transform: translateX(4px); } 30%, 50%, 70% { transform: translateX(-8px); } 40%, 60% { transform: translateX(8px); } }
+@keyframes mh-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--tangerine) 70%, transparent); }
+  100% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--tangerine) 0%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .machine *, .auth-sheet * { animation: none !important; transition: none !important; }
+}
+
+/* Operator in the cab: blinks; looks away while a password is shown */
+.machine-head { fill: #2d2b44; stroke: var(--indigo-soft); stroke-width: 2; }
+.machine-eye { fill: #f3f2f8; }
+.machine-pupil { fill: var(--onyx); }
+.machine-eyes { transform-box: fill-box; transform-origin: center; animation: mh-blink-eyes 5s infinite; }
+.machine-pupils { transform: translate(1.4px, .8px); transition: transform .35s cubic-bezier(.3,1.4,.5,1); }
+.machine[data-reveal="true"] .machine-pupils { transform: translate(-2.6px, -2.4px); }
+.machine[data-state="error"] .machine-pupils { transform: translate(0, 1.6px); }
+@keyframes mh-blink-eyes { 0%, 94%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
+/* Bigger dots for hidden passwords; letters in mono when shown */
+.auth-theme input[type="password"] { font-size: 1.5rem; letter-spacing: .18em; }
+.auth-theme input.pw-revealed { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: .02em; }

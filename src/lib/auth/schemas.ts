@@ -1,3 +1,4 @@
+import { isCommon } from "./password-strength";
 import { z } from "zod";
 
 const email = z.email("Enter a valid email").transform((s) => s.trim().toLowerCase());
@@ -13,7 +14,11 @@ export const contactSchema = z.discriminatedUnion("method", [
   z.object({ method: z.literal("mobile"), mobile: nzMobile }),
 ]);
 
-export const passwordSchema = z.string().min(8, "At least 8 characters").max(72);
+export const passwordSchema = z
+  .string()
+  .min(8, "At least 8 characters")
+  .max(72)
+  .refine((pw) => !isCommon(pw), "This password is too common");
 
 export const signUpSchema = z.object({
   code: z.string().min(6).max(64),

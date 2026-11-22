@@ -1,4 +1,6 @@
 "use client";
+import { useMachineFeedback } from "@/components/auth/machine-state";
+import { SubmitButton } from "@/components/auth/submit-button";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, FormError } from "@/components/field";
@@ -19,6 +21,7 @@ export function CodeEntry({
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  useMachineFeedback(pending, error);
   const sentTo = contact.method === "email" ? contact.email : contact.mobile;
 
   return (
@@ -49,9 +52,9 @@ export function CodeEntry({
       />
       <FormError message={error} />
       {notice ? <p className="text-base">{notice}</p> : null}
-      <Button type="submit" size="lg" className="h-14 text-lg" disabled={pending || token.length !== 6}>
-        Confirm
-      </Button>
+      <SubmitButton pending={pending} disabled={token.length !== 6}>
+        {pending ? "Checking…" : "Confirm"}
+      </SubmitButton>
       <Button
         type="button"
         variant="ghost"

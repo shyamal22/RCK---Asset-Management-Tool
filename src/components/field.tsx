@@ -30,11 +30,12 @@ export function FormError({ message }: { message?: string | null }) {
   );
 }
 
+/** Content of an account screen; the (auth) layout supplies the hero and sheet. */
 export function Screen({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-sm flex-col justify-center gap-6 p-4">
-      <h1 className="text-3xl font-bold">{title}</h1>
+    <div className="auth-form flex flex-col gap-6">
+      <h1 className="text-3xl font-bold tracking-tight text-balance">{title}</h1>
       {children}
-    </main>
+    </div>
   );
 }
