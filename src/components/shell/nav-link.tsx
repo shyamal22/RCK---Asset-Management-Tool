@@ -2,9 +2,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Building2, Home, Settings, UserRound } from "lucide-react";
+import { Building2, Home, Settings, Truck, UserRound } from "lucide-react";
 
-const ICONS = { home: Home, clients: Building2, setup: Settings, me: UserRound } as const;
+const ICONS = { home: Home, assets: Truck, clients: Building2, setup: Settings, me: UserRound } as const;
 export type IconName = keyof typeof ICONS;
 
 export function NavLink({ href, label, icon, variant }: { href: string; label: string; icon: IconName; variant: "bottom" | "side" }) {

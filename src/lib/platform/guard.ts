@@ -17,9 +17,4 @@ export async function asPlatformAdmin<T>(fn: (tx: Tx) => Promise<T>): Promise<T>
   return asUser({ id: me.id, sessionId: me.sessionId, ...meta }, fn);
 }
 
-/** Postgres error text from a definer function ("Not permitted", "Give a reason"…), safe to show. */
-export function dbMessage(e: unknown, fallback = "Something went wrong. Try again.") {
-  const err = e as { message?: string; cause?: { message?: string } };
-  const msg = err.cause?.message ?? err.message ?? "";
-  return /^[A-Z][^\n]{2,80}$/.test(msg) && !/^Failed query/.test(msg) ? msg : fallback;
-}
+export { dbMessage } from "@/lib/db-message";

@@ -3,7 +3,7 @@ import { sql } from "drizzle-orm";
 import { asPlatformAdmin, requirePlatformAdmin } from "@/lib/platform/guard";
 import { NewClientForm } from "./new-client-form";
 import { clientStatus, type ClientRow } from "./status";
-import { StatusDot } from "./status-dot";
+import { StatusDot } from "@/components/status-dot";
 
 export const dynamic = "force-dynamic";
 

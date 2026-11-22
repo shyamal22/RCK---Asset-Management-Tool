@@ -1,5 +1,6 @@
 import type { ActiveUser } from "@/lib/auth/session";
 import { setupSections } from "@/lib/nav/setup";
+import { can } from "@/lib/permissions/check";
 import { NavLink, type IconName } from "./nav-link";
 import { DoneButton } from "./done-button";
 
@@ -7,6 +8,7 @@ type Item = { href: string; label: string; icon: IconName };
 
 export function navItems(me: ActiveUser): Item[] {
   const items: Item[] = [{ href: "/", label: "Home", icon: "home" }];
+  if (can(me.actor, "assets", "view")) items.push({ href: "/assets", label: "Assets", icon: "assets" });
   if (me.isPlatformAdmin) items.push({ href: "/kre", label: "Clients", icon: "clients" });
   if (setupSections(me.actor).length) items.push({ href: "/setup", label: "Setup", icon: "setup" });
   items.push({ href: "/me", label: "Me", icon: "me" });

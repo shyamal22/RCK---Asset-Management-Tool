@@ -33,11 +33,11 @@ Work top to bottom. Tick each box when done (see CLAUDE.md "Done means").
 
 ## Milestone 1 — Asset register
 - [x] Tables: asset_types (company-editable list), assets, compliance_items, meter_readings — per docs/06-asset-setup.md
-- [ ] Asset fixed details: name, code (unique per company, uppercase), type, make, model, year — all required
-- [ ] Tracking unit segmented switch (Hours | Kilometres), type suggests default, user confirms; unit change restricted, reasoned, audited
-- [ ] Meter readings with source and entered-by; flag readings lower than the last
-- [ ] Asset list (search by name OR code, filter by type/status/site/crew) and asset detail page
-- [ ] Create/edit asset form with validation; photo upload
+- [x] Asset fixed details: name, code (unique per company, uppercase), type, make, model, year — all required
+- [x] Tracking unit segmented switch (Hours | Kilometres), type suggests default, user confirms; unit change restricted, reasoned, audited
+- [x] Meter readings with source and entered-by; flag readings lower than the last
+- [x] Asset list (search by name OR code, filter by type/status/site/crew) and asset detail page
+- [x] Create/edit asset form with validation; photo upload
 - [ ] QR code per asset (generate + printable label sheet, A4)
 - [ ] Compliance items (CoF, WoF, RUC, rego, insurance) with expiry and document upload
 - [ ] Asset documents with access category: workshop (repair manuals, wiring, procedures), operator (manual, SOP), compliance, commercial (value, lease); visibility per docs/05

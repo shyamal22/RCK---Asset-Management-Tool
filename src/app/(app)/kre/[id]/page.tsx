@@ -5,7 +5,7 @@ import { publicEnv } from "@/lib/env";
 import { asPlatformAdmin, requirePlatformAdmin } from "@/lib/platform/guard";
 import { USER_TYPE_LABELS } from "@/lib/permissions/types";
 import { clientStatus, type ClientRow } from "../status";
-import { StatusDot } from "../status-dot";
+import { StatusDot } from "@/components/status-dot";
 import { EndSupportButton, InviteDirectorForm, ResendInviteButton, StartSupportForm, SuspendControls } from "./controls";
 
 export const dynamic = "force-dynamic";

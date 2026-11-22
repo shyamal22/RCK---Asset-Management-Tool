@@ -22,7 +22,7 @@ for (const [type, sections] of Object.entries(HOMES)) {
     const u = await makeE2EUser(co.id, type as keyof typeof HOMES, { crewId: co.crewId });
     await signIn(page, u.email);
     for (const s of sections) await expect(page.getByRole("region", { name: s, exact: true })).toBeVisible();
-    const hasSetup = type === "director" || type === "office";
+    const hasSetup = type === "director" || type === "office" || type === "workshop"; // Workshop: Setup → Assets (docs/10)
     await expect(mainNav(page).getByRole("link", { name: "Setup" })).toHaveCount(hasSetup ? 1 : 0);
     await noSideScroll(page);
   });

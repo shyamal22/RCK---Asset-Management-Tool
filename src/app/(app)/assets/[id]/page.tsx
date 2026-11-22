@@ -1,0 +1,109 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Truck } from "lucide-react";
+import { requirePermission } from "@/lib/auth/guard";
+import { can } from "@/lib/permissions/check";
+import { formatDate, formatDateTime } from "@/lib/dates";
+import { STATUS_LABELS, STATUS_TONE, UNIT_LABELS, formatReading } from "@/lib/assets/labels";
+import { getAsset, photoUrls, recentReadings, runAs } from "@/lib/assets/queries";
+import { StatusDot } from "@/components/status-dot";
+import { Button } from "@/components/ui/button";
+import { ReadingForm } from "./reading-form";
+
+export const dynamic = "force-dynamic";
+
+export default async function AssetPage({ params }: { params: Promise<{ id: string }> }) {
+  const me = await requirePermission("assets", "view");
+  const { id } = await params;
+  const data = await runAs(me, async (tx) => {
+    const a = await getAsset(tx, id);
+    return a ? { a, readings: await recentReadings(tx, a.id) } : null;
+  });
+  if (!data) notFound();
+  const { a, readings } = data;
+  const photo = a.photo_path ? (await photoUrls([a.photo_path]))[a.photo_path] : undefined;
+  const canEdit = can(me.actor, "assets", "edit");
+  const details: [string, string | null][] = [
+    ["Type", a.type_name],
+    ["Make", a.make],
+    ["Model", a.model],
+    ["Year", String(a.year)],
+    ["Yard", a.site_name],
+    ["Crew", a.crew_name],
+    ["Owner", a.owner_name],
+    ["Rego", a.rego],
+    ["VIN / serial", a.vin_serial],
+  ];
+  return (
+    <div className="grid max-w-3xl gap-6">
+      <header className="flex items-start gap-4">
+        <div className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted sm:size-32">
+          {photo ? (
+            // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL
+            <img src={photo} alt={`${a.code} ${a.name}`} className="size-full object-cover" />
+          ) : (
+            <Truck className="size-10 text-muted-foreground" aria-hidden />
+          )}
+        </div>
+        <div className="grid min-w-0 gap-1">
+          <h1 className="text-2xl font-bold">
+            {a.code} <span className="font-normal">{a.name}</span>
+          </h1>
+          <StatusDot tone={STATUS_TONE[a.status]} label={STATUS_LABELS[a.status]} />
+          <p className="text-lg font-bold tabular-nums" data-testid="current-reading">
+            {formatReading(a.current_reading, a.tracking_unit)}
+          </p>
+          {a.current_reading_at ? <p className="text-sm text-muted-foreground">as at {formatDate(a.current_reading_at)}</p> : null}
+        </div>
+      </header>
+
+      {canEdit ? (
+        <Button asChild variant="outline" size="lg" className="h-12 w-fit">
+          <Link href={`/setup/assets/${a.id}`}>Edit asset</Link>
+        </Button>
+      ) : null}
+
+      <section aria-labelledby="details-h" className="grid gap-2">
+        <h2 id="details-h" className="text-xl font-bold">Details</h2>
+        <dl className="grid grid-cols-[8rem_1fr] gap-x-4 gap-y-1">
+          {details
+            .filter(([, v]) => v)
+            .map(([k, v]) => (
+              <div key={k} className="contents">
+                <dt className="text-muted-foreground">{k}</dt>
+                <dd>{v}</dd>
+              </div>
+            ))}
+        </dl>
+        {a.notes ? <p className="whitespace-pre-wrap">{a.notes}</p> : null}
+      </section>
+
+      <section aria-labelledby="readings-h" className="grid gap-3">
+        <h2 id="readings-h" className="text-xl font-bold">{UNIT_LABELS[a.tracking_unit].name}</h2>
+        {canEdit ? (
+          <div className="max-w-sm">
+            <ReadingForm assetId={a.id} unitName={UNIT_LABELS[a.tracking_unit].name} />
+          </div>
+        ) : null}
+        {readings.length === 0 ? (
+          <p className="text-muted-foreground">No readings yet.</p>
+        ) : (
+          <ul className="grid gap-1" aria-label="Recent readings">
+            {readings.map((r) => (
+              <li key={r.id} className="flex flex-wrap justify-between gap-2 border-b py-2">
+                <span className="font-bold tabular-nums">
+                  {formatReading(r.reading, r.unit)}
+                  {r.lower_than_previous ? <span className="ml-2 font-normal text-status-red">Lower than previous</span> : null}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  {formatDateTime(r.read_at)}
+                  {r.entered_by ? ` · ${r.entered_by}` : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
+  );
+}
