@@ -25,3 +25,11 @@ export const readingSourceEnum = pgEnum("reading_source", READING_SOURCES);
 
 export const COMPLIANCE_KINDS = ["cof", "wof", "ruc", "rego", "insurance", "crane_cert", "other"] as const;
 export const complianceKindEnum = pgEnum("compliance_kind", COMPLIANCE_KINDS);
+
+/** docs/07: Still usable (yellow) or Unusable (red). */
+export const BREAKDOWN_SEVERITIES = ["usable", "unusable"] as const;
+export const breakdownSeverityEnum = pgEnum("breakdown_severity", BREAKDOWN_SEVERITIES);
+
+/** open → dismissed (not a fault, reason) | fixed (what was done). Work orders link in Milestone 3. */
+export const BREAKDOWN_STATUSES = ["open", "dismissed", "fixed"] as const;
+export const breakdownStatusEnum = pgEnum("breakdown_status", BREAKDOWN_STATUSES);

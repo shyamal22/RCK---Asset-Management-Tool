@@ -11,6 +11,7 @@ const EXPECTED: Record<string, string[]> = {
   asset_types: ["INSERT", "SELECT", "UPDATE"],
   assets: ["SELECT"], // insert/update are column-level (tracking unit + readings only via functions)
   audit_log: ["SELECT"],
+  breakdown_reports: ["SELECT"], // written only via raise_breakdown / close_breakdown
   companies: ["UPDATE"],
   compliance_items: ["INSERT", "SELECT", "UPDATE"],
   crews: ["INSERT", "SELECT", "UPDATE"],
