@@ -11,7 +11,7 @@ export function PhoneHeader({ brand, companyName, done, hasSetup }: { brand: Rea
   const path = usePathname();
   if (isTabRoot(path))
     return (
-      <header className="flex items-end justify-between gap-3 px-5 select-none pt-[calc(env(safe-area-inset-top)+1.25rem)] pb-8 md:hidden">
+      <header className="flex items-center justify-between gap-3 px-5 select-none pt-[calc(env(safe-area-inset-top)+0.75rem)] pb-5 md:hidden">
         {brand}
         {done}
       </header>

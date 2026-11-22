@@ -50,7 +50,7 @@ export default async function UsersPage() {
           <ul className="divide-y rounded-lg border" aria-label="People">
             {people.map((p) => (
               <li key={p.id}>
-                <Link href={`/setup/users/${p.id}`} className="flex min-h-14 items-center justify-between gap-3 px-4 py-2">
+                <Link href={`/setup/users/${p.id}`} className="press flex min-h-14 items-center justify-between gap-3 px-4 py-2">
                   <span className={p.status === "deactivated" ? "text-muted-foreground line-through" : "font-bold"}>{p.name}</span>
                   <span className="text-right text-sm">
                     {p.user_type ? USER_TYPE_LABELS[p.user_type] : ""}

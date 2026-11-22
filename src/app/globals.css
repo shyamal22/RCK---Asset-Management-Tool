@@ -61,7 +61,7 @@
   --brand-gradient: linear-gradient(150deg, var(--onyx) 0%, var(--indigo-deep) 55%, var(--indigo) 115%);
   /* Older names kept as aliases so nothing breaks. */
   --ink: var(--onyx);
-  --paper: #f6f5fb;
+  --paper: #f2f1f7; /* page tint behind white cards (iOS grouped look) */
   --steel: var(--indigo);
   /* Status colours: ONLY for asset/flag status. */
   --status-green: #1e8e3e;
@@ -119,8 +119,10 @@
     -webkit-tap-highlight-color: transparent;
   }
   html, body { overscroll-behavior-y: none; }
-  a, button, [role="button"], [role="switch"], [role="radio"], [role="tab"], label, summary {
-    touch-action: manipulation;
+  /* pan + pinch, not "manipulation": in Safari "manipulation" stops pointercancel firing when a scroll
+     starts, which leaves controls stuck pressed (WebKit bug 240917, noted in React Aria's usePress). */
+  a, button, [role="button"], [role="switch"], [role="radio"], [role="tab"], [role="checkbox"], label, summary, select, [data-pressable] {
+    touch-action: pan-x pan-y pinch-zoom;
   }
   button, [role="button"], [role="switch"], [role="radio"], [role="tab"], nav a {
     -webkit-user-select: none;
@@ -219,11 +221,14 @@
 
 /* ── App-wide look (same family as the sign-in screens) ── */
 .app-theme { background: var(--brand-gradient); min-height: 100dvh; }
-.surface {
-  border-radius: 1.25rem;
-  background: var(--card);
-  border: 1px solid #efedf6;
-  box-shadow: 0 14px 30px -22px color-mix(in srgb, var(--indigo) 45%, transparent);
+@layer components {
+  /* White card on the tinted page (iOS grouped style): crisp edge + soft lift so it reads as tappable. */
+  .surface {
+    border-radius: 1.25rem;
+    background: var(--card);
+    border: 1px solid #e6e3f0;
+    box-shadow: 0 1px 2px rgb(11 11 16 / .06), 0 10px 24px -18px color-mix(in srgb, var(--indigo) 40%, transparent);
+  }
 }
 select:not([data-slot]), textarea:not([data-slot]) { border-radius: 0.875rem; }
 h1 { letter-spacing: -0.01em; }
@@ -283,9 +288,6 @@ h1 { letter-spacing: -0.01em; }
 @media (prefers-reduced-motion: reduce) { .rail-item { transition: none; } }
 
 /* ── Touch feedback ── */
-/* Cards and rows that are links: sink slightly under the finger. */
-.press { transition: transform .12s ease-out, box-shadow .2s; }
-.press:active { transform: scale(.97); }
 /* Loading bar while the next screen comes in. */
 .nav-progress {
   position: fixed; z-index: 70; left: 0; top: env(safe-area-inset-top); height: 3px; width: 100%;
@@ -308,7 +310,6 @@ h1 { letter-spacing: -0.01em; }
 [role="alert"]:not([data-quiet]) { animation: alert-nudge .4s cubic-bezier(.36,.07,.19,.97); }
 @keyframes alert-nudge { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
 @media (prefers-reduced-motion: reduce) {
-  .press:active { transform: none; }
   .nav-progress, .status-note, .open-in-app-hint, [role="alert"] { animation: none; }
   .nav-progress { transform: scaleX(.6); }
 }
@@ -316,6 +317,7 @@ h1 { letter-spacing: -0.01em; }
 .bay-rail, .showroom { overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
 
 /* Home headline tiles: a light wash of their status colour, strongest top-left. */
+@layer components {
 .status-tile {
   --tone: var(--status-green);
   background: linear-gradient(145deg, color-mix(in srgb, var(--tone) 24%, #fff) 0%, color-mix(in srgb, var(--tone) 7%, #fff) 100%);
@@ -326,6 +328,7 @@ h1 { letter-spacing: -0.01em; }
 .status-tile[data-tone="yellow"] { --tone: var(--status-yellow); }
 .status-tile[data-tone="red"] { --tone: var(--status-red); }
 .status-tile-icon { background: var(--tone); }
+}
 
 /* Collapsible side menu (tablet / desktop): the menu column slides to zero and the panel takes the room. */
 @media (min-width: 768px) {
@@ -349,62 +352,118 @@ h1 { letter-spacing: -0.01em; }
 /* Phone turned sideways: keep everything clear of the notch / Dynamic Island (0 in portrait and on desktops). */
 .side-frame, .auth-theme { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
 
-/* ── Tactile buttons (Sam, 22/11/2026): every button looks raised and visibly sinks when pressed,
-   so a tap is never in doubt. In the components layer so a one-off className can still override. ── */
+/* ── Press (Sam, 22/11/2026: "pressing doesn't feel like pressing") ──────────────────────────────
+   The press controller (src/lib/feedback/press.ts) puts data-pressed on a control the instant a finger
+   lands, so none of this waits for Safari's :active. Rules learnt from Konsta UI, Framework7, Ionic,
+   React Aria and Material Web:
+   - in fast (60 ms), out slow (240 ms, ease-out): the press snaps on, the release eases off;
+   - keys sink ~2 px with a darker fill and an inset shadow; rows and cards take a tint;
+   - small controls scale more than big ones (0.9 vs 0.97), full-width rows don't shrink;
+   - Reduce Motion keeps the tints and darkening, drops the movement.
+   In the components layer, so a one-off className can still override. */
 @layer components {
+  :root { --press-out: 240ms; --press-in: 60ms; --press-ease: cubic-bezier(.23, 1, .32, 1); --press-tint: rgb(11 11 16 / .10); }
+
+  /* Everything tappable: release eases off; while pressed it snaps on. Default look = dim (text links, icons). */
+  :where(a[href], button, [role="button"], [role="tab"], [role="radio"], [role="switch"], [role="checkbox"], summary, label[for], select, [data-pressable]) {
+    transition-property: transform, scale, opacity, background-color, box-shadow, filter, color, border-color;
+    transition-duration: var(--press-out);
+    transition-timing-function: var(--press-ease);
+  }
+  :where([data-pressed]) { transition-duration: var(--press-in); }
+  :where(a[href], summary, label[for], select, [role="button"])[data-pressed] { opacity: .55; }
+
+  /* Keys (shadcn Button) */
   [data-slot="button"] {
     --lift: 0 1px 1px rgb(11 11 16 / .10), 0 8px 18px -10px rgb(11 11 16 / .45);
     position: relative;
-    transition: transform .12s cubic-bezier(.2,.8,.2,1), box-shadow .14s ease, background-color .15s, filter .15s;
     -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none; user-select: none;
   }
-  [data-slot="button"]:active:not(:disabled) { transform: translateY(1.5px) scale(.975); }
+  [data-slot="button"][data-pressed] { opacity: 1; transform: translateY(2px) scale(.97); }
+  [data-slot="button"]:is([data-size="icon"], [data-size="icon-sm"], [data-size="icon-lg"], [data-size="icon-xs"])[data-pressed] { transform: translateY(1px) scale(.9); }
 
-  /* Coloured keys: soft top sheen, darker bottom lip, coloured glow underneath. */
+  /* Coloured keys: top sheen, darker bottom lip, coloured glow; pressed = darker, inset, glow gone. */
   [data-slot="button"]:is([data-variant="default"], [data-variant="accent"], [data-variant="destructive"]) {
     --key: var(--indigo);
-    background-image: linear-gradient(180deg, rgb(255 255 255 / .18), rgb(255 255 255 / 0) 60%);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / .30), inset 0 -2px 0 rgb(0 0 0 / .20),
-      0 1px 2px rgb(11 11 16 / .16), 0 10px 22px -10px var(--key);
+    background-image: linear-gradient(180deg, rgb(255 255 255 / .20), rgb(255 255 255 / 0) 60%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .32), inset 0 -3px 0 rgb(0 0 0 / .22),
+      0 1px 2px rgb(11 11 16 / .18), 0 12px 24px -10px var(--key);
   }
   [data-slot="button"][data-variant="accent"] { --key: var(--tangerine); }
   [data-slot="button"][data-variant="destructive"] { --key: var(--destructive); }
-  [data-slot="button"]:is([data-variant="default"], [data-variant="accent"], [data-variant="destructive"]):active:not(:disabled) {
-    background-image: linear-gradient(180deg, rgb(0 0 0 / .10), rgb(0 0 0 / 0) 70%);
-    box-shadow: inset 0 2px 5px rgb(0 0 0 / .30), 0 2px 6px -4px var(--key);
-    filter: brightness(.96);
+  [data-slot="button"]:is([data-variant="default"], [data-variant="accent"], [data-variant="destructive"])[data-pressed] {
+    background-image: linear-gradient(180deg, rgb(0 0 0 / .16), rgb(0 0 0 / .04) 70%);
+    box-shadow: inset 0 3px 6px rgb(0 0 0 / .34), 0 1px 2px -1px var(--key);
+    filter: brightness(.9) saturate(1.1);
   }
 
-  /* White keys: raised card that presses into the page. */
+  /* White keys: raised, press into the page. */
   [data-slot="button"]:is([data-variant="outline"], [data-variant="secondary"]) {
-    box-shadow: inset 0 -2px 0 rgb(11 11 16 / .06), var(--lift);
+    box-shadow: inset 0 -2px 0 rgb(11 11 16 / .07), var(--lift);
   }
-  [data-slot="button"]:is([data-variant="outline"], [data-variant="secondary"]):active:not(:disabled) {
-    background-color: var(--muted);
-    box-shadow: inset 0 2px 5px rgb(11 11 16 / .14);
+  [data-slot="button"]:is([data-variant="outline"], [data-variant="secondary"])[data-pressed] {
+    background-color: color-mix(in srgb, var(--indigo) 8%, var(--muted));
+    box-shadow: inset 0 2px 6px rgb(11 11 16 / .18);
   }
-  [data-slot="button"][data-variant="ghost"]:active:not(:disabled) { background-color: var(--accent); }
+  [data-slot="button"]:is([data-variant="ghost"], [data-variant="link"])[data-pressed] {
+    background-color: color-mix(in srgb, var(--indigo) 10%, transparent);
+  }
 
-  /* Pick-one switches (Hours | Km, Usable | Unusable …): recessed track, raised chosen option. */
-  [data-slot="toggle-group"] { box-shadow: inset 0 2px 5px rgb(11 11 16 / .08); }
-  [data-slot="toggle-group-item"], [data-slot="toggle"] { transition: transform .12s cubic-bezier(.2,.8,.2,1), background-color .15s, box-shadow .15s, color .15s; }
-  [data-slot="toggle-group-item"]:active, [data-slot="toggle"]:active { transform: scale(.95); }
+  /* Rows and cards (.press): a tint washes over instantly (Konsta/Framework7 rows), cards dip slightly. */
+  .press { position: relative; -webkit-user-select: none; user-select: none; }
+  .press::after {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: var(--press-tint); opacity: 0; transition: opacity var(--press-out) var(--press-ease);
+  }
+  .press[data-pressed] { opacity: 1; transform: scale(.98); }
+  .press[data-pressed]::after { opacity: 1; transition-duration: var(--press-in); }
+  .surface.press[data-pressed] { box-shadow: 0 1px 2px rgb(11 11 16 / .08); }
+
+  /* Pick-one switches: recessed track, raised chosen option; the pressed option dips and darkens. */
+  [data-slot="toggle-group"] { box-shadow: inset 0 2px 5px rgb(11 11 16 / .09); }
   [data-slot="toggle-group-item"][data-state="on"] {
     box-shadow: inset 0 1px 0 rgb(255 255 255 / .28), inset 0 -2px 0 rgb(0 0 0 / .18), 0 6px 16px -8px var(--indigo);
   }
+  [data-slot="toggle-group-item"][data-pressed], [data-slot="toggle"][data-pressed] { scale: .94; background-color: var(--press-tint); }
+  [data-slot="toggle-group-item"][data-state="on"][data-pressed], [data-slot="toggle"][data-state="on"][data-pressed] { filter: brightness(.88); }
   [data-slot="toggle"][data-state="on"] { box-shadow: inset 0 2px 5px rgb(0 0 0 / .35); }
 
-  /* On/off switch: the knob squashes a little under the finger. */
-  [data-slot="switch"]:active [data-slot="switch-thumb"] { scale: .88; }
+  /* Big pick-one tiles (e.g. Still usable / Unusable): dip and darken. */
+  [role="radio"]:not([data-slot])[data-pressed] { opacity: 1; scale: .97; filter: brightness(.94); }
 
-  /* Cards and rows that are links sink too (and lose some lift). */
-  .press:active { box-shadow: 0 2px 8px -6px rgb(11 11 16 / .5); }
+  /* On/off switch: the knob squashes and the track darkens (Konsta/iOS). */
+  [data-slot="switch"][data-pressed] { filter: brightness(.92); }
+  [data-slot="switch"][data-pressed] [data-slot="switch-thumb"] { scale: .82; transition-duration: var(--press-in); }
+  [data-slot="switch-thumb"] { transition: translate 200ms var(--press-ease), scale var(--press-out) var(--press-ease); }
 }
+
+/* Compact type row (after a type is picked): chosen one ringed in tangerine. */
+.rail-chip[aria-current="true"] .rail-photo { border-color: var(--indigo); box-shadow: 0 0 0 3px var(--tangerine), 0 10px 18px -10px var(--indigo); }
+.rail-chip[aria-current="true"] { color: var(--indigo); }
+.rail-chip .rail-photo { transition: scale var(--press-out) var(--press-ease), filter var(--press-out) var(--press-ease), box-shadow .22s; }
+.rail-chip[data-pressed] { opacity: 1; }
+.rail-chip[data-pressed] .rail-photo { scale: .86; filter: brightness(.85); transition-duration: var(--press-in); }
+/* Machine-type rail: the photo dips and darkens under the finger. */
+.rail-item .rail-photo { transition: scale var(--press-out) var(--press-ease), filter var(--press-out) var(--press-ease), box-shadow .22s; }
+.rail-item[data-pressed] { opacity: 1; }
+.rail-item[data-pressed] .rail-photo { scale: .88; filter: brightness(.85); transition-duration: var(--press-in); }
+/* Wheel cards are moved by JS every frame: only filter may transition, never transform/opacity. */
+.orbit-card { transition: filter var(--press-out) var(--press-ease), box-shadow .3s; }
+.orbit-card[data-pressed] { opacity: inherit; filter: brightness(.82); transition-duration: var(--press-in); }
 
 /* Screens slide in softly instead of snapping (app pages; filters on the same screen don't replay it). */
 .screen-in { animation: screen-in .22s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes screen-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
   .screen-in { animation: none; }
-  [data-slot="button"]:active:not(:disabled), [data-slot="toggle-group-item"]:active, [data-slot="toggle"]:active { transform: none; }
+  [data-pressed] { transform: none !important; scale: none !important; }
 }
+
+/* Loading placeholders: a soft shimmer on white blocks over the page tint. */
+.skeleton {
+  background: linear-gradient(100deg, #fff 30%, #f7f6fb 50%, #fff 70%) 0 0 / 300% 100%;
+  border: 1px solid #ebe9f2; animation: skeleton 1.3s ease-in-out infinite;
+}
+@keyframes skeleton { from { background-position: 100% 0; } to { background-position: 0 0; } }
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }

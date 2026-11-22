@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Form from "next/form";
 import { SlidersHorizontal } from "lucide-react";
 import { requirePermission } from "@/lib/auth/guard";
 import { can } from "@/lib/permissions/check";
@@ -63,7 +64,7 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
   const listView = f.view === "list";
 
   return (
-    <div className="grid max-w-5xl grid-cols-[minmax(0,1fr)] gap-5">
+    <div className="grid max-w-5xl grid-cols-[minmax(0,1fr)] gap-4">
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-3xl font-bold">Assets</h1>
         {can(me.actor, "assets", "create") ? (
@@ -73,8 +74,9 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
         ) : null}
       </div>
 
-      {/* Curved rail of machine types */}
+      {/* Machine types: the big curved rail on arrival; once one is picked, a slim row so the wheel is on screen. */}
       <TypeRail
+        compact={chosen}
         items={[
           {
             key: "all",
@@ -101,7 +103,44 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
 
       {chosen ? (
         <>
-          <form key={JSON.stringify(f)} className="grid gap-2" role="search">
+
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm text-muted-foreground" role="status">
+              <span>
+                {list.length} {list.length === 1 ? "asset" : "assets"}
+              </span>
+              {filtered ? (
+                <>
+                  {" · "}
+                  <Link
+                    href={href({ type: f.type || "all", view: f.view }, {})}
+                    className="-my-3 inline-flex min-h-11 items-center px-1 font-semibold text-[var(--indigo)]"
+                  >
+                    Clear
+                  </Link>
+                </>
+              ) : null}
+            </p>
+            <LinkTabs
+              label="View"
+              items={[
+                { href: href(f, { view: "" }), label: "Wheel", active: !listView },
+                { href: href(f, { view: "list" }), label: "Grid", active: listView },
+              ]}
+            />
+          </div>
+          {list.length === 0 ? (
+            <p className="py-10 text-center text-muted-foreground">
+              {filtered ? "Nothing matches." : "No machines of this type."}
+            </p>
+          ) : listView ? (
+            <ShuffleGrid key={`${f.type}-${f.status}-${f.q}-${f.site}-${f.crew}`} items={items} />
+          ) : (
+            <Orbit key={`${f.type}-${f.status}-${f.q}-${f.site}-${f.crew}`} items={items} />
+          )}
+
+          {/* next/form: a client-side navigation (keeps the app shell, shows progress) instead of a full reload. */}
+          <Form key={JSON.stringify(f)} action="/assets" className="grid gap-2" role="search">
             {f.type ? <input type="hidden" name="type" value={f.type} /> : null}
             {f.view ? <input type="hidden" name="view" value={f.view} /> : null}
             <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
@@ -118,7 +157,7 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
               </Button>
             </div>
             <details className="group" open={moreFilters || undefined}>
-              <summary className="flex w-fit cursor-pointer list-none items-center gap-2 rounded-full px-1 py-1 text-base font-semibold text-[var(--indigo)]">
+              <summary className="flex min-h-11 w-fit cursor-pointer list-none items-center gap-2 rounded-full px-1 text-base font-semibold text-[var(--indigo)]">
                 <SlidersHorizontal className="size-4" aria-hidden /> Filter
               </summary>
               <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -166,42 +205,7 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
                 </Button>
               </div>
             </details>
-          </form>
-
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground" role="status">
-              <span>
-                {list.length} {list.length === 1 ? "asset" : "assets"}
-              </span>
-              {filtered ? (
-                <>
-                  {" · "}
-                  <Link
-                    href={href({ type: f.type || "all", view: f.view }, {})}
-                    className="font-semibold text-[var(--indigo)]"
-                  >
-                    Clear
-                  </Link>
-                </>
-              ) : null}
-            </p>
-            <LinkTabs
-              label="View"
-              items={[
-                { href: href(f, { view: "" }), label: "Wheel", active: !listView },
-                { href: href(f, { view: "list" }), label: "Grid", active: listView },
-              ]}
-            />
-          </div>
-          {list.length === 0 ? (
-            <p className="py-10 text-center text-muted-foreground">
-              {filtered ? "Nothing matches." : "No machines of this type."}
-            </p>
-          ) : listView ? (
-            <ShuffleGrid key={`${f.type}-${f.status}-${f.q}-${f.site}-${f.crew}`} items={items} />
-          ) : (
-            <Orbit key={`${f.type}-${f.status}-${f.q}-${f.site}-${f.crew}`} items={items} />
-          )}
+          </Form>
         </>
       ) : null}
     </div>

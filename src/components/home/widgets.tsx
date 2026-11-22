@@ -29,7 +29,7 @@ export function Panel({ title, href, children, className }: { title: string; hre
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-lg font-bold">{title}</h2>
         {href ? (
-          <Link href={href} className="inline-flex items-center gap-0.5 text-sm font-semibold text-[var(--indigo)]">
+          <Link href={href} className="-my-2 -mr-2 inline-flex min-h-11 items-center gap-0.5 rounded-full px-2 text-sm font-semibold text-[var(--indigo)]">
             See all <ChevronRight className="size-4" aria-hidden />
           </Link>
         ) : null}

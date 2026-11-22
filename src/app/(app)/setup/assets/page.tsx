@@ -20,7 +20,7 @@ export default async function SetupAssetsPage({ searchParams }: { searchParams: 
       <ul className="divide-y surface">
         {list.map((a) => (
           <li key={a.id}>
-            <Link href={`/setup/assets/${a.id}`} className="flex min-h-14 items-center justify-between gap-3 px-4">
+            <Link href={`/setup/assets/${a.id}`} className="press flex min-h-14 items-center justify-between gap-3 px-4">
               <span className="truncate">
                 <span className="font-bold">{a.code}</span> {a.name}
               </span>

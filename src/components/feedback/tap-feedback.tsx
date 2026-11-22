@@ -1,26 +1,22 @@
 "use client";
 import { useEffect } from "react";
-import { haptic } from "@/lib/feedback/haptics";
-
-const TAPPABLE = 'button, a[href], [role="button"], [role="switch"], [role="radio"], [role="tab"], [role="checkbox"], summary';
+import { haptic, installHapticTriggers, isIos } from "@/lib/feedback/haptics";
+import { installPressController } from "@/lib/feedback/press";
 
 /**
  * One place for touch feedback across the app:
- *  - a light tick on every button / link / switch tap (not on disabled ones);
- *  - a stronger buzz when an error appears (role="alert"), a double tick when a "Saved" note appears (role="status").
+ *  - the press controller: every control shows its pressed look the moment the finger lands
+ *    (data-pressed, styled in globals.css "Press");
+ *  - a buzz on press-down (Android), and a real system tick on iPhone switches/toggles/options;
+ *  - a stronger buzz when an error appears (role="alert"), a double one when a "Saved" note appears.
  */
 export function TapFeedback() {
   useEffect(() => {
-    const onClick = (e: MouseEvent) => {
-      const el = (e.target as Element | null)?.closest?.(TAPPABLE);
-      if (!el || el.closest("[data-no-haptic]")) return;
-      if (el.matches(":disabled, [aria-disabled='true']")) return;
-      haptic("tap");
-    };
-    document.addEventListener("click", onClick, { capture: true });
-    // iPhone Safari only shows :active (pressed) styles when the page listens for touches.
-    const noop = () => {};
-    document.addEventListener("touchstart", noop, { passive: true });
+    const ios = isIos();
+    const stopPress = installPressController((el) => {
+      if (!ios && !el.closest("[data-no-haptic]")) haptic("tap");
+    });
+    const stopTriggers = installHapticTriggers();
 
     const seen = new WeakSet<Element>();
     const check = (el: Element) => {
@@ -40,8 +36,8 @@ export function TapFeedback() {
     });
     mo.observe(document.body, { childList: true, subtree: true });
     return () => {
-      document.removeEventListener("click", onClick, { capture: true });
-      document.removeEventListener("touchstart", noop);
+      stopPress();
+      stopTriggers();
       mo.disconnect();
     };
   }, []);

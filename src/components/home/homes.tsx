@@ -31,7 +31,7 @@ function Pending({ n }: { n: number }) {
   return (
     <Panel title="Waiting for approval" href="/setup/users">
       {n ? (
-        <Link href="/setup/users" className="flex items-center gap-3 rounded-xl p-1.5 hover:bg-accent">
+        <Link href="/setup/users" className="press flex min-h-14 items-center gap-3 rounded-xl p-1.5">
           <span className="flex size-10 items-center justify-center rounded-full bg-accent text-[var(--indigo)]">
             <UserPlus className="size-5" aria-hidden />
           </span>

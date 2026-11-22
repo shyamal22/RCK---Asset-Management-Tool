@@ -120,7 +120,7 @@ export function Orbit({ items }: { items: ShowItem[] }) {
           aria-roledescription="carousel"
           aria-label="Machines, drag to spin or use the arrow keys"
           data-backlight={backlightFor(a.status, a.flag)}
-          className="orbit-stage relative mx-auto h-[23rem] w-full touch-pan-y outline-none select-none md:h-[27rem]"
+          className="orbit-stage relative mx-auto h-[19.5rem] w-full touch-pan-y outline-none select-none md:h-[27rem]"
           onPointerDown={(e) => {
             if (e.pointerType === "mouse" && e.button !== 0) return;
             cancelAnimationFrame(raf.current);
@@ -217,11 +217,11 @@ export function Orbit({ items }: { items: ShowItem[] }) {
         </div>
         {n > 1 ? (
           <>
-            <Button type="button" variant="outline" size="icon-lg" className="absolute top-1/2 left-0 z-[1001] -translate-y-1/2 shadow" onClick={() => nudge(-1)}>
+            <Button type="button" variant="outline" size="icon-lg" className="absolute top-1/2 left-0 z-[1001] -translate-y-1/2" onClick={() => nudge(-1)}>
               <ChevronLeft aria-hidden />
               <span className="sr-only">Previous machine</span>
             </Button>
-            <Button type="button" variant="outline" size="icon-lg" className="absolute top-1/2 right-0 z-[1001] -translate-y-1/2 shadow" onClick={() => nudge(1)}>
+            <Button type="button" variant="outline" size="icon-lg" className="absolute top-1/2 right-0 z-[1001] -translate-y-1/2" onClick={() => nudge(1)}>
               <ChevronRight aria-hidden />
               <span className="sr-only">Next machine</span>
             </Button>

@@ -101,3 +101,27 @@ test("on an iPhone browser (not the home-screen app) a tip says how to get the f
   await ctx.close();
   await app.close();
 });
+
+test("pressing shows straight away, clears on release, and sliding off cancels it", async ({ page }) => {
+  await page.goto("/sign-in");
+  const btn = page.getByRole("button", { name: "Sign in" });
+  await expect(btn).toBeVisible();
+  await page.waitForLoadState("networkidle"); // press controller is installed after hydration
+  const b = (await btn.boundingBox())!;
+  const cx = b.x + b.width / 2;
+  const cy = b.y + b.height / 2;
+  // Down: pressed at once (no waiting for the browser's :active).
+  await page.mouse.move(cx, cy);
+  await page.mouse.down();
+  await expect(btn).toHaveAttribute("data-pressed", "");
+  // Slide well off: cancelled, nothing submitted.
+  await page.mouse.move(cx, cy + 80, { steps: 4 });
+  await expect(btn).not.toHaveAttribute("data-pressed");
+  await page.mouse.up();
+  await expect(page.locator('p[role="alert"]')).toHaveCount(0);
+  // A quick tap still shows, then clears by itself.
+  await page.mouse.move(cx, cy);
+  await page.mouse.down();
+  await page.mouse.up();
+  await expect(btn).not.toHaveAttribute("data-pressed", { timeout: 2000 });
+});

@@ -16,13 +16,13 @@ describe("haptic", () => {
     haptic("tap");
     haptic("success");
     haptic("error");
-    expect(v.mock.calls.map((c) => c[0])).toEqual([8, [12, 60, 18], [30, 50, 30, 50, 30]]);
+    expect(v.mock.calls.map((c) => c[0])).toEqual([12, [14, 60, 20], [30, 50, 30, 50, 30]]);
   });
 
-  it("stays still when the user asked for reduced motion", () => {
+  it("still buzzes with Reduce Motion on (a buzz isn't motion)", () => {
     const v = fakeWindow({ vibrate: true, reduced: true });
     haptic("error");
-    expect(v).not.toHaveBeenCalled();
+    expect(v).toHaveBeenCalled();
   });
 
   it("does nothing on a desktop browser with no vibration", () => {

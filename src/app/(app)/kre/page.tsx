@@ -20,7 +20,7 @@ export default async function ClientsPage() {
             const s = clientStatus(c);
             return (
               <li key={c.id}>
-                <Link href={`/kre/${c.id}`} className="flex min-h-14 items-center justify-between gap-4 surface px-4 py-3 hover:bg-accent">
+                <Link href={`/kre/${c.id}`} className="press surface flex min-h-14 items-center justify-between gap-4 px-4 py-3">
                   <span className="font-bold">{c.name}</span>
                   <span className="flex items-center gap-4 text-sm text-muted-foreground">
                     <span>{Number(c.active_users)} users</span>

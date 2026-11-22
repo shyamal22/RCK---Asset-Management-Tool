@@ -13,7 +13,7 @@ export default async function SetupPage() {
       <ul className="divide-y surface">
         {setupSections(me.actor).map((s) => (
           <li key={s.href}>
-            <Link href={s.href} className="flex min-h-14 items-center justify-between px-4 text-lg">
+            <Link href={s.href} className="press flex min-h-14 items-center justify-between px-4 text-lg">
               {s.label}
               <ChevronRight className="size-5" aria-hidden />
             </Link>

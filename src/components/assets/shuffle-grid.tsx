@@ -32,7 +32,7 @@ export function ShuffleGrid({ items }: { items: ShowItem[] }) {
               setSort(s.key);
               setOrder(reorder(items, s.key));
             }}
-            className="h-10 rounded-full px-4 text-sm font-semibold data-[state=on]:border-[var(--onyx)] data-[state=on]:bg-[var(--onyx)] data-[state=on]:text-white"
+            className="h-11 rounded-full px-4 text-sm font-semibold data-[state=on]:border-[var(--onyx)] data-[state=on]:bg-[var(--onyx)] data-[state=on]:text-white"
           >
             {s.key === "shuffle" ? <Shuffle aria-hidden /> : null}
             {s.label}

@@ -89,7 +89,7 @@ export default async function AssetPage({ params }: { params: Promise<{ id: stri
           <ul className="grid gap-2">
             {reports.map((r) => (
               <li key={r.id}>
-                <Link href={`/reports/${r.id}`} className="surface flex items-center justify-between gap-3 p-3 hover:bg-accent">
+                <Link href={`/reports/${r.id}`} className="press surface flex min-h-14 items-center justify-between gap-3 p-3">
                   <span className="min-w-0">
                     <span className="block truncate font-bold">{r.title}</span>
                     <span className="text-sm text-muted-foreground">

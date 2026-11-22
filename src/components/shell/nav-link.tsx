@@ -20,7 +20,7 @@ export function NavLink({ href, label, icon, variant }: { href: string; label: s
       className={cn(
         variant === "bottom"
           ? "group relative flex min-h-16 flex-1 flex-col items-center justify-center gap-1 text-sm transition-colors"
-          : "relative flex h-12 items-center gap-3 rounded-full px-4 text-base transition-colors active:scale-[0.98]",
+          : "press relative flex h-12 items-center gap-3 rounded-full px-4 text-base",
         variant === "bottom" && (active ? "font-bold text-[var(--indigo)]" : "text-muted-foreground"),
         variant === "side" && (active ? "bg-white font-bold text-[var(--indigo)]" : "text-white/80 hover:bg-white/10 hover:text-white"),
       )}
@@ -48,7 +48,7 @@ function BottomIcon({ Icon, active }: { Icon: (typeof ICONS)[IconName]; active: 
   return (
     <span
       className={cn(
-        "relative flex h-8 w-16 items-center justify-center rounded-full transition-[background-color,box-shadow,scale] duration-200 group-active:scale-90",
+        "relative flex h-8 w-16 items-center justify-center rounded-full transition-[background-color,box-shadow,scale] duration-[240ms] ease-[cubic-bezier(.23,1,.32,1)] group-data-[pressed]:scale-[0.86] group-data-[pressed]:bg-[color-mix(in_srgb,var(--indigo)_20%,transparent)] group-data-[pressed]:duration-[60ms]",
         lit && "bg-[color-mix(in_srgb,var(--indigo)_13%,transparent)] text-[var(--indigo)] shadow-[inset_0_1px_3px_rgb(11_11_16/.10)]",
       )}
     >

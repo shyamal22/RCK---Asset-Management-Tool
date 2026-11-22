@@ -20,12 +20,13 @@ function at(t: number, w: number) {
  * Curved SVG rail (no canvas): machine types sit along a bowed line. Hovering one scales and
  * spotlights it while the rest dim (CSS in globals.css); the selected one stays lit.
  */
-export function TypeRail({ items }: { items: RailItem[] }) {
+export function TypeRail({ items, compact = false }: { items: RailItem[]; compact?: boolean }) {
+  if (compact) return <CompactRail items={items} />;
   const w = Math.max(360, items.length * GAP + 96);
   const pts = items.map((_, i) => at(items.length === 1 ? 0.5 : (i + 0.5) / items.length, w));
   const d = `M 48 46 Q ${w / 2} 250 ${w - 48} 46`;
   return (
-    <BayRail label="Asset types" className="type-rail bay-rail -mx-5 overflow-x-auto px-5 md:-mx-10 md:px-10">
+    <BayRail label="Asset types" className="type-rail bay-rail -mx-4 overflow-x-auto px-4 md:-mx-10 md:px-10">
       <div className="relative mx-auto" style={{ width: w, height: H }}>
         <svg viewBox={`0 0 ${w} ${H}`} width={w} height={H} className="absolute inset-0" aria-hidden>
           <defs>
@@ -63,6 +64,39 @@ export function TypeRail({ items }: { items: RailItem[] }) {
           </Link>
         ))}
       </div>
+    </BayRail>
+  );
+}
+
+/**
+ * Once a type is picked the curved rail shrinks to one straight, swipeable row (small round photos),
+ * so the wheel below lands on screen instead of under the fold.
+ */
+function CompactRail({ items }: { items: RailItem[] }) {
+  return (
+    <BayRail label="Asset types" className="bay-rail -mx-4 -mt-1 flex gap-1 overflow-x-auto px-4 pt-1 pb-1 md:-mx-10 md:px-10">
+      {items.map((it) => (
+        <Link
+          key={it.key}
+          href={it.href}
+          scroll={false}
+          aria-current={it.active ? "true" : undefined}
+          aria-label={`${it.label}, ${it.n}`}
+          className="rail-chip flex w-[4.75rem] shrink-0 flex-col items-center gap-1 rounded-2xl py-1 text-center"
+        >
+          <span className="rail-photo relative block size-12 overflow-hidden rounded-full border-2 border-white bg-muted shadow-[0_6px_14px_-8px_var(--indigo)]">
+            {it.photo ? (
+              // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL
+              <img src={it.photo} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
+            ) : (
+              <span className="flex size-full items-center justify-center" style={{ background: "var(--brand-gradient)" }}>
+                <Truck className="size-5 text-white/85" aria-hidden />
+              </span>
+            )}
+          </span>
+          <span className="w-full truncate text-sm leading-tight font-bold">{it.label}</span>
+        </Link>
+      ))}
     </BayRail>
   );
 }

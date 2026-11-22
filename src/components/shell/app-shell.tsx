@@ -20,6 +20,16 @@ export function navItems(me: ActiveUser): Item[] {
   return items;
 }
 
+/** Phone tab header (Konsta/iOS large-title feel): just the company, one line, so the screen starts high. */
+function PhoneBrand({ me }: { me: ActiveUser }) {
+  return (
+    <p className="flex min-w-0 items-center gap-2.5 text-2xl leading-tight font-bold text-white">
+      <span className="size-2.5 shrink-0 rounded-full bg-[var(--tangerine)] shadow-[0_0_10px_var(--tangerine)]" aria-hidden />
+      <span className="truncate">{me.companyName || "KRE Asset Management"}</span>
+    </p>
+  );
+}
+
 function Brand({ me }: { me: ActiveUser }) {
   return (
     <div className="grid gap-0.5">
@@ -68,9 +78,9 @@ export function AppShell({
     >
       <StatusBarBackdrop />
       <div className="flex min-h-dvh min-w-0 flex-col md:p-3 md:pl-0 md:group-data-[collapsed=true]/side:pl-3">
-        <PhoneHeader brand={<Brand me={me} />} companyName={me.companyName || "KRE Asset Management"} done={shared ? <DoneButton /> : null} hasSetup={hasSetup} />
+        <PhoneHeader brand={<PhoneBrand me={me} />} companyName={me.companyName || "KRE Asset Management"} done={shared ? <DoneButton /> : null} hasSetup={hasSetup} />
         <ScreenTracker />
-        <main className="min-w-0 flex-1 overflow-x-clip rounded-t-[2.5rem] bg-background px-5 pt-8 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:rounded-[2rem] md:px-10 md:pt-10 md:pb-10 md:group-data-[collapsed=true]/side:pt-16">
+        <main className="min-w-0 flex-1 overflow-x-clip rounded-t-[2rem] bg-[var(--paper)] px-4 pt-6 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:rounded-[2rem] md:px-10 md:pt-10 md:pb-10 md:group-data-[collapsed=true]/side:pt-16">
           <div className="-mt-3 mb-3 hidden md:block md:empty:hidden">
             <BackButton hasSetup={hasSetup} className="-ml-2 text-[var(--indigo)]" />
           </div>

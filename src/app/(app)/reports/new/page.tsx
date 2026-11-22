@@ -1,3 +1,4 @@
+import Form from "next/form";
 import Link from "next/link";
 import { requirePermission } from "@/lib/auth/guard";
 import { getAsset, listAssets, photoUrls, runAs } from "@/lib/assets/queries";
@@ -45,10 +46,10 @@ export default async function NewReportPage({ searchParams }: { searchParams: Pr
     <div className="grid max-w-md gap-4">
       <h1 className="text-3xl font-bold">Report damage</h1>
       <p className="text-muted-foreground">Which machine?</p>
-      <form className="grid grid-cols-[minmax(0,1fr)_auto] gap-2" role="search">
+      <Form action="/reports/new" className="grid grid-cols-[minmax(0,1fr)_auto] gap-2" role="search">
         <input name="q" type="search" defaultValue={q} placeholder="Search name, code or rego" aria-label="Search machines" className="h-12 w-full min-w-0 rounded-full border border-input bg-background px-5 text-lg" />
         <Button type="submit" size="lg" className="h-12 px-6">Search</Button>
-      </form>
+      </Form>
       <ul className="grid gap-2">
         {data.list.map((a) => (
           <li key={a.id}>
